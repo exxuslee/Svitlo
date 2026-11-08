@@ -4,6 +4,8 @@ import android.content.Context
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.exxlexxlee.domain.model.Region
+import org.exxlexxlee.domain.model.ServiceArea
+import org.exxlexxlee.domain.model.Supplier
 
 class RegionCatalog(
     context: Context,
@@ -14,26 +16,42 @@ class RegionCatalog(
         context.assets.open("regions.json").bufferedReader().use { it.readText() },
     )
 
-    fun regions(): List<Region> = file.regions.map { it.toRegion() }
+    fun areas(): List<ServiceArea> = file.areas.map { area ->
+        ServiceArea(
+            id = area.id,
+            name = area.name,
+            suppliers = area.suppliers.map { it.toSupplier() },
+        )
+    }
+
+    fun regions(): List<Region> = areas().flatMap { area -> area.suppliers.map { it.region } }
 
     fun source(regionId: String): RegionSourceConfig =
-        file.regions.firstOrNull { it.id == regionId }?.source
+        file.areas.flatMap { it.suppliers }.firstOrNull { it.id == regionId }?.source
             ?: error("Unknown region: $regionId")
 
     fun region(regionId: String): Region =
-        file.regions.first { it.id == regionId }.toRegion()
+        regions().first { it.id == regionId }
 }
 
 @Serializable
 data class RegionsFile(
-    val regions: List<RegionConfig>,
+    val areas: List<AreaConfig>,
 )
 
 @Serializable
-data class RegionConfig(
+data class AreaConfig(
+    val id: String,
+    val name: String,
+    val suppliers: List<SupplierConfig>,
+)
+
+@Serializable
+data class SupplierConfig(
     val id: String,
     val name: String,
     val providerId: String,
+    val primary: Boolean = false,
     val source: RegionSourceConfig,
 )
 
@@ -45,8 +63,7 @@ data class RegionSourceConfig(
     val dsoId: Int? = null,
 )
 
-private fun RegionConfig.toRegion() = Region(
-    id = id,
-    name = name,
-    providerId = providerId,
+private fun SupplierConfig.toSupplier() = Supplier(
+    region = Region(id = id, name = name, providerId = providerId),
+    primary = primary,
 )

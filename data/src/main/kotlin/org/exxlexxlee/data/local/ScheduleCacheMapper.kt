@@ -20,18 +20,30 @@ fun OutageSchedule.toEntity(selection: Selection): ScheduleCacheEntity = Schedul
     tomorrowHalfHours = tomorrow?.halfHours?.encode(),
     sourceUpdatedAtEpochMs = sourceUpdatedAt?.toEpochMilliseconds(),
     fetchedAtEpochMs = fetchedAt.toEpochMilliseconds(),
+    todayPublished = today.published,
+    tomorrowPublished = tomorrow?.published,
+    schedulesSuspended = schedulesSuspended,
 )
 
 fun ScheduleCacheEntity.toDomain(): OutageSchedule = OutageSchedule(
     group = OutageGroup(id = groupId, name = groupName),
-    today = DaySchedule(LocalDate.parse(todayDate), todayHalfHours.decodeStates()),
+    today = DaySchedule(
+        date = LocalDate.parse(todayDate),
+        halfHours = todayHalfHours.decodeStates(),
+        published = todayPublished,
+    ),
     tomorrow = if (tomorrowDate != null && tomorrowHalfHours != null) {
-        DaySchedule(LocalDate.parse(tomorrowDate), tomorrowHalfHours.decodeStates())
+        DaySchedule(
+            date = LocalDate.parse(tomorrowDate),
+            halfHours = tomorrowHalfHours.decodeStates(),
+            published = tomorrowPublished ?: true,
+        )
     } else {
         null
     },
     sourceUpdatedAt = sourceUpdatedAtEpochMs?.let(Instant::fromEpochMilliseconds),
     fetchedAt = Instant.fromEpochMilliseconds(fetchedAtEpochMs),
+    schedulesSuspended = schedulesSuspended,
 )
 
 private fun List<PowerState>.encode(): String = joinToString(",") { it.name }

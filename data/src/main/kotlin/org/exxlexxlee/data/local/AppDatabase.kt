@@ -4,11 +4,11 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [SelectionEntity::class, ScheduleCacheEntity::class],
-    version = 1,
+    entities = [PlaceEntity::class, ScheduleCacheEntity::class],
+    version = 2,
     exportSchema = true,
 )
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun selectionDao(): SelectionDao
+    abstract fun placeDao(): PlaceDao
     abstract fun scheduleDao(): ScheduleDao
 }

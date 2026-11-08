@@ -38,7 +38,7 @@ object ScheduleWidgetMapper {
             )
         }
         return ScheduleWidgetUi(
-            title = selection.region.name,
+            title = selection.details?.name ?: selection.region.name,
             groupLabel = groupLabel(selection.group.name),
             today = schedule?.today?.toUi(),
             tomorrow = schedule?.tomorrow?.toUi(),

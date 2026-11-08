@@ -5,6 +5,11 @@ data class OutageWindow(
     val endMinutes: Int,
 )
 
+data class PowerSnapshot(
+    val state: PowerState,
+    val minutesUntilChange: Int?,
+)
+
 object OutageWindows {
     fun windows(halfHours: List<PowerState>): List<OutageWindow> {
         val result = mutableListOf<OutageWindow>()
@@ -38,6 +43,18 @@ object OutageWindows {
             "${formatClock(window.startMinutes)}–${formatClock(window.endMinutes)}"
         }
 
+    fun statusAt(halfHours: List<PowerState>, minuteOfDay: Int): PowerSnapshot {
+        val minute = minuteOfDay.coerceIn(0, MINUTES_IN_DAY - 1)
+        val index = minute / 30
+        val state = halfHours[index]
+        var cursor = index + 1
+        while (cursor < halfHours.size && halfHours[cursor] == state) {
+            cursor += 1
+        }
+        val until = if (cursor >= halfHours.size) null else cursor * 30 - minute
+        return PowerSnapshot(state = state, minutesUntilChange = until)
+    }
+
     fun formatDuration(minutes: Int): String {
         val hours = minutes / 60
         val rest = minutes % 60
@@ -47,4 +64,6 @@ object OutageWindows {
             else -> "$rest хв"
         }
     }
+
+    private const val MINUTES_IN_DAY = 24 * 60
 }

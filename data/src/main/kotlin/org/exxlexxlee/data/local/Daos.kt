@@ -7,12 +7,21 @@ import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface SelectionDao {
-    @Query("SELECT * FROM selection WHERE id = 1")
-    fun observe(): Flow<SelectionEntity?>
+interface PlaceDao {
+    @Query("SELECT * FROM places ORDER BY position ASC, id ASC")
+    fun observeAll(): Flow<List<PlaceEntity>>
+
+    @Query("SELECT * FROM places WHERE id = :id")
+    fun observe(id: Long): Flow<PlaceEntity?>
+
+    @Query("SELECT COALESCE(MAX(position), -1) FROM places")
+    suspend fun maxPosition(): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsert(entity: SelectionEntity)
+    suspend fun insert(entity: PlaceEntity): Long
+
+    @Query("DELETE FROM places WHERE id = :id")
+    suspend fun delete(id: Long)
 }
 
 @Dao

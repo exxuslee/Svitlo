@@ -5,7 +5,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
 import org.exxlexxlee.svitlo.features.schedule.models.Action
-import org.exxlexxlee.svitlo.navigation.Routes
 import org.exxlexxlee.svitlo.ui.common.LocalNavController
 import org.koin.androidx.compose.koinViewModel
 
@@ -23,9 +22,9 @@ fun ScheduleScreen(
     )
 
     when (viewAction) {
-        Action.OpenAddress -> {
+        Action.Close -> {
             viewModel.clearAction()
-            navController.navigate(Routes.Address.route)
+            navController.popBackStack()
         }
 
         null -> {}

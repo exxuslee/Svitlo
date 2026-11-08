@@ -46,6 +46,7 @@ class YasnoMapper(
             tomorrow = tomorrow,
             sourceUpdatedAt = dto.updatedOn?.let { runCatching { Instant.parse(it) }.getOrNull() },
             fetchedAt = clock.now(),
+            schedulesSuspended = todayDto.isEmergency() || dto.tomorrow?.isEmergency() == true,
         )
     }
 
@@ -67,8 +68,15 @@ class YasnoMapper(
                 halves[index] = merge(halves[index], state)
             }
         }
-        return DaySchedule(date, halves)
+        return DaySchedule(
+            date = date,
+            halfHours = halves,
+            published = !(isEmergency() && slots.isEmpty()),
+        )
     }
+
+    private fun YasnoDayDto.isEmergency(): Boolean =
+        status.equals("EmergencyShutdowns", ignoreCase = true)
 
     private fun parseDate(value: String): LocalDate {
         runCatching { Instant.parse(value) }.getOrNull()?.let { return KyivTime.date(it) }

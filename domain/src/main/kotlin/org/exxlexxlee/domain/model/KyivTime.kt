@@ -19,6 +19,11 @@ object KyivTime {
 
     fun hourOfDay(clock: Clock = Clock.System): Int = clock.now().toLocalDateTime(ZONE).hour
 
+    fun minuteOfDay(clock: Clock = Clock.System): Int {
+        val local = clock.now().toLocalDateTime(ZONE)
+        return local.hour * 60 + local.minute
+    }
+
     fun halfHourIndex(clock: Clock = Clock.System): Int {
         val local = clock.now().toLocalDateTime(ZONE)
         return local.hour * 2 + if (local.minute >= 30) 1 else 0

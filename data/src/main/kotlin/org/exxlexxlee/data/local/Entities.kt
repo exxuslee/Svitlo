@@ -3,9 +3,10 @@ package org.exxlexxlee.data.local
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "selection")
-data class SelectionEntity(
-    @PrimaryKey val id: Int = 1,
+@Entity(tableName = "places")
+data class PlaceEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val position: Int,
     val json: String,
 )
 
@@ -20,4 +21,7 @@ data class ScheduleCacheEntity(
     val tomorrowHalfHours: String?,
     val sourceUpdatedAtEpochMs: Long?,
     val fetchedAtEpochMs: Long,
+    val todayPublished: Boolean,
+    val tomorrowPublished: Boolean?,
+    val schedulesSuspended: Boolean,
 )

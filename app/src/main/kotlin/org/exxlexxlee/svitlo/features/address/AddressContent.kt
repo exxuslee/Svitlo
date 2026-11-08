@@ -1,147 +1,224 @@
 package org.exxlexxlee.svitlo.features.address
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Undo
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import org.exxlexxlee.domain.model.Region
+import org.exxlexxlee.domain.model.ServiceArea
+import org.exxlexxlee.domain.model.Supplier
 import org.exxlexxlee.svitlo.R
+import org.exxlexxlee.svitlo.features.address.models.AddressStep
 import org.exxlexxlee.svitlo.features.address.models.Event
 import org.exxlexxlee.svitlo.features.address.models.ViewState
 import org.exxlexxlee.svitlo.ui.theme.SvitloTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddressContent(
     viewState: ViewState,
     eventHandler: (Event) -> Unit,
 ) {
-    Scaffold(
-        topBar = {
-            TopAppBar(title = { Text(stringResource(R.string.address_title)) })
-        },
-    ) { padding ->
-        Column(
+    BackHandler(enabled = viewState.step != AddressStep.Region) {
+        eventHandler(Event.Back)
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AddressPalette.Background)
+            .windowInsetsPadding(WindowInsets.statusBars)
+            .windowInsetsPadding(WindowInsets.navigationBars),
+    ) {
+        AddressHeader(step = viewState.step, onBack = { eventHandler(Event.Back) })
+        Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+                .weight(1f)
+                .fillMaxWidth(),
         ) {
-            Text(
-                text = stringResource(R.string.address_hint),
-                style = MaterialTheme.typography.bodyMedium,
-            )
-            OutlinedTextField(
-                value = viewState.regionQuery,
-                onValueChange = { eventHandler(Event.RegionQuery(it)) },
-                modifier = Modifier.fillMaxWidth(),
-                label = { Text(stringResource(R.string.region_label)) },
-                placeholder = { Text(stringResource(R.string.search)) },
-                singleLine = true,
-            )
-            if (viewState.isLoadingRegions) {
-                CircularProgressIndicator()
-            } else {
-                LazyColumn(
-                    modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(bottom = 8.dp),
-                ) {
-                    items(viewState.filteredRegions, key = { it.id }) { region ->
-                        ListItem(
-                            headlineContent = { Text(region.name) },
-                            modifier = Modifier.clickable {
-                                eventHandler(Event.RegionSelected(region))
-                            },
-                            supportingContent = if (viewState.selectedRegion?.id == region.id) {
-                                { Text("✓") }
-                            } else {
-                                null
-                            },
-                        )
-                    }
-                }
-            }
-
-            if (viewState.selectedRegion != null) {
-                OutlinedTextField(
-                    value = viewState.groupQuery,
-                    onValueChange = { eventHandler(Event.GroupQuery(it)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = { Text(stringResource(R.string.group_label)) },
-                    placeholder = { Text(stringResource(R.string.search)) },
-                    singleLine = true,
-                    enabled = !viewState.isLoadingGroups,
+            if (viewState.isLoadingAreas && viewState.step == AddressStep.Region) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                    color = AddressPalette.Accent,
                 )
-                if (viewState.isLoadingGroups) {
-                    CircularProgressIndicator()
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.weight(1f),
-                        contentPadding = PaddingValues(bottom = 8.dp),
-                    ) {
-                        items(viewState.filteredGroups, key = { it.id }) { group ->
-                            ListItem(
-                                headlineContent = { Text(group.name) },
-                                modifier = Modifier.clickable {
-                                    eventHandler(Event.GroupSelected(group))
-                                },
-                                supportingContent = if (viewState.selectedGroup?.id == group.id) {
-                                    { Text("✓") }
-                                } else {
-                                    null
-                                },
-                            )
-                        }
-                    }
+            } else {
+                when (viewState.step) {
+                    AddressStep.Region -> RegionStep(viewState, eventHandler)
+                    AddressStep.Supplier -> SupplierStep(viewState, eventHandler)
+                    AddressStep.Group -> GroupStep(viewState, eventHandler)
+                    AddressStep.Details -> DetailsStep(viewState, eventHandler)
                 }
-            }
-
-            viewState.error?.let { error ->
-                Text(text = error, color = MaterialTheme.colorScheme.error)
-            }
-
-            Button(
-                onClick = { eventHandler(Event.Save) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                enabled = viewState.selectedRegion != null && viewState.selectedGroup != null,
-            ) {
-                Text(stringResource(R.string.save_and_show))
             }
         }
     }
+
+    if (viewState.showAddressSearchHint) {
+        AlertDialog(
+            onDismissRequest = { eventHandler(Event.DismissAddressSearch) },
+            text = { Text(stringResource(R.string.find_group_unavailable)) },
+            confirmButton = {
+                TextButton(onClick = { eventHandler(Event.DismissAddressSearch) }) {
+                    Text(stringResource(R.string.got_it))
+                }
+            },
+        )
+    }
+
+    if (viewState.showReminderPicker) {
+        AlertDialog(
+            onDismissRequest = { eventHandler(Event.DismissReminder) },
+            title = { Text(stringResource(R.string.reminder_label)) },
+            text = {
+                Column {
+                    listOf(15, 30, 60).forEach { minutes ->
+                        Text(
+                            text = reminderText(minutes),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { eventHandler(Event.ReminderSelected(minutes)) }
+                                .padding(vertical = 12.dp),
+                            color = AddressPalette.Title,
+                            fontSize = 16.sp,
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { eventHandler(Event.DismissReminder) }) {
+                    Text(stringResource(R.string.got_it))
+                }
+            },
+        )
+    }
+}
+
+@Composable
+private fun AddressHeader(step: AddressStep, onBack: () -> Unit) {
+    Column(modifier = Modifier.padding(top = 8.dp)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            IconButton(onClick = onBack, modifier = Modifier.size(56.dp)) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.Undo,
+                    contentDescription = stringResource(R.string.back),
+                    tint = AddressPalette.Title,
+                    modifier = Modifier.size(28.dp),
+                )
+            }
+            Text(
+                text = stringResource(R.string.address_title),
+                modifier = Modifier.weight(1f),
+                color = AddressPalette.Title,
+                fontSize = 26.sp,
+                fontWeight = FontWeight.Bold,
+                lineHeight = 32.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+        Text(
+            text = stringResource(R.string.address_step, step.index, stepTitle(step)),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp, bottom = 14.dp),
+            color = AddressPalette.Subtitle,
+            fontSize = 16.sp,
+            textAlign = TextAlign.Center,
+        )
+        Box(
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth()
+                .height(6.dp)
+                .clip(RoundedCornerShape(3.dp))
+                .background(AddressPalette.Track),
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(step.fraction)
+                    .fillMaxHeight()
+                    .clip(RoundedCornerShape(3.dp))
+                    .background(AddressPalette.Accent),
+            )
+        }
+    }
+}
+
+@Composable
+private fun stepTitle(step: AddressStep): String = when (step) {
+    AddressStep.Region -> stringResource(R.string.step_region)
+    AddressStep.Supplier -> stringResource(R.string.step_supplier)
+    AddressStep.Group -> stringResource(R.string.step_group)
+    AddressStep.Details -> stringResource(R.string.step_details)
+}
+
+@Composable
+fun reminderText(minutes: Int): String = when {
+    minutes >= 60 && minutes % 60 == 0 -> stringResource(R.string.reminder_hours, minutes / 60)
+    else -> stringResource(R.string.reminder_minutes, minutes)
 }
 
 @Preview
 @Composable
 private fun AddressContent_Preview() {
     SvitloTheme {
-        Surface {
-            AddressContent(
-                viewState = ViewState(isLoadingRegions = false),
-                eventHandler = {},
-            )
-        }
+        AddressContent(
+            viewState = ViewState(
+                isLoadingAreas = false,
+                areas = listOf(
+                    ServiceArea(
+                        id = "kyiv-region",
+                        name = "Київська область",
+                        suppliers = listOf(
+                            Supplier(
+                                region = Region(
+                                    id = "kyiv-region",
+                                    name = "ПрАТ «ДТЕК Київські регіональні електромережі»",
+                                    providerId = "dtek",
+                                ),
+                                primary = true,
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+            eventHandler = {},
+        )
     }
 }

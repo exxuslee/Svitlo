@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import org.exxlexxlee.domain.usecase.ObservePlaces
 import org.exxlexxlee.domain.usecase.ObserveSchedule
 import org.exxlexxlee.domain.usecase.ObserveSelection
 import org.exxlexxlee.domain.usecase.RefreshSchedule
@@ -75,10 +76,9 @@ class WidgetRefreshWorker(
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
         val koin = GlobalContext.getOrNull() ?: return Result.retry()
-        val selection = koin.get<ObserveSelection>()().first()
-        if (selection != null) {
-            koin.get<RefreshSchedule>()(selection)
-        }
+        val places = koin.get<ObservePlaces>()().first()
+        val refresh = koin.get<RefreshSchedule>()
+        places.forEach { place -> refresh(place.selection) }
         WidgetCoordinator.update(applicationContext)
         return Result.success()
     }

@@ -58,6 +58,9 @@ class MapperTest {
         assertEquals(11, schedule.today.date.monthNumber)
         assertEquals(8, schedule.today.date.dayOfMonth)
         assertEquals(9, schedule.tomorrow!!.date.dayOfMonth)
+        assertTrue(schedule.today.published)
+        assertTrue(schedule.tomorrow!!.published)
+        assertEquals(false, schedule.schedulesSuspended)
     }
 
     @Test
@@ -72,6 +75,9 @@ class MapperTest {
         val schedule = yasnoMapper.toSchedule(payload, OutageGroup("3.1", "3.1"))
         assertTrue(schedule.today.halfHours.all { it == PowerState.ON })
         assertTrue(schedule.tomorrow!!.halfHours.all { it == PowerState.ON })
+        assertTrue(schedule.schedulesSuspended)
+        assertEquals(false, schedule.today.published)
+        assertEquals(false, schedule.tomorrow!!.published)
     }
 
     private fun readResource(name: String): String =

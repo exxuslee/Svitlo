@@ -47,8 +47,9 @@ fun ScheduleContent(
     viewState: ViewState,
     eventHandler: (Event) -> Unit,
 ) {
-    val title = viewState.selection?.let { "${it.region.name} · ${it.group.name}" }
-        ?: stringResource(R.string.app_name)
+    val title = viewState.selection?.let { selection ->
+        selection.details?.name ?: "${selection.region.name} · ${selection.group.name}"
+    } ?: stringResource(R.string.app_name)
 
     Scaffold(
         topBar = {
@@ -56,7 +57,7 @@ fun ScheduleContent(
                 title = { Text(title) },
                 actions = {
                     TextButton(onClick = { eventHandler(Event.ChangeSelection) }) {
-                        Text(stringResource(R.string.change_selection))
+                        Text(stringResource(R.string.back_to_list))
                     }
                 },
             )

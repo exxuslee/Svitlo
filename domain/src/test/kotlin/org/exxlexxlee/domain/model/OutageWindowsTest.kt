@@ -29,6 +29,27 @@ class OutageWindowsTest {
     }
 
     @Test
+    fun countsMinutesUntilTheStateChanges() {
+        val halves = MutableList(48) { PowerState.ON }
+        for (index in 36 until 42) halves[index] = PowerState.OFF
+
+        val status = OutageWindows.statusAt(halves, minuteOfDay = 18 * 60 + 26)
+
+        assertEquals(PowerState.OFF, status.state)
+        assertEquals(2 * 60 + 34, status.minutesUntilChange)
+    }
+
+    @Test
+    fun hasNoCountdownWhenTheStateLastsUntilMidnight() {
+        val halves = MutableList(48) { PowerState.ON }
+
+        val status = OutageWindows.statusAt(halves, minuteOfDay = 10 * 60)
+
+        assertEquals(PowerState.ON, status.state)
+        assertEquals(null, status.minutesUntilChange)
+    }
+
+    @Test
     fun ignoresMaybeWhenBuildingOffWindows() {
         val halves = MutableList(48) { PowerState.ON }
         halves[0] = PowerState.OFF

@@ -10,8 +10,10 @@ import org.exxlexxlee.domain.model.HourState
 import org.exxlexxlee.domain.model.House
 import org.exxlexxlee.domain.model.OutageGroup
 import org.exxlexxlee.domain.model.OutageSchedule
+import org.exxlexxlee.domain.model.Place
 import org.exxlexxlee.domain.model.Region
 import org.exxlexxlee.domain.model.Selection
+import org.exxlexxlee.domain.model.ServiceArea
 import org.exxlexxlee.domain.model.Street
 import org.exxlexxlee.domain.repository.LocationRepository
 import org.exxlexxlee.domain.repository.ScheduleRepository
@@ -19,6 +21,10 @@ import org.exxlexxlee.domain.repository.SelectionRepository
 
 class GetRegions(private val locationRepository: LocationRepository) {
     suspend operator fun invoke(): List<Region> = locationRepository.regions()
+}
+
+class GetAreas(private val locationRepository: LocationRepository) {
+    suspend operator fun invoke(): List<ServiceArea> = locationRepository.areas()
 }
 
 class GetCities(private val locationRepository: LocationRepository) {
@@ -44,6 +50,18 @@ class SaveSelection(private val selectionRepository: SelectionRepository) {
 
 class ObserveSelection(private val selectionRepository: SelectionRepository) {
     operator fun invoke(): Flow<Selection?> = selectionRepository.observe()
+}
+
+class ObservePlaces(private val selectionRepository: SelectionRepository) {
+    operator fun invoke(): Flow<List<Place>> = selectionRepository.observePlaces()
+}
+
+class ObservePlace(private val selectionRepository: SelectionRepository) {
+    operator fun invoke(id: Long): Flow<Place?> = selectionRepository.observePlace(id)
+}
+
+class DeletePlace(private val selectionRepository: SelectionRepository) {
+    suspend operator fun invoke(id: Long) = selectionRepository.delete(id)
 }
 
 class ObserveSchedule(private val scheduleRepository: ScheduleRepository) {

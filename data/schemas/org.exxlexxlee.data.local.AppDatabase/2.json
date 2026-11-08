@@ -1,0 +1,123 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "fe2da20a21eb4dc4afcba3ae973067b5",
+    "entities": [
+      {
+        "tableName": "places",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `position` INTEGER NOT NULL, `json` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "position",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "json",
+            "columnName": "json",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "schedule_cache",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cacheKey` TEXT NOT NULL, `groupId` TEXT NOT NULL, `groupName` TEXT NOT NULL, `todayDate` TEXT NOT NULL, `todayHalfHours` TEXT NOT NULL, `tomorrowDate` TEXT, `tomorrowHalfHours` TEXT, `sourceUpdatedAtEpochMs` INTEGER, `fetchedAtEpochMs` INTEGER NOT NULL, `todayPublished` INTEGER NOT NULL, `tomorrowPublished` INTEGER, `schedulesSuspended` INTEGER NOT NULL, PRIMARY KEY(`cacheKey`))",
+        "fields": [
+          {
+            "fieldPath": "cacheKey",
+            "columnName": "cacheKey",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "groupId",
+            "columnName": "groupId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "groupName",
+            "columnName": "groupName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "todayDate",
+            "columnName": "todayDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "todayHalfHours",
+            "columnName": "todayHalfHours",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tomorrowDate",
+            "columnName": "tomorrowDate",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "tomorrowHalfHours",
+            "columnName": "tomorrowHalfHours",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "sourceUpdatedAtEpochMs",
+            "columnName": "sourceUpdatedAtEpochMs",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "fetchedAtEpochMs",
+            "columnName": "fetchedAtEpochMs",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "todayPublished",
+            "columnName": "todayPublished",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tomorrowPublished",
+            "columnName": "tomorrowPublished",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "schedulesSuspended",
+            "columnName": "schedulesSuspended",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "cacheKey"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fe2da20a21eb4dc4afcba3ae973067b5')"
+    ]
+  }
+}

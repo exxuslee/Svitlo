@@ -1,5 +1,6 @@
 package org.exxlexxlee.svitlo.features.schedule
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,8 +14,8 @@ import kotlinx.datetime.Instant
 import org.exxlexxlee.domain.model.KyivTime
 import org.exxlexxlee.domain.model.Selection
 import org.exxlexxlee.domain.usecase.ObserveDials
+import org.exxlexxlee.domain.usecase.ObservePlace
 import org.exxlexxlee.domain.usecase.ObserveSchedule
-import org.exxlexxlee.domain.usecase.ObserveSelection
 import org.exxlexxlee.domain.usecase.RefreshSchedule
 import org.exxlexxlee.svitlo.features.schedule.models.Action
 import org.exxlexxlee.svitlo.features.schedule.models.Event
@@ -24,22 +25,24 @@ import kotlin.time.Duration.Companion.hours
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ScheduleViewModel(
-    observeSelection: ObserveSelection,
+    observePlace: ObservePlace,
     observeDials: ObserveDials,
     observeSchedule: ObserveSchedule,
     private val refreshSchedule: RefreshSchedule,
     private val clock: Clock,
+    savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<ViewState, Action, Event>(
     initialState = ViewState(currentHour = KyivTime.hourOfDay(clock))
 ) {
+    private val placeId: Long = savedStateHandle.get<Long>("placeId") ?: 0L
     private val refreshState = MutableStateFlow(RefreshUi(isRefreshing = false, error = null))
 
     init {
         viewModelScope.launch {
             combine(
-                observeSelection(),
+                observePlace(placeId),
                 refreshState,
-            ) { selection, refresh -> selection to refresh }
+            ) { place, refresh -> place?.selection to refresh }
                 .flatMapLatest { (selection, refresh) ->
                     if (selection == null) {
                         flowOf(
@@ -71,8 +74,8 @@ class ScheduleViewModel(
                 .collect { viewState = it }
         }
         viewModelScope.launch {
-            observeSelection().collect { selection ->
-                if (selection != null) refresh(selection)
+            observePlace(placeId).collect { place ->
+                if (place != null) refresh(place.selection)
             }
         }
     }
@@ -80,7 +83,7 @@ class ScheduleViewModel(
     override fun obtainEvent(viewEvent: Event) {
         when (viewEvent) {
             Event.Refresh -> refresh(viewState.selection)
-            Event.ChangeSelection -> viewAction = Action.OpenAddress
+            Event.ChangeSelection -> viewAction = Action.Close
         }
     }
 

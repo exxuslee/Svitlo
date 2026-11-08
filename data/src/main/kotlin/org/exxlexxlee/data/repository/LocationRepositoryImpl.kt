@@ -9,6 +9,7 @@ import org.exxlexxlee.domain.model.City
 import org.exxlexxlee.domain.model.House
 import org.exxlexxlee.domain.model.OutageGroup
 import org.exxlexxlee.domain.model.Region
+import org.exxlexxlee.domain.model.ServiceArea
 import org.exxlexxlee.domain.model.Street
 import org.exxlexxlee.domain.repository.LocationRepository
 
@@ -19,6 +20,8 @@ class LocationRepositoryImpl(
     private val yasnoMapper: YasnoMapper,
     private val gpvMapper: GpvMapper,
 ) : LocationRepository {
+
+    override suspend fun areas(): List<ServiceArea> = catalog.areas()
 
     override suspend fun regions(): List<Region> = catalog.regions()
 

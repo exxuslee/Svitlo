@@ -25,9 +25,17 @@ fun AddressScreen(
     when (viewAction) {
         Action.Saved -> {
             viewModel.clearAction()
-            navController.navigate(Routes.Schedule.route) {
-                popUpTo(Routes.Address.route) { inclusive = true }
+            val popped = navController.popBackStack()
+            if (!popped) {
+                navController.navigate(Routes.Home.route) {
+                    popUpTo(Routes.Address.route) { inclusive = true }
+                }
             }
+        }
+
+        Action.Close -> {
+            viewModel.clearAction()
+            navController.popBackStack()
         }
 
         null -> {}

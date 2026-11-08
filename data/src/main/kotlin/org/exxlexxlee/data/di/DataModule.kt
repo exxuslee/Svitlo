@@ -58,7 +58,7 @@ val dataModule = module {
             .fallbackToDestructiveMigration(dropAllTables = true)
             .build()
     }
-    single { get<AppDatabase>().selectionDao() }
+    single { get<AppDatabase>().placeDao() }
     single { get<AppDatabase>().scheduleDao() }
     single { RegionCatalog(androidContext(), get()) }
     single { YasnoApi(get()) }

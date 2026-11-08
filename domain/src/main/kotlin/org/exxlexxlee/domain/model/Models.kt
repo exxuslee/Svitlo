@@ -9,6 +9,24 @@ data class Region(
     val providerId: String,
 )
 
+data class Supplier(
+    val region: Region,
+    val primary: Boolean,
+)
+
+data class ServiceArea(
+    val id: String,
+    val name: String,
+    val suppliers: List<Supplier>,
+)
+
+data class AddressDetails(
+    val name: String,
+    val reminderMinutes: Int = 15,
+    val quietNight: Boolean = false,
+    val iconId: String = "home",
+)
+
 data class City(
     val id: String,
     val name: String,
@@ -48,6 +66,7 @@ enum class PowerState {
 data class DaySchedule(
     val date: LocalDate,
     val halfHours: List<PowerState>,
+    val published: Boolean = true,
 ) {
     init {
         require(halfHours.size == 48) { "Day schedule must contain 48 half-hour slots" }
@@ -60,6 +79,7 @@ data class OutageSchedule(
     val tomorrow: DaySchedule?,
     val sourceUpdatedAt: Instant?,
     val fetchedAt: Instant,
+    val schedulesSuspended: Boolean = false,
 )
 
 data class HourState(
@@ -82,18 +102,26 @@ data class Dials(
     val tomorrowPm: Dial?,
 )
 
+data class Place(
+    val id: Long,
+    val selection: Selection,
+)
+
 sealed interface Selection {
     val region: Region
     val group: OutageGroup
+    val details: AddressDetails?
 
     data class ByGroup(
         override val region: Region,
         override val group: OutageGroup,
+        override val details: AddressDetails? = null,
     ) : Selection
 
     data class ByAddress(
         val address: Address,
         override val group: OutageGroup,
+        override val details: AddressDetails? = null,
     ) : Selection {
         override val region: Region get() = address.region
     }

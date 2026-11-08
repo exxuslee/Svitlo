@@ -5,11 +5,14 @@ import org.exxlexxlee.domain.model.City
 import org.exxlexxlee.domain.model.House
 import org.exxlexxlee.domain.model.OutageGroup
 import org.exxlexxlee.domain.model.OutageSchedule
+import org.exxlexxlee.domain.model.Place
 import org.exxlexxlee.domain.model.Region
 import org.exxlexxlee.domain.model.Selection
+import org.exxlexxlee.domain.model.ServiceArea
 import org.exxlexxlee.domain.model.Street
 
 interface LocationRepository {
+    suspend fun areas(): List<ServiceArea>
     suspend fun regions(): List<Region>
     suspend fun cities(regionId: String): List<City>
     suspend fun streets(cityId: String): List<Street>
@@ -23,6 +26,9 @@ interface ScheduleRepository {
 }
 
 interface SelectionRepository {
+    fun observePlaces(): Flow<List<Place>>
+    fun observePlace(id: Long): Flow<Place?>
     fun observe(): Flow<Selection?>
-    suspend fun save(selection: Selection)
+    suspend fun save(selection: Selection): Long
+    suspend fun delete(id: Long)
 }

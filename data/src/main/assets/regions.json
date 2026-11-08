@@ -1,148 +1,253 @@
 {
-  "regions": [
+  "areas": [
     {
-      "id": "kyiv-yasno",
-      "name": "Київ (ДТЕК Yasno)",
-      "providerId": "yasno",
-      "source": { "type": "yasno", "regionId": 25, "dsoId": 902 }
-    },
-    {
-      "id": "dnipro-dnem",
-      "name": "Дніпро (ДнЕМ)",
-      "providerId": "yasno",
-      "source": { "type": "yasno", "regionId": 3, "dsoId": 301 }
-    },
-    {
-      "id": "dnipro-cek",
-      "name": "Дніпро (ЦЕК)",
-      "providerId": "yasno",
-      "source": { "type": "yasno", "regionId": 3, "dsoId": 303 }
+      "id": "kyiv",
+      "name": "Київ",
+      "suppliers": [
+        {
+          "id": "kyiv-yasno",
+          "name": "ПрАТ «ДТЕК Київські електромережі»",
+          "providerId": "yasno",
+          "primary": true,
+          "source": { "type": "yasno", "regionId": 25, "dsoId": 902 }
+        }
+      ]
     },
     {
       "id": "kyiv-region",
       "name": "Київська область",
-      "providerId": "dtek",
-      "source": {
-        "type": "github_json",
-        "url": "https://raw.githubusercontent.com/Baskerville42/outage-data-ua/main/data/kyiv-region.json"
-      }
-    },
-    {
-      "id": "dnipro-json",
-      "name": "Дніпро та область (JSON)",
-      "providerId": "dtek",
-      "source": {
-        "type": "github_json",
-        "url": "https://raw.githubusercontent.com/Baskerville42/outage-data-ua/main/data/dnipro.json"
-      }
-    },
-    {
-      "id": "odesa",
-      "name": "Одеса та область",
-      "providerId": "dtek",
-      "source": {
-        "type": "github_json",
-        "url": "https://raw.githubusercontent.com/Baskerville42/outage-data-ua/main/data/odesa.json"
-      }
+      "suppliers": [
+        {
+          "id": "kyiv-region",
+          "name": "ПрАТ «ДТЕК Київські регіональні електромережі»",
+          "providerId": "dtek",
+          "primary": true,
+          "source": {
+            "type": "github_json",
+            "url": "https://raw.githubusercontent.com/Baskerville42/outage-data-ua/main/data/kyiv-region.json"
+          }
+        }
+      ]
     },
     {
       "id": "vinnytsia",
       "name": "Вінницька область",
-      "providerId": "voe",
-      "source": {
-        "type": "github_json",
-        "url": "https://raw.githubusercontent.com/olnet93/gpv-voe-vinnytsia/main/data/Vinnytsiaoblenerho.json"
-      }
+      "suppliers": [
+        {
+          "id": "vinnytsia",
+          "name": "АТ «Вінницяобленерго»",
+          "providerId": "voe",
+          "primary": true,
+          "source": {
+            "type": "github_json",
+            "url": "https://raw.githubusercontent.com/olnet93/gpv-voe-vinnytsia/main/data/Vinnytsiaoblenerho.json"
+          }
+        }
+      ]
     },
     {
-      "id": "khmelnytskyi",
-      "name": "Хмельницька область",
-      "providerId": "oe",
-      "source": {
-        "type": "github_json",
-        "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Khmelnytskoblenerho.json"
-      }
-    },
-    {
-      "id": "ivano-frankivsk",
-      "name": "Івано-Франківська область",
-      "providerId": "oe",
-      "source": {
-        "type": "github_json",
-        "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Prykarpattiaoblenerho.json"
-      }
-    },
-    {
-      "id": "zakarpattia",
-      "name": "Закарпатська область",
-      "providerId": "oe",
-      "source": {
-        "type": "github_json",
-        "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Zakarpattiaoblenerho.json"
-      }
-    },
-    {
-      "id": "lviv",
-      "name": "Львівська область",
-      "providerId": "oe",
-      "source": {
-        "type": "github_json",
-        "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Lvivoblenerho.json"
-      }
-    },
-    {
-      "id": "ternopil",
-      "name": "Тернопільська область",
-      "providerId": "oe",
-      "source": {
-        "type": "github_json",
-        "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Ternopiloblenerho.json"
-      }
-    },
-    {
-      "id": "chernihiv",
-      "name": "Чернігівська область",
-      "providerId": "oe",
-      "source": {
-        "type": "github_json",
-        "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Chernihivoblenergo.json"
-      }
-    },
-    {
-      "id": "zaporizhzhia",
-      "name": "Запорізька область",
-      "providerId": "oe",
-      "source": {
-        "type": "github_json",
-        "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Zaporizhzhiaoblenergo.json"
-      }
+      "id": "dnipro",
+      "name": "Дніпропетровська область",
+      "suppliers": [
+        {
+          "id": "dnipro-dnem",
+          "name": "ПрАТ «ДТЕК Дніпровські електромережі»",
+          "providerId": "yasno",
+          "primary": true,
+          "source": { "type": "yasno", "regionId": 3, "dsoId": 301 }
+        },
+        {
+          "id": "dnipro-cek",
+          "name": "АТ «ЦЕК»",
+          "providerId": "yasno",
+          "source": { "type": "yasno", "regionId": 3, "dsoId": 303 }
+        },
+        {
+          "id": "dnipro-json",
+          "name": "Дніпро та область",
+          "providerId": "dtek",
+          "source": {
+            "type": "github_json",
+            "url": "https://raw.githubusercontent.com/Baskerville42/outage-data-ua/main/data/dnipro.json"
+          }
+        }
+      ]
     },
     {
       "id": "zhytomyr",
       "name": "Житомирська область",
-      "providerId": "oe",
-      "source": {
-        "type": "github_json",
-        "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Zhytomyroblenergo.json"
-      }
+      "suppliers": [
+        {
+          "id": "zhytomyr",
+          "name": "АТ «Житомиробленерго»",
+          "providerId": "oe",
+          "primary": true,
+          "source": {
+            "type": "github_json",
+            "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Zhytomyroblenergo.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "zakarpattia",
+      "name": "Закарпатська область",
+      "suppliers": [
+        {
+          "id": "zakarpattia",
+          "name": "АТ «Закарпаттяобленерго»",
+          "providerId": "oe",
+          "primary": true,
+          "source": {
+            "type": "github_json",
+            "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Zakarpattiaoblenerho.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "zaporizhzhia",
+      "name": "Запорізька область",
+      "suppliers": [
+        {
+          "id": "zaporizhzhia",
+          "name": "АТ «Запоріжжяобленерго»",
+          "providerId": "oe",
+          "primary": true,
+          "source": {
+            "type": "github_json",
+            "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Zaporizhzhiaoblenergo.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ivano-frankivsk",
+      "name": "Івано-Франківська область",
+      "suppliers": [
+        {
+          "id": "ivano-frankivsk",
+          "name": "АТ «Прикарпаттяобленерго»",
+          "providerId": "oe",
+          "primary": true,
+          "source": {
+            "type": "github_json",
+            "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Prykarpattiaoblenerho.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "lviv",
+      "name": "Львівська область",
+      "suppliers": [
+        {
+          "id": "lviv",
+          "name": "АТ «Львівобленерго»",
+          "providerId": "oe",
+          "primary": true,
+          "source": {
+            "type": "github_json",
+            "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Lvivoblenerho.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "odesa",
+      "name": "Одеська область",
+      "suppliers": [
+        {
+          "id": "odesa",
+          "name": "ПрАТ «ДТЕК Одеські електромережі»",
+          "providerId": "dtek",
+          "primary": true,
+          "source": {
+            "type": "github_json",
+            "url": "https://raw.githubusercontent.com/Baskerville42/outage-data-ua/main/data/odesa.json"
+          }
+        }
+      ]
     },
     {
       "id": "poltava",
       "name": "Полтавська область",
-      "providerId": "oe",
-      "source": {
-        "type": "github_json",
-        "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Poltavaoblenergo.json"
-      }
+      "suppliers": [
+        {
+          "id": "poltava",
+          "name": "АТ «Полтаваобленерго»",
+          "providerId": "oe",
+          "primary": true,
+          "source": {
+            "type": "github_json",
+            "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Poltavaoblenergo.json"
+          }
+        }
+      ]
     },
     {
       "id": "rivne",
       "name": "Рівненська область",
-      "providerId": "oe",
-      "source": {
-        "type": "github_json",
-        "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Rivneoblenergo.json"
-      }
+      "suppliers": [
+        {
+          "id": "rivne",
+          "name": "АТ «Рівнеобленерго»",
+          "providerId": "oe",
+          "primary": true,
+          "source": {
+            "type": "github_json",
+            "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Rivneoblenergo.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ternopil",
+      "name": "Тернопільська область",
+      "suppliers": [
+        {
+          "id": "ternopil",
+          "name": "АТ «Тернопільобленерго»",
+          "providerId": "oe",
+          "primary": true,
+          "source": {
+            "type": "github_json",
+            "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Ternopiloblenerho.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "khmelnytskyi",
+      "name": "Хмельницька область",
+      "suppliers": [
+        {
+          "id": "khmelnytskyi",
+          "name": "АТ «Хмельницькобленерго»",
+          "providerId": "oe",
+          "primary": true,
+          "source": {
+            "type": "github_json",
+            "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Khmelnytskoblenerho.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "chernihiv",
+      "name": "Чернігівська область",
+      "suppliers": [
+        {
+          "id": "chernihiv",
+          "name": "АТ «Чернігівобленерго»",
+          "providerId": "oe",
+          "primary": true,
+          "source": {
+            "type": "github_json",
+            "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Chernihivoblenergo.json"
+          }
+        }
+      ]
     }
   ]
 }

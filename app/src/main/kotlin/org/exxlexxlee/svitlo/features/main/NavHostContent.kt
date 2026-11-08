@@ -3,9 +3,12 @@ package org.exxlexxlee.svitlo.features.main
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import org.exxlexxlee.svitlo.features.address.AddressScreen
+import org.exxlexxlee.svitlo.features.home.HomeScreen
 import org.exxlexxlee.svitlo.features.main.models.ViewState
 import org.exxlexxlee.svitlo.features.schedule.ScheduleScreen
 import org.exxlexxlee.svitlo.navigation.Routes
@@ -21,7 +24,11 @@ fun NavHostContent(
         startDestination = viewState.initialRoute,
         modifier = modifier,
     ) {
+        composable(Routes.Home.route) { HomeScreen() }
         composable(Routes.Address.route) { AddressScreen() }
-        composable(Routes.Schedule.route) { ScheduleScreen() }
+        composable(
+            route = Routes.Schedule.route,
+            arguments = listOf(navArgument("placeId") { type = NavType.LongType }),
+        ) { ScheduleScreen() }
     }
 }
