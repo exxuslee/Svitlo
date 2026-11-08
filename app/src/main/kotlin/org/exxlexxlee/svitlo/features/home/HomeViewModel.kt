@@ -98,6 +98,7 @@ class HomeViewModel(
                 viewState = viewState.copy(pendingDeleteId = null)
                 viewModelScope.launch { deletePlace(id) }
             }
+            is Event.Edit -> viewAction = Action.OpenAddress
         }
     }
 

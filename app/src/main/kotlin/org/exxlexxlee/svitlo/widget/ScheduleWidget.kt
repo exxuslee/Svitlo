@@ -217,7 +217,7 @@ private fun DayChip(text: String, selected: Boolean, showTomorrow: Boolean) {
             text = text,
             style = TextStyle(
                 color = if (selected) WidgetColors.title else WidgetColors.muted,
-                fontSize = 16.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
             ),
             maxLines = 1,
@@ -349,7 +349,7 @@ private fun HourCell(
                 modifier = GlanceModifier.fillMaxWidth(),
                 style = TextStyle(
                     color = labelColor(first, second),
-                    fontSize = 8.sp,
+                    fontSize = 10.sp,
                     fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Center,
                 ),

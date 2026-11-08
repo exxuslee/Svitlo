@@ -28,6 +28,7 @@
     <string name="home_empty">Додайте адресу, щоб бачити графік відключень</string>
     <string name="add_address">Додати адресу</string>
     <string name="delete">Видалити</string>
+    <string name="edit">Редагувати</string>
     <string name="cancel">Скасувати</string>
     <string name="delete_place_title">Видалити адресу?</string>
     <string name="delete_place_body">Картку «%1$s» буде видалено з цього пристрою.</string>
