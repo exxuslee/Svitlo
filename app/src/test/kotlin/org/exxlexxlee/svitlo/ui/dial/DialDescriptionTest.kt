@@ -26,6 +26,6 @@ class DialDescriptionTest {
         hours[7] = HourState(PowerState.OFF, PowerState.OFF)
         val description = buildDialDescription(hours, 12)
         assertTrue(description.contains("з 18:00 до 18:30 світла немає"))
-        assertTrue(description.contains("з 19:00 до 21:00 світла немає"))
+        assertTrue(description.contains("з 19:00 до 20:00 світла немає"))
     }
 }

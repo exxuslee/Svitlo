@@ -78,7 +78,11 @@ class ScheduleViewModel(
                 }
             }
         }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ScheduleUiState())
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            ScheduleUiState(currentHour = KyivTime.hourOfDay(clock)),
+        )
 
     init {
         viewModelScope.launch {

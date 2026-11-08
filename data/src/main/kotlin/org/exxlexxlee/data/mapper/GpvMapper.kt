@@ -4,7 +4,6 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.serialization.json.Json
 import org.exxlexxlee.data.dto.GpvFileDto
@@ -100,6 +99,6 @@ class GpvMapper(
             hour.toInt(),
             minute.toInt(),
         )
-        return local.toInstant(TimeZone.of("Europe/Kyiv"))
+        return local.toInstant(KyivTime.ZONE)
     }
 }

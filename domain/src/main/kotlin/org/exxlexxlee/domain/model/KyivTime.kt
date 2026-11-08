@@ -7,7 +7,11 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
 object KyivTime {
-    val ZONE: TimeZone = TimeZone.of("Europe/Kyiv")
+    val ZONE: TimeZone = runCatching { TimeZone.of("Europe/Kyiv") }
+        .getOrElse {
+            runCatching { TimeZone.of("Europe/Kiev") }
+                .getOrElse { TimeZone.of("UTC+02:00") }
+        }
 
     fun date(instant: Instant): LocalDate = instant.toLocalDateTime(ZONE).date
 
