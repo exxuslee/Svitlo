@@ -10,7 +10,6 @@ import androidx.navigation.navArgument
 import org.exxlexxlee.svitlo.features.address.AddressScreen
 import org.exxlexxlee.svitlo.features.home.HomeScreen
 import org.exxlexxlee.svitlo.features.main.models.ViewState
-import org.exxlexxlee.svitlo.features.schedule.ScheduleScreen
 import org.exxlexxlee.svitlo.navigation.Routes
 
 @Composable
@@ -34,9 +33,5 @@ fun NavHostContent(
                 },
             ),
         ) { AddressScreen() }
-        composable(
-            route = Routes.Schedule.route,
-            arguments = listOf(navArgument("placeId") { type = NavType.LongType }),
-        ) { ScheduleScreen() }
     }
 }

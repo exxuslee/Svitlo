@@ -6,7 +6,4 @@ sealed class Routes(val route: String) {
         fun create(placeId: Long? = null): String =
             if (placeId != null) "address?placeId=$placeId" else "address"
     }
-    data object Schedule : Routes("schedule/{placeId}") {
-        fun create(placeId: Long) = "schedule/$placeId"
-    }
 }

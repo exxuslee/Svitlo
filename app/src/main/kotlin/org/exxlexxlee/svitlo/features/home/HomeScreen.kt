@@ -29,11 +29,6 @@ fun HomeScreen(
             navController.navigate(Routes.Address.create(placeId))
         }
 
-        is Action.OpenSchedule -> {
-            viewModel.clearAction()
-            navController.navigate(Routes.Schedule.create(action.placeId))
-        }
-
         null -> {}
     }
 }

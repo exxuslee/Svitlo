@@ -89,7 +89,6 @@ class HomeViewModel(
     override fun obtainEvent(viewEvent: Event) {
         when (viewEvent) {
             Event.Add -> viewAction = Action.OpenAddress()
-            is Event.Open -> viewAction = Action.OpenSchedule(viewEvent.id)
             Event.Refresh -> refreshAll(latestPlaces)
             is Event.DeleteRequested -> viewState = viewState.copy(pendingDeleteId = viewEvent.id)
             Event.DismissDelete -> viewState = viewState.copy(pendingDeleteId = null)

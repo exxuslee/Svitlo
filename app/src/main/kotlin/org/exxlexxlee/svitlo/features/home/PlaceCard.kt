@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -209,21 +210,26 @@ internal fun PlaceCardSwipeable(
                         }
                     },
                 )
-                .clickable {
+                .then(
                     if (offsetX.value != 0f) {
-                        coroutineScope.launch {
-                            offsetX.animateTo(
-                                targetValue = 0f,
-                                animationSpec = spring(
-                                    dampingRatio = Spring.DampingRatioLowBouncy,
-                                    stiffness = Spring.StiffnessMediumLow,
-                                ),
-                            )
+                        Modifier.clickable(
+                            interactionSource = remember(card.id) { MutableInteractionSource() },
+                            indication = null,
+                        ) {
+                            coroutineScope.launch {
+                                offsetX.animateTo(
+                                    targetValue = 0f,
+                                    animationSpec = spring(
+                                        dampingRatio = Spring.DampingRatioLowBouncy,
+                                        stiffness = Spring.StiffnessMediumLow,
+                                    ),
+                                )
+                            }
                         }
                     } else {
-                        eventHandler(Event.Open(card.id))
+                        Modifier
                     }
-                },
+                ),
             shape = RoundedCornerShape(24.dp),
             colors = CardDefaults.cardColors(containerColor = CardPalette.Card),
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
