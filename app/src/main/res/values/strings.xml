@@ -23,4 +23,8 @@
     <string name="legend_on">Є світло</string>
     <string name="legend_off">Немає світла</string>
     <string name="legend_maybe">Можливе відключення</string>
+    <string name="widget_name">Графік світла</string>
+    <string name="widget_description">Сьогодні та завтра: слоти світла і відключень</string>
+    <string name="widget_empty">Оберіть групу в додатку, щоб побачити графік</string>
+    <string name="widget_total">Загалом: %1$s</string>
 </resources>

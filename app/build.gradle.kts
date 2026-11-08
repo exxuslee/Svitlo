@@ -65,6 +65,9 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
+    implementation(libs.androidx.glance.appwidget)
+    implementation(libs.androidx.glance.material3)
+    implementation(libs.androidx.work.runtime.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
