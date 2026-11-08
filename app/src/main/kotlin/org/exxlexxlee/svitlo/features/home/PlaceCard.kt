@@ -24,7 +24,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.DragHandle
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -55,7 +54,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
 import org.exxlexxlee.domain.model.OutageWindows
 import org.exxlexxlee.domain.model.PowerState
@@ -63,6 +61,7 @@ import org.exxlexxlee.svitlo.R
 import org.exxlexxlee.svitlo.features.address.AddressIcon
 import org.exxlexxlee.svitlo.features.home.models.Event
 import org.exxlexxlee.svitlo.ui.theme.SvitloTheme
+import kotlin.math.roundToInt
 
 @Composable
 fun PlaceCard(
@@ -254,14 +253,16 @@ internal fun PlaceCardSwipeable(
                             onTabSelected = { showTomorrow = it },
                         )
                         DayLabel(
-                            prefix = if (showTomorrow) stringResource(R.string.tomorrow) else stringResource(R.string.today),
+                            prefix = if (showTomorrow) stringResource(R.string.tomorrow) else stringResource(
+                                R.string.today
+                            ),
                             ranges = if (showTomorrow) card.tomorrowRanges else card.todayRanges,
                         )
                     }
                     StatusColumn(
                         card = card,
                         modifier = Modifier
-                            .width(110.dp)
+                            .width(120.dp)
                             .padding(start = 8.dp),
                     )
                 }
@@ -327,7 +328,7 @@ private fun CardHeader(card: PlaceCardUi) {
         Text(
             text = card.groupLabel,
             modifier = Modifier
-                .clip(RoundedCornerShape(50))
+                .clip(RoundedCornerShape(30))
                 .background(CardPalette.Accent)
                 .padding(horizontal = 12.dp, vertical = 6.dp),
             color = Color.White,
@@ -420,7 +421,10 @@ private fun StatusColumn(card: PlaceCardUi, modifier: Modifier = Modifier) {
             modifier = Modifier
                 .size(22.dp)
                 .clip(CircleShape)
-                .background(stateColor(card.currentState)),
+                .background(
+                    if (card.currentState == PowerState.ON) CardPalette.Yes
+                    else stateColor(card.currentState)
+                ),
         )
         if (card.schedulesSuspended) {
             Text(
@@ -618,8 +622,9 @@ internal object CardPalette {
     val Title = Color(0xFF1B2437)
     val Muted = Color(0xFF8B95A7)
     val Off = Color(0xFFE23B3B)
-    val On = Color(0xFF2EAE4E)
-    val Maybe = Color(0xFFF0A202)
+    val On = Color(0xFFFFE826)
+    val Yes = Color(0xFF2EAE4E)
+    val Maybe = Color(0xFF4DAF98)
     val Unknown = Color(0xFF2C3444)
     val Accent = Color(0xFF5B6CFF)
     val Marker = Color(0xFF2F6FED)
