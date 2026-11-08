@@ -43,8 +43,9 @@ class ScheduleWidgetMapperTest {
 
         assertEquals("Київ", ui.title)
         assertEquals("Група 1.1", ui.groupLabel)
-        assertEquals("08:00–11:00", ui.today?.ranges)
-        assertEquals("3 год", ui.today?.total)
+        assertEquals(48, ui.today?.states?.size)
+        assertEquals(PowerState.OFF, ui.today?.states?.get(16))
+        assertEquals(PowerState.ON, ui.today?.states?.get(15))
         assertEquals(21, ui.nowHalfHourIndex)
         assertNull(ui.tomorrow)
     }

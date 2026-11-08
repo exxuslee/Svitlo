@@ -3,15 +3,12 @@ package org.exxlexxlee.svitlo.widget
 import org.exxlexxlee.domain.model.DaySchedule
 import org.exxlexxlee.domain.model.KyivTime
 import org.exxlexxlee.domain.model.OutageSchedule
-import org.exxlexxlee.domain.model.OutageWindows
 import org.exxlexxlee.domain.model.PowerState
 import org.exxlexxlee.domain.model.Selection
 import kotlinx.datetime.Clock
 
 data class WidgetDayUi(
     val states: List<PowerState>,
-    val ranges: String,
-    val total: String,
 )
 
 data class ScheduleWidgetUi(
@@ -46,14 +43,7 @@ object ScheduleWidgetMapper {
         )
     }
 
-    private fun DaySchedule.toUi(): WidgetDayUi {
-        val minutes = OutageWindows.totalOffMinutes(halfHours)
-        return WidgetDayUi(
-            states = halfHours,
-            ranges = OutageWindows.formatRanges(halfHours),
-            total = OutageWindows.formatDuration(minutes),
-        )
-    }
+    private fun DaySchedule.toUi(): WidgetDayUi = WidgetDayUi(states = halfHours)
 
     private fun groupLabel(name: String): String {
         val normalized = name.trim()

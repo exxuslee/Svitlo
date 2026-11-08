@@ -55,5 +55,4 @@
     <string name="widget_name">Графік світла</string>
     <string name="widget_description">Сьогодні та завтра: слоти світла і відключень</string>
     <string name="widget_empty">Оберіть групу в додатку, щоб побачити графік</string>
-    <string name="widget_total">Загалом: %1$s</string>
 </resources>
