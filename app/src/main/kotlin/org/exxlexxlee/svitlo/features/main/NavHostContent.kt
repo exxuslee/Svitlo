@@ -25,7 +25,15 @@ fun NavHostContent(
         modifier = modifier,
     ) {
         composable(Routes.Home.route) { HomeScreen() }
-        composable(Routes.Address.route) { AddressScreen() }
+        composable(
+            route = Routes.Address.route,
+            arguments = listOf(
+                navArgument("placeId") {
+                    type = NavType.LongType
+                    defaultValue = -1L
+                },
+            ),
+        ) { AddressScreen() }
         composable(
             route = Routes.Schedule.route,
             arguments = listOf(navArgument("placeId") { type = NavType.LongType }),

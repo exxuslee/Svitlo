@@ -88,7 +88,7 @@ class HomeViewModel(
 
     override fun obtainEvent(viewEvent: Event) {
         when (viewEvent) {
-            Event.Add -> viewAction = Action.OpenAddress
+            Event.Add -> viewAction = Action.OpenAddress()
             is Event.Open -> viewAction = Action.OpenSchedule(viewEvent.id)
             Event.Refresh -> refreshAll(latestPlaces)
             is Event.DeleteRequested -> viewState = viewState.copy(pendingDeleteId = viewEvent.id)
@@ -98,7 +98,7 @@ class HomeViewModel(
                 viewState = viewState.copy(pendingDeleteId = null)
                 viewModelScope.launch { deletePlace(id) }
             }
-            is Event.Edit -> viewAction = Action.OpenAddress
+            is Event.Edit -> viewAction = Action.OpenAddress(viewEvent.id)
         }
     }
 

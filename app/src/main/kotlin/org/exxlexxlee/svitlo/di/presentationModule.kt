@@ -35,6 +35,6 @@ val presentationModule = module {
 
     viewModel { MainViewModel() }
     viewModel { HomeViewModel(get(), get(), get(), get(), get()) }
-    viewModel { AddressViewModel(get<GetAreas>(), get(), get()) }
+    viewModel { AddressViewModel(get<GetAreas>(), get(), get(), get(), get()) }
     viewModel { ScheduleViewModel(get(), get(), get(), get(), get(), get()) }
 }

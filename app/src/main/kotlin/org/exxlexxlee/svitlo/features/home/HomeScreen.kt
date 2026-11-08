@@ -23,9 +23,10 @@ fun HomeScreen(
     )
 
     when (val action = viewAction) {
-        Action.OpenAddress -> {
+        is Action.OpenAddress -> {
+            val placeId = action.placeId
             viewModel.clearAction()
-            navController.navigate(Routes.Address.route)
+            navController.navigate(Routes.Address.create(placeId))
         }
 
         is Action.OpenSchedule -> {

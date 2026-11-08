@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Світло</string>
     <string name="address_title">Додавання адреси</string>
+    <string name="edit_address_title">Редагування адреси</string>
     <string name="address_step">Крок %1$d з 4 — %2$s</string>
     <string name="step_region">Регіон</string>
     <string name="step_supplier">Постачальник</string>

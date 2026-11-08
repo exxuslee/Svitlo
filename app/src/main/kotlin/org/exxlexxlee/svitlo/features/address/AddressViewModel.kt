@@ -1,6 +1,8 @@
 package org.exxlexxlee.svitlo.features.address
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import org.exxlexxlee.domain.model.AddressDetails
 import org.exxlexxlee.domain.model.OutageGroup
@@ -9,6 +11,7 @@ import org.exxlexxlee.domain.model.ServiceArea
 import org.exxlexxlee.domain.model.Supplier
 import org.exxlexxlee.domain.usecase.GetAreas
 import org.exxlexxlee.domain.usecase.GetGroups
+import org.exxlexxlee.domain.usecase.ObservePlace
 import org.exxlexxlee.domain.usecase.SaveSelection
 import org.exxlexxlee.svitlo.features.address.models.Action
 import org.exxlexxlee.svitlo.features.address.models.AddressStep
@@ -21,23 +24,72 @@ class AddressViewModel(
     private val getAreas: GetAreas,
     private val getGroups: GetGroups,
     private val saveSelection: SaveSelection,
+    private val observePlace: ObservePlace,
+    savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<ViewState, Action, Event>(
     initialState = ViewState()
 ) {
+    private val editingPlaceId: Long? = savedStateHandle.get<Long>("placeId")?.takeIf { it > 0 }
+
     init {
         viewModelScope.launch {
-            runCatching { getAreas() }
-                .onSuccess { areas ->
-                    viewState = viewState.copy(areas = areas, isLoadingAreas = false)
-                }
-                .onFailure { error ->
+            if (editingPlaceId != null) {
+                viewState = viewState.copy(isLoadingAreas = true, isEditing = true)
+                runCatching {
+                    val areas = getAreas()
+                    val place = observePlace(editingPlaceId).firstOrNull()
+                    val selection = place?.selection
+                    if (selection != null) {
+                        val region = selection.region
+                        val selectedArea = areas.find { area ->
+                            area.suppliers.any { it.region.id == region.id }
+                        } ?: ServiceArea(
+                            id = region.id,
+                            name = region.name,
+                            suppliers = listOf(Supplier(region = region, primary = true)),
+                        )
+                        val selectedSupplier = selectedArea.suppliers.find { it.region.id == region.id }
+                            ?: Supplier(region = region, primary = true)
+                        val groups = runCatching { getGroups(selectedSupplier.region.id) }.getOrDefault(emptyList())
+                        val selectedGroup = groups.find { it.id == selection.group.id } ?: selection.group
+                        val details = selection.details
+                        viewState = viewState.copy(
+                            areas = areas,
+                            selectedArea = selectedArea,
+                            selectedSupplier = selectedSupplier,
+                            groups = groups,
+                            selectedGroup = selectedGroup,
+                            addressName = details?.name.orEmpty(),
+                            nameEdited = true,
+                            reminderMinutes = details?.reminderMinutes ?: 15,
+                            quietNight = details?.quietNight ?: false,
+                            icon = AddressIcon.fromId(details?.iconId ?: "home"),
+                            step = AddressStep.Details,
+                            isLoadingAreas = false,
+                            isLoadingGroups = false,
+                            isEditing = true,
+                        )
+                    } else {
+                        viewState = viewState.copy(areas = areas, isLoadingAreas = false, isEditing = false)
+                    }
+                }.onFailure { error ->
                     viewState = viewState.copy(isLoadingAreas = false, error = error.message)
                 }
+            } else {
+                runCatching { getAreas() }
+                    .onSuccess { areas ->
+                        viewState = viewState.copy(areas = areas, isLoadingAreas = false)
+                    }
+                    .onFailure { error ->
+                        viewState = viewState.copy(isLoadingAreas = false, error = error.message)
+                    }
+            }
         }
     }
 
     override fun obtainEvent(viewEvent: Event) {
         when (viewEvent) {
+            Event.Close -> viewAction = Action.Close
             Event.Back -> onBack()
             is Event.AreaSelected -> onAreaSelected(viewEvent.area)
             is Event.SupplierSelected -> onSupplierSelected(viewEvent.supplier)
@@ -136,7 +188,7 @@ class AddressViewModel(
                     iconId = viewState.icon.id,
                 ),
             )
-            runCatching { saveSelection(selection) }
+            runCatching { saveSelection(selection, editingPlaceId) }
                 .onSuccess { viewAction = Action.Saved }
                 .onFailure { error -> viewState = viewState.copy(error = error.message) }
         }

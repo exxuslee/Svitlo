@@ -45,7 +45,8 @@ class GetGroups(private val locationRepository: LocationRepository) {
 }
 
 class SaveSelection(private val selectionRepository: SelectionRepository) {
-    suspend operator fun invoke(selection: Selection) = selectionRepository.save(selection)
+    suspend operator fun invoke(selection: Selection, placeId: Long? = null): Long =
+        selectionRepository.save(selection, placeId)
 }
 
 class ObserveSelection(private val selectionRepository: SelectionRepository) {

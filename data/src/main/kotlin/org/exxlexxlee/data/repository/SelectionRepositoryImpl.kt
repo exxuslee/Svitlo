@@ -29,12 +29,20 @@ class SelectionRepositoryImpl(
         places.firstOrNull()?.selection
     }
 
-    override suspend fun save(selection: Selection): Long {
+    override suspend fun save(selection: Selection, placeId: Long?): Long {
         val stored = selection.toStored()
+        val json = parser.encodeToString(StoredSelection.serializer(), stored)
+        if (placeId != null && placeId > 0) {
+            val existing = placeDao.get(placeId)
+            if (existing != null) {
+                placeDao.update(existing.copy(json = json))
+                return placeId
+            }
+        }
         return placeDao.insert(
             PlaceEntity(
                 position = placeDao.maxPosition() + 1,
-                json = parser.encodeToString(StoredSelection.serializer(), stored),
+                json = json,
             ),
         )
     }

@@ -29,6 +29,6 @@ interface SelectionRepository {
     fun observePlaces(): Flow<List<Place>>
     fun observePlace(id: Long): Flow<Place?>
     fun observe(): Flow<Selection?>
-    suspend fun save(selection: Selection): Long
+    suspend fun save(selection: Selection, placeId: Long? = null): Long
     suspend fun delete(id: Long)
 }

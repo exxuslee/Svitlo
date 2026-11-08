@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Undo
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -62,7 +63,12 @@ fun AddressContent(
             .windowInsetsPadding(WindowInsets.statusBars)
             .windowInsetsPadding(WindowInsets.navigationBars),
     ) {
-        AddressHeader(step = viewState.step, onBack = { eventHandler(Event.Back) })
+        AddressHeader(
+            step = viewState.step,
+            isEditing = viewState.isEditing,
+            onBack = { eventHandler(Event.Back) },
+            onClose = { eventHandler(Event.Close) },
+        )
         Box(
             modifier = Modifier
                 .weight(1f)
@@ -125,12 +131,17 @@ fun AddressContent(
 }
 
 @Composable
-private fun AddressHeader(step: AddressStep, onBack: () -> Unit) {
+private fun AddressHeader(
+    step: AddressStep,
+    isEditing: Boolean,
+    onBack: () -> Unit,
+    onClose: () -> Unit,
+) {
     Column(modifier = Modifier.padding(top = 8.dp)) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(end = 16.dp),
+                .padding(end = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             IconButton(onClick = onBack, modifier = Modifier.size(56.dp)) {
@@ -142,7 +153,7 @@ private fun AddressHeader(step: AddressStep, onBack: () -> Unit) {
                 )
             }
             Text(
-                text = stringResource(R.string.address_title),
+                text = stringResource(if (isEditing) R.string.edit_address_title else R.string.address_title),
                 modifier = Modifier.weight(1f),
                 color = AddressPalette.Title,
                 fontSize = 26.sp,
@@ -151,6 +162,16 @@ private fun AddressHeader(step: AddressStep, onBack: () -> Unit) {
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
+            if (isEditing) {
+                IconButton(onClick = onClose, modifier = Modifier.size(56.dp)) {
+                    Icon(
+                        imageVector = Icons.Filled.Close,
+                        contentDescription = stringResource(R.string.cancel),
+                        tint = AddressPalette.Title,
+                        modifier = Modifier.size(28.dp),
+                    )
+                }
+            }
         }
         Text(
             text = stringResource(R.string.address_step, step.index, stepTitle(step)),

@@ -7,6 +7,7 @@ import org.exxlexxlee.svitlo.features.address.AddressIcon
 
 sealed interface Event {
     data object Back : Event
+    data object Close : Event
     data class AreaSelected(val area: ServiceArea) : Event
     data class SupplierSelected(val supplier: Supplier) : Event
     data class GroupSelected(val group: OutageGroup) : Event

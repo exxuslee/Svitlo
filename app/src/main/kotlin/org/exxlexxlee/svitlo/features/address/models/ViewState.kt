@@ -31,6 +31,7 @@ data class ViewState(
     val isLoadingGroups: Boolean = false,
     val showReminderPicker: Boolean = false,
     val showAddressSearchHint: Boolean = false,
+    val isEditing: Boolean = false,
     val error: String? = null,
 ) {
     val sortedGroups: List<OutageGroup>
