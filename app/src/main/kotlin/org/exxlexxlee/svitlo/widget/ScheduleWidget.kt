@@ -10,6 +10,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
+import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
 import androidx.glance.action.ActionParameters
 import androidx.glance.action.actionParametersOf
@@ -19,6 +20,7 @@ import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.action.actionRunCallback
+import androidx.glance.appwidget.appWidgetBackground
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.provideContent
 import androidx.glance.appwidget.state.updateAppWidgetState
@@ -64,7 +66,8 @@ class ScheduleWidget : GlanceAppWidget() {
     }
 
     private suspend fun loadUi(): ScheduleWidgetUi {
-        val koin = GlobalContext.getOrNull() ?: return ScheduleWidgetMapper.map(null, null, Clock.System)
+        val koin =
+            GlobalContext.getOrNull() ?: return ScheduleWidgetMapper.map(null, null, Clock.System)
         val selection = koin.get<ObserveSelection>()().first()
         val schedule = selection?.let { koin.get<ObserveSchedule>()(it).first() }
         val clock = koin.getOrNull<Clock>() ?: Clock.System
@@ -84,9 +87,7 @@ class SelectDayAction : ActionCallback {
     ) {
         val showTomorrow = parameters[ShowTomorrowParam] ?: return
         updateAppWidgetState(context, glanceId) { prefs ->
-            prefs.toMutablePreferences().apply {
-                this[ShowTomorrowKey] = showTomorrow
-            }
+            prefs[ShowTomorrowKey] = showTomorrow
         }
         ScheduleWidget().update(context, glanceId)
     }
@@ -98,9 +99,10 @@ private fun ScheduleWidgetContent(data: ScheduleWidgetUi, showTomorrow: Boolean)
     Box(
         modifier = GlanceModifier
             .fillMaxSize()
-            .background(WidgetColors.card)
-            .cornerRadius(24.dp)
-            .padding(10.dp),
+            .appWidgetBackground()
+            .background(ImageProvider(R.drawable.widget_card_background))
+            .cornerRadius(28.dp)
+            .padding(12.dp),
     ) {
         Column(modifier = GlanceModifier.fillMaxWidth()) {
             Header(
@@ -119,11 +121,22 @@ private fun ScheduleWidgetContent(data: ScheduleWidgetUi, showTomorrow: Boolean)
             } else {
                 val day = if (showTomorrow) data.tomorrow else today
                 if (day == null) {
-                    Text(
-                        text = LocalContext.current.getString(R.string.tomorrow_unavailable),
-                        style = TextStyle(color = WidgetColors.muted, fontSize = 13.sp),
-                        modifier = GlanceModifier.clickable(openApp),
-                    )
+                    Box(
+                        modifier = GlanceModifier
+                            .fillMaxWidth()
+                            .height(47.dp)
+                            .clickable(openApp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = LocalContext.current.getString(R.string.tomorrow_unavailable),
+                            style = TextStyle(
+                                color = WidgetColors.muted,
+                                fontSize = 13.sp,
+                                textAlign = TextAlign.Center,
+                            ),
+                        )
+                    }
                 } else {
                     Timeline(
                         states = day.states,
@@ -155,7 +168,11 @@ private fun Header(title: String, groupLabel: String, modifier: GlanceModifier) 
             modifier = GlanceModifier.defaultWeight(),
         )
         if (groupLabel.isNotBlank()) {
-            Chip(text = groupLabel, background = WidgetColors.groupChip, textColor = WidgetColors.title)
+            Chip(
+                text = groupLabel,
+                background = WidgetColors.groupChip,
+                textColor = WidgetColors.groupChipText,
+            )
         }
     }
 }
@@ -186,7 +203,7 @@ private fun DaySwitch(showTomorrow: Boolean) {
 private fun DayChip(text: String, selected: Boolean, showTomorrow: Boolean) {
     Box(
         modifier = GlanceModifier
-            .background(if (selected) WidgetColors.switchSelected else WidgetColors.switchTrack)
+            .background(if (selected) WidgetColors.switchSelected else WidgetColors.transparent)
             .cornerRadius(14.dp)
             .clickable(
                 actionRunCallback<SelectDayAction>(
@@ -200,7 +217,7 @@ private fun DayChip(text: String, selected: Boolean, showTomorrow: Boolean) {
             text = text,
             style = TextStyle(
                 color = if (selected) WidgetColors.title else WidgetColors.muted,
-                fontSize = 13.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
             ),
             maxLines = 1,
@@ -268,14 +285,14 @@ private fun HourGroup(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        for (hour in startHour until startHour + 6) {
+        for (hour in startHour until (startHour + 6)) {
             val first = states.getOrElse(hour * 2) { PowerState.UNKNOWN }
-            val second = states.getOrElse(hour * 2 + 1) { PowerState.UNKNOWN }
+            val second = states.getOrElse((hour * 2) + 1) { PowerState.UNKNOWN }
             HourCell(
                 hour = hour,
                 first = first,
                 second = second,
-                marked = nowHalfHourIndex == hour * 2 || nowHalfHourIndex == hour * 2 + 1,
+                marked = nowHalfHourIndex == hour * 2 || nowHalfHourIndex == (hour * 2) + 1,
                 modifier = GlanceModifier.defaultWeight(),
             )
         }
@@ -293,7 +310,7 @@ private fun HourCell(
     Box(
         modifier = modifier
             .padding(horizontal = 1.dp)
-            .background(if (marked) WidgetColors.nowRing else WidgetColors.card)
+            .background(if (marked) WidgetColors.nowRing else WidgetColors.cellBackground)
             .cornerRadius(4.dp)
             .padding(if (marked) 1.dp else 0.dp),
         contentAlignment = Alignment.Center,
@@ -356,17 +373,19 @@ private fun labelColor(first: PowerState, second: PowerState): ColorProvider {
 
 @SuppressLint("RestrictedApi")
 private object WidgetColors {
-    val card = ColorProvider(Color(0xFF2B2B33))
-    val title = ColorProvider(Color(0xFFF4F4F6))
-    val muted = ColorProvider(Color(0xFFB5B5BD))
+    val transparent = ColorProvider(Color.Transparent)
+    val cellBackground = ColorProvider(Color.Transparent)
+    val title = ColorProvider(Color(0xFFF4F6FC))
+    val muted = ColorProvider(Color(0xFFBAC0D0))
     val on = ColorProvider(Color(0xFFFFCC00))
     val off = ColorProvider(Color(0xFFE74C5C))
     val maybe = ColorProvider(Color(0xFFF0A202))
-    val unknown = ColorProvider(Color(0xFF6B6B73))
-    val groupChip = ColorProvider(Color(0xFF8EA2FF))
-    val switchTrack = ColorProvider(Color(0xFF1E1E26))
-    val switchSelected = ColorProvider(Color(0xFF3E3E4A))
-    val nowRing = ColorProvider(Color(0xFFF4F4F6))
+    val unknown = ColorProvider(Color(0xFF55596B))
+    val groupChip = ColorProvider(Color(0x338EA2FF))
+    val groupChipText = ColorProvider(Color(0xFFD4DEFF))
+    val switchTrack = ColorProvider(Color(0x33000000))
+    val switchSelected = ColorProvider(Color(0x33FFFFFF))
+    val nowRing = ColorProvider(Color(0xFFFFFFFF))
     val labelOnLight = ColorProvider(Color(0xFF1A1A1A))
-    val labelOnDark = ColorProvider(Color(0xFFF4F4F6))
+    val labelOnDark = ColorProvider(Color(0xFFF4F6FC))
 }
