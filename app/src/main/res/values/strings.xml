@@ -1,3 +1,26 @@
 <resources>
-    <string name="app_name">Svitlo</string>
+    <string name="app_name">Світло</string>
+    <string name="address_title">Вибір групи</string>
+    <string name="address_hint">У MVP оберіть область та чергу. Пошук за адресою з’явиться пізніше.</string>
+    <string name="region_label">Область або оператор</string>
+    <string name="group_label">Черга</string>
+    <string name="search">Пошук</string>
+    <string name="save_and_show">Показати графік</string>
+    <string name="today">Сьогодні</string>
+    <string name="tomorrow">Завтра</string>
+    <string name="hours_am">0–12</string>
+    <string name="hours_pm">12–24</string>
+    <string name="change_selection">Змінити</string>
+    <string name="stale_data">Дані застаріли. Джерело могло не оновлювати графік, коли відключень немає.</string>
+    <string name="tomorrow_unavailable">Графік на завтра ще не опубліковано</string>
+    <string name="updated_at">Оновлено: %1$s</string>
+    <string name="loading">Завантаження…</string>
+    <string name="error_generic">Не вдалося завантажити дані</string>
+    <string name="no_cached_schedule">Немає збереженого графіка. Потягніть вниз, щоб оновити.</string>
+    <string name="retry">Повторити</string>
+    <string name="all_on">світло є протягом усієї половини доби</string>
+    <string name="all_off">світла немає протягом усієї половини доби</string>
+    <string name="legend_on">Є світло</string>
+    <string name="legend_off">Немає світла</string>
+    <string name="legend_maybe">Можливе відключення</string>
 </resources>

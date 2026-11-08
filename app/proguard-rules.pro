@@ -1,0 +1,5 @@
+-keepattributes *Annotation*, InnerClasses, EnclosingMethod
+-dontwarn kotlinx.serialization.**
+-keepclassmembers class kotlinx.serialization.json.** { *** Companion; }
+-keepclasseswithmembers class **$$serializer { *; }
+-keep class org.exxlexxlee.** { *; }
