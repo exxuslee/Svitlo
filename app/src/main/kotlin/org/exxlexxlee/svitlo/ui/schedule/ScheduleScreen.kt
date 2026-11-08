@@ -113,11 +113,13 @@ fun ScheduleScreen(
                             isToday = true,
                             currentHour = state.currentHour,
                         )
-                        if (dials.tomorrowAm != null && dials.tomorrowPm != null) {
+                        val tomorrowAm = dials.tomorrowAm
+                        val tomorrowPm = dials.tomorrowPm
+                        if (tomorrowAm != null && tomorrowPm != null) {
                             DialSection(
                                 title = stringResource(R.string.tomorrow),
-                                am = dials.tomorrowAm,
-                                pm = dials.tomorrowPm,
+                                am = tomorrowAm,
+                                pm = tomorrowPm,
                                 isToday = false,
                                 currentHour = state.currentHour,
                             )
