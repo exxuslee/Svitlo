@@ -335,9 +335,9 @@ private fun CardHeader(card: PlaceCardUi) {
             text = card.groupLabel,
             modifier = Modifier
                 .clip(RoundedCornerShape(30))
-                .background(CardPalette.Accent)
+                .background(CardPalette.GroupBadge)
                 .padding(horizontal = 12.dp, vertical = 6.dp),
-            color = Color.White,
+            color = CardPalette.GroupBadgeText,
             fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
@@ -636,6 +636,8 @@ internal object CardPalette {
     val Marker = Color(0xFF2F6FED)
     val Banner = Color(0xFFF0F1F4)
     val BannerText = Color(0xFF6D7686)
+    val GroupBadge = Color(0xFFF0F1F4)
+    val GroupBadgeText = Color(0xFF1B2437)
     val Range = Color(0xFFE14D4D)
 }
 

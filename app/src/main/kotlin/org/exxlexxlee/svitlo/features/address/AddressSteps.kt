@@ -62,7 +62,10 @@ fun RegionStep(viewState: ViewState, eventHandler: (Event) -> Unit) {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         items(viewState.areas, key = { it.id }) { area ->
-            AreaCard(area) { eventHandler(Event.AreaSelected(area)) }
+            AreaCard(
+                area = area,
+                isSelected = area.id == viewState.selectedArea?.id,
+            ) { eventHandler(Event.AreaSelected(area)) }
         }
         errorItem(viewState.error)
     }
@@ -77,7 +80,10 @@ fun SupplierStep(viewState: ViewState, eventHandler: (Event) -> Unit) {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         items(suppliers, key = { it.region.id }) { supplier ->
-            SupplierCard(supplier) { eventHandler(Event.SupplierSelected(supplier)) }
+            SupplierCard(
+                supplier = supplier,
+                isSelected = supplier.region.id == viewState.selectedSupplier?.region?.id,
+            ) { eventHandler(Event.SupplierSelected(supplier)) }
         }
         errorItem(viewState.error)
     }
@@ -116,7 +122,10 @@ fun GroupStep(viewState: ViewState, eventHandler: (Event) -> Unit) {
             )
         }
         items(viewState.sortedGroups, key = { it.id }) { group ->
-            GroupChip(group) { eventHandler(Event.GroupSelected(group)) }
+            GroupChip(
+                group = group,
+                isSelected = group.id == viewState.selectedGroup?.id,
+            ) { eventHandler(Event.GroupSelected(group)) }
         }
         if (viewState.error != null) {
             item(span = { GridItemSpan(3) }) {
@@ -221,13 +230,21 @@ fun DetailsStep(viewState: ViewState, eventHandler: (Event) -> Unit) {
 }
 
 @Composable
-private fun AreaCard(area: ServiceArea, onClick: () -> Unit) {
+private fun AreaCard(
+    area: ServiceArea,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .shadow(2.dp, CardShape)
             .clip(CardShape)
-            .background(Color.White)
+            .background(if (isSelected) AddressPalette.AccentSoft else Color.White)
+            .then(
+                if (isSelected) Modifier.border(1.5.dp, AddressPalette.Accent, CardShape)
+                else Modifier
+            )
             .clickable(onClick = onClick)
             .padding(horizontal = 18.dp, vertical = 16.dp),
     ) {
@@ -248,13 +265,21 @@ private fun AreaCard(area: ServiceArea, onClick: () -> Unit) {
 }
 
 @Composable
-private fun SupplierCard(supplier: Supplier, onClick: () -> Unit) {
+private fun SupplierCard(
+    supplier: Supplier,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .shadow(2.dp, CardShape)
             .clip(CardShape)
-            .background(Color.White)
+            .background(if (isSelected) AddressPalette.AccentSoft else Color.White)
+            .then(
+                if (isSelected) Modifier.border(1.5.dp, AddressPalette.Accent, CardShape)
+                else Modifier
+            )
             .clickable(onClick = onClick)
             .padding(horizontal = 18.dp, vertical = 18.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -285,14 +310,22 @@ private fun SupplierCard(supplier: Supplier, onClick: () -> Unit) {
 }
 
 @Composable
-private fun GroupChip(group: OutageGroup, onClick: () -> Unit) {
+private fun GroupChip(
+    group: OutageGroup,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(64.dp)
             .shadow(2.dp, RoundedCornerShape(18.dp))
             .clip(RoundedCornerShape(18.dp))
-            .background(Color.White)
+            .background(if (isSelected) AddressPalette.AccentSoft else Color.White)
+            .then(
+                if (isSelected) Modifier.border(1.5.dp, AddressPalette.Accent, RoundedCornerShape(18.dp))
+                else Modifier
+            )
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {

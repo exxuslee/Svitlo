@@ -64,7 +64,7 @@ class AddressViewModel(
                             reminderMinutes = details?.reminderMinutes ?: 15,
                             quietNight = details?.quietNight ?: false,
                             icon = AddressIcon.fromId(details?.iconId ?: "home"),
-                            step = AddressStep.Details,
+                            step = AddressStep.Region,
                             isLoadingAreas = false,
                             isLoadingGroups = false,
                             isEditing = true,
@@ -125,38 +125,43 @@ class AddressViewModel(
     }
 
     private fun onAreaSelected(area: ServiceArea) {
+        val sameArea = area.id == viewState.selectedArea?.id
         viewState = viewState.copy(
             selectedArea = area,
-            selectedSupplier = null,
-            selectedGroup = null,
-            groups = emptyList(),
+            selectedSupplier = if (sameArea) viewState.selectedSupplier else null,
+            selectedGroup = if (sameArea) viewState.selectedGroup else null,
+            groups = if (sameArea) viewState.groups else emptyList(),
             step = AddressStep.Supplier,
-            nameEdited = false,
+            nameEdited = viewState.isEditing && viewState.nameEdited,
             error = null,
         )
     }
 
     private fun onSupplierSelected(supplier: Supplier) {
+        val sameSupplier = supplier.region.id == viewState.selectedSupplier?.region?.id
+        val hasGroups = sameSupplier && viewState.groups.isNotEmpty()
         viewState = viewState.copy(
             selectedSupplier = supplier,
-            selectedGroup = null,
-            groups = emptyList(),
-            isLoadingGroups = true,
+            selectedGroup = if (sameSupplier) viewState.selectedGroup else null,
+            groups = if (sameSupplier) viewState.groups else emptyList(),
+            isLoadingGroups = !hasGroups,
             step = AddressStep.Group,
-            nameEdited = false,
+            nameEdited = viewState.isEditing && viewState.nameEdited,
             error = null,
         )
-        val supplierId = supplier.region.id
-        viewModelScope.launch {
-            runCatching { getGroups(supplierId) }
-                .onSuccess { groups ->
-                    if (viewState.selectedSupplier?.region?.id != supplierId) return@onSuccess
-                    viewState = viewState.copy(groups = groups, isLoadingGroups = false)
-                }
-                .onFailure { error ->
-                    if (viewState.selectedSupplier?.region?.id != supplierId) return@onFailure
-                    viewState = viewState.copy(isLoadingGroups = false, error = error.message)
-                }
+        if (!hasGroups) {
+            val supplierId = supplier.region.id
+            viewModelScope.launch {
+                runCatching { getGroups(supplierId) }
+                    .onSuccess { groups ->
+                        if (viewState.selectedSupplier?.region?.id != supplierId) return@onSuccess
+                        viewState = viewState.copy(groups = groups, isLoadingGroups = false)
+                    }
+                    .onFailure { error ->
+                        if (viewState.selectedSupplier?.region?.id != supplierId) return@onFailure
+                        viewState = viewState.copy(isLoadingGroups = false, error = error.message)
+                    }
+            }
         }
     }
 
@@ -167,7 +172,11 @@ class AddressViewModel(
         viewState = viewState.copy(
             selectedGroup = group,
             step = AddressStep.Details,
-            addressName = if (viewState.nameEdited) viewState.addressName else generated,
+            addressName = if (viewState.nameEdited && viewState.addressName.isNotBlank()) {
+                viewState.addressName
+            } else {
+                generated
+            },
             error = null,
         )
     }
