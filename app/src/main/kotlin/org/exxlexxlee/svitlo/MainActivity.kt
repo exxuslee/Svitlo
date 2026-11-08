@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import org.exxlexxlee.svitlo.ui.SvitloNav
+import org.exxlexxlee.svitlo.features.main.MainContent
 import org.exxlexxlee.svitlo.ui.theme.SvitloTheme
 
 class MainActivity : ComponentActivity() {
@@ -13,7 +13,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SvitloTheme {
-                SvitloNav()
+                MainContent()
             }
         }
     }

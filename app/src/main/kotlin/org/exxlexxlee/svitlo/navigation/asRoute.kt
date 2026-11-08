@@ -1,0 +1,11 @@
+package org.exxlexxlee.svitlo.navigation
+
+import androidx.navigation.NavDestination
+
+fun NavDestination?.asRoute(): Routes? {
+    return when (this?.route) {
+        Routes.Address.route -> Routes.Address
+        Routes.Schedule.route -> Routes.Schedule
+        else -> null
+    }
+}

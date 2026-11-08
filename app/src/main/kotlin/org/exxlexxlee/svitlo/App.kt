@@ -1,17 +1,19 @@
 package org.exxlexxlee.svitlo
 
 import android.app.Application
-import org.exxlexxlee.data.di.dataModule
 import org.exxlexxlee.svitlo.di.appModule
 import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
+import org.koin.core.logger.Level
 
-class SvitloApp : Application() {
+class App : Application() {
     override fun onCreate() {
         super.onCreate()
         startKoin {
-            androidContext(this@SvitloApp)
-            modules(dataModule, appModule)
+            androidLogger(Level.ERROR)
+            androidContext(this@App)
+            modules(appModule)
         }
     }
 }

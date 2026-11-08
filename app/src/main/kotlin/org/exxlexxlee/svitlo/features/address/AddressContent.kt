@@ -1,4 +1,4 @@
-package org.exxlexxlee.svitlo.ui.address
+package org.exxlexxlee.svitlo.features.address
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,29 +16,25 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.exxlexxlee.svitlo.R
-import org.koin.androidx.compose.koinViewModel
+import org.exxlexxlee.svitlo.features.address.models.Event
+import org.exxlexxlee.svitlo.features.address.models.ViewState
+import org.exxlexxlee.svitlo.ui.theme.SvitloTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddressScreen(
-    onSaved: () -> Unit,
-    viewModel: AddressViewModel = koinViewModel(),
+fun AddressContent(
+    viewState: ViewState,
+    eventHandler: (Event) -> Unit,
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-    LaunchedEffect(state.saved) {
-        if (state.saved) onSaved()
-    }
-
     Scaffold(
         topBar = {
             TopAppBar(title = { Text(stringResource(R.string.address_title)) })
@@ -56,25 +52,27 @@ fun AddressScreen(
                 style = MaterialTheme.typography.bodyMedium,
             )
             OutlinedTextField(
-                value = state.regionQuery,
-                onValueChange = viewModel::onRegionQuery,
+                value = viewState.regionQuery,
+                onValueChange = { eventHandler(Event.RegionQuery(it)) },
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text(stringResource(R.string.region_label)) },
                 placeholder = { Text(stringResource(R.string.search)) },
                 singleLine = true,
             )
-            if (state.isLoadingRegions) {
+            if (viewState.isLoadingRegions) {
                 CircularProgressIndicator()
             } else {
                 LazyColumn(
                     modifier = Modifier.weight(1f),
                     contentPadding = PaddingValues(bottom = 8.dp),
                 ) {
-                    items(state.filteredRegions, key = { it.id }) { region ->
+                    items(viewState.filteredRegions, key = { it.id }) { region ->
                         ListItem(
                             headlineContent = { Text(region.name) },
-                            modifier = Modifier.clickable { viewModel.onRegionSelected(region) },
-                            supportingContent = if (state.selectedRegion?.id == region.id) {
+                            modifier = Modifier.clickable {
+                                eventHandler(Event.RegionSelected(region))
+                            },
+                            supportingContent = if (viewState.selectedRegion?.id == region.id) {
                                 { Text("✓") }
                             } else {
                                 null
@@ -84,28 +82,30 @@ fun AddressScreen(
                 }
             }
 
-            if (state.selectedRegion != null) {
+            if (viewState.selectedRegion != null) {
                 OutlinedTextField(
-                    value = state.groupQuery,
-                    onValueChange = viewModel::onGroupQuery,
+                    value = viewState.groupQuery,
+                    onValueChange = { eventHandler(Event.GroupQuery(it)) },
                     modifier = Modifier.fillMaxWidth(),
                     label = { Text(stringResource(R.string.group_label)) },
                     placeholder = { Text(stringResource(R.string.search)) },
                     singleLine = true,
-                    enabled = !state.isLoadingGroups,
+                    enabled = !viewState.isLoadingGroups,
                 )
-                if (state.isLoadingGroups) {
+                if (viewState.isLoadingGroups) {
                     CircularProgressIndicator()
                 } else {
                     LazyColumn(
                         modifier = Modifier.weight(1f),
                         contentPadding = PaddingValues(bottom = 8.dp),
                     ) {
-                        items(state.filteredGroups, key = { it.id }) { group ->
+                        items(viewState.filteredGroups, key = { it.id }) { group ->
                             ListItem(
                                 headlineContent = { Text(group.name) },
-                                modifier = Modifier.clickable { viewModel.onGroupSelected(group) },
-                                supportingContent = if (state.selectedGroup?.id == group.id) {
+                                modifier = Modifier.clickable {
+                                    eventHandler(Event.GroupSelected(group))
+                                },
+                                supportingContent = if (viewState.selectedGroup?.id == group.id) {
                                     { Text("✓") }
                                 } else {
                                     null
@@ -116,19 +116,32 @@ fun AddressScreen(
                 }
             }
 
-            state.error?.let { error ->
+            viewState.error?.let { error ->
                 Text(text = error, color = MaterialTheme.colorScheme.error)
             }
 
             Button(
-                onClick = viewModel::save,
+                onClick = { eventHandler(Event.Save) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp),
-                enabled = state.selectedRegion != null && state.selectedGroup != null,
+                enabled = viewState.selectedRegion != null && viewState.selectedGroup != null,
             ) {
                 Text(stringResource(R.string.save_and_show))
             }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun AddressContent_Preview() {
+    SvitloTheme {
+        Surface {
+            AddressContent(
+                viewState = ViewState(isLoadingRegions = false),
+                eventHandler = {},
+            )
         }
     }
 }

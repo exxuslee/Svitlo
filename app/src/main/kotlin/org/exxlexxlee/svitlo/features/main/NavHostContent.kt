@@ -1,0 +1,27 @@
+package org.exxlexxlee.svitlo.features.main
+
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import org.exxlexxlee.svitlo.features.address.AddressScreen
+import org.exxlexxlee.svitlo.features.main.models.ViewState
+import org.exxlexxlee.svitlo.features.schedule.ScheduleScreen
+import org.exxlexxlee.svitlo.navigation.Routes
+
+@Composable
+fun NavHostContent(
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    viewState: ViewState,
+) {
+    NavHost(
+        navController = navController,
+        startDestination = viewState.initialRoute,
+        modifier = modifier,
+    ) {
+        composable(Routes.Address.route) { AddressScreen() }
+        composable(Routes.Schedule.route) { ScheduleScreen() }
+    }
+}

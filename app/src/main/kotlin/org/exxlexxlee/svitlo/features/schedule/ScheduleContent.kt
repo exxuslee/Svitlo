@@ -1,4 +1,4 @@
-package org.exxlexxlee.svitlo.ui.schedule
+package org.exxlexxlee.svitlo.features.schedule
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,35 +18,36 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toLocalDateTime
 import org.exxlexxlee.domain.model.Dial
 import org.exxlexxlee.domain.model.KyivTime
 import org.exxlexxlee.svitlo.R
+import org.exxlexxlee.svitlo.features.schedule.models.Event
+import org.exxlexxlee.svitlo.features.schedule.models.ViewState
 import org.exxlexxlee.svitlo.ui.dial.OutageDial
-import org.koin.androidx.compose.koinViewModel
+import org.exxlexxlee.svitlo.ui.theme.SvitloTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScheduleScreen(
-    onChangeSelection: () -> Unit,
-    viewModel: ScheduleViewModel = koinViewModel(),
+fun ScheduleContent(
+    viewState: ViewState,
+    eventHandler: (Event) -> Unit,
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-    val title = state.selection?.let { "${it.region.name} · ${it.group.name}" }
+    val title = viewState.selection?.let { "${it.region.name} · ${it.group.name}" }
         ?: stringResource(R.string.app_name)
 
     Scaffold(
@@ -54,7 +55,7 @@ fun ScheduleScreen(
             TopAppBar(
                 title = { Text(title) },
                 actions = {
-                    TextButton(onClick = onChangeSelection) {
+                    TextButton(onClick = { eventHandler(Event.ChangeSelection) }) {
                         Text(stringResource(R.string.change_selection))
                     }
                 },
@@ -62,13 +63,15 @@ fun ScheduleScreen(
         },
     ) { padding ->
         PullToRefreshBox(
-            isRefreshing = state.isRefreshing,
-            onRefresh = { viewModel.refresh() },
+            isRefreshing = viewState.isRefreshing,
+            onRefresh = { eventHandler(Event.Refresh) },
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
         ) {
-            if (!state.loaded || (state.dials == null && state.isRefreshing && state.error == null)) {
+            if (!viewState.loaded ||
+                (viewState.dials == null && viewState.isRefreshing && viewState.error == null)
+            ) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
@@ -83,11 +86,13 @@ fun ScheduleScreen(
                     Text(
                         text = stringResource(
                             R.string.updated_at,
-                            formatUpdatedAt(state.schedule?.sourceUpdatedAt ?: state.schedule?.fetchedAt),
+                            formatUpdatedAt(
+                                viewState.schedule?.sourceUpdatedAt ?: viewState.schedule?.fetchedAt,
+                            ),
                         ),
                         style = MaterialTheme.typography.bodyMedium,
                     )
-                    if (state.isStale) {
+                    if (viewState.isStale) {
                         Text(
                             text = stringResource(R.string.stale_data),
                             modifier = Modifier
@@ -98,20 +103,20 @@ fun ScheduleScreen(
                             color = MaterialTheme.colorScheme.onErrorContainer,
                         )
                     }
-                    state.error?.let { error ->
+                    viewState.error?.let { error ->
                         Text(text = error, color = MaterialTheme.colorScheme.error)
                     }
-                    if (state.dials == null) {
+                    if (viewState.dials == null) {
                         Text(stringResource(R.string.no_cached_schedule))
                     }
                     Legend()
-                    state.dials?.let { dials ->
+                    viewState.dials?.let { dials ->
                         DialSection(
                             title = stringResource(R.string.today),
                             am = dials.todayAm,
                             pm = dials.todayPm,
                             isToday = true,
-                            currentHour = state.currentHour,
+                            currentHour = viewState.currentHour,
                         )
                         val tomorrowAm = dials.tomorrowAm
                         val tomorrowPm = dials.tomorrowPm
@@ -121,7 +126,7 @@ fun ScheduleScreen(
                                 am = tomorrowAm,
                                 pm = tomorrowPm,
                                 isToday = false,
-                                currentHour = state.currentHour,
+                                currentHour = viewState.currentHour,
                             )
                         } else {
                             PlaceholderTomorrow()
@@ -202,4 +207,17 @@ private fun formatUpdatedAt(instant: Instant?): String {
     val hour = local.hour.toString().padStart(2, '0')
     val minute = local.minute.toString().padStart(2, '0')
     return "${local.dayOfMonth}.${local.monthNumber}.${local.year} $hour:$minute"
+}
+
+@Preview
+@Composable
+private fun ScheduleContent_Preview() {
+    SvitloTheme {
+        Surface {
+            ScheduleContent(
+                viewState = ViewState(loaded = true),
+                eventHandler = {},
+            )
+        }
+    }
 }
