@@ -3,7 +3,6 @@ package org.exxlexxlee.svitlo.features.home
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -11,7 +10,6 @@ import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.DragHandle
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -34,13 +33,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -228,34 +229,73 @@ internal fun PlaceCardSwipeable(
             colors = CardDefaults.cardColors(containerColor = CardPalette.Card),
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         ) {
-            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            var showTomorrow by remember(card.id) { mutableStateOf(false) }
+
+            Column(
+                modifier = Modifier.padding(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
                 CardHeader(card)
+
                 card.error?.let { error ->
                     Text(text = error, color = CardPalette.Off, fontSize = 13.sp)
                 }
-                Row(verticalAlignment = Alignment.Top) {
-                    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        DayLabel(
-                            prefix = stringResource(R.string.today),
-                            ranges = card.todayRanges,
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.Top,
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        DaySwitch(
+                            showTomorrow = showTomorrow,
+                            onTabSelected = { showTomorrow = it },
                         )
-                        DayTimeline(
-                            states = card.todayStates,
-                            nowIndex = card.nowIndex,
-                            showMarker = card.showNowMarker,
+                        DayLabel(
+                            prefix = if (showTomorrow) stringResource(R.string.tomorrow) else stringResource(R.string.today),
+                            ranges = if (showTomorrow) card.tomorrowRanges else card.todayRanges,
                         )
                     }
-                    StatusColumn(card, modifier = Modifier.width(120.dp).padding(start = 8.dp))
+                    StatusColumn(
+                        card = card,
+                        modifier = Modifier
+                            .width(110.dp)
+                            .padding(start = 8.dp),
+                    )
                 }
-                DayLabel(
-                    prefix = stringResource(R.string.tomorrow),
-                    ranges = card.tomorrowRanges,
-                )
-                DayTimeline(
-                    states = card.tomorrowStates,
-                    nowIndex = 0,
-                    showMarker = false,
-                )
+
+                val currentStates = if (showTomorrow) card.tomorrowStates else card.todayStates
+                val hasData = if (showTomorrow) {
+                    card.tomorrowRanges != null || currentStates.any { it != PowerState.UNKNOWN }
+                } else {
+                    true
+                }
+
+                if (hasData) {
+                    WidgetTimeline(
+                        states = currentStates,
+                        nowHalfHourIndex = if (!showTomorrow && card.showNowMarker) card.nowIndex else null,
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(54.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(CardPalette.Banner),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.tomorrow_unavailable),
+                            color = CardPalette.Muted,
+                            fontSize = 13.sp,
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+                }
+
                 if (card.schedulesSuspended) {
                     EmergencyNotice()
                 }
@@ -292,6 +332,56 @@ private fun CardHeader(card: PlaceCardUi) {
                 .padding(horizontal = 12.dp, vertical = 6.dp),
             color = Color.White,
             fontSize = 14.sp,
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 1,
+        )
+    }
+}
+
+@Composable
+private fun DaySwitch(
+    showTomorrow: Boolean,
+    onTabSelected: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(16.dp))
+            .background(CardPalette.Banner)
+            .padding(2.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        DayChip(
+            text = stringResource(R.string.today),
+            selected = !showTomorrow,
+            onClick = { onTabSelected(false) },
+        )
+        DayChip(
+            text = stringResource(R.string.tomorrow),
+            selected = showTomorrow,
+            onClick = { onTabSelected(true) },
+        )
+    }
+}
+
+@Composable
+private fun DayChip(
+    text: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(14.dp))
+            .background(if (selected) CardPalette.Accent else Color.Transparent)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 6.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = text,
+            color = if (selected) Color.White else CardPalette.Muted,
+            fontSize = 13.sp,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
         )
@@ -377,62 +467,113 @@ private fun StatusColumn(card: PlaceCardUi, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun DayTimeline(
+private fun WidgetTimeline(
     states: List<PowerState>,
-    nowIndex: Int,
-    showMarker: Boolean,
+    nowHalfHourIndex: Int?,
+    modifier: Modifier = Modifier,
 ) {
-    Column {
-        Box(modifier = Modifier.fillMaxWidth().height(10.dp)) {
-            if (showMarker) {
-                Canvas(modifier = Modifier.fillMaxSize()) {
-                    val center = size.width * (nowIndex + 0.5f) / states.size
-                    val half = 6.dp.toPx()
-                    val path = Path().apply {
-                        moveTo(center, size.height)
-                        lineTo(center - half, 0f)
-                        lineTo(center + half, 0f)
-                        close()
-                    }
-                    drawPath(path, CardPalette.Marker)
-                }
-            }
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth().height(34.dp),
-            horizontalArrangement = Arrangement.spacedBy(1.dp),
-        ) {
-            states.forEachIndexed { index, state ->
-                val color = if (showMarker && index == nowIndex) CardPalette.Marker else stateColor(state)
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(2.dp))
-                        .background(color),
-                )
-            }
-        }
-        HourLabels()
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        HourRow(states = states, startHour = 0, nowHalfHourIndex = nowHalfHourIndex)
+        HourRow(states = states, startHour = 12, nowHalfHourIndex = nowHalfHourIndex)
     }
 }
 
 @Composable
-private fun HourLabels() {
-    BoxWithConstraints(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 2.dp),
+private fun HourRow(
+    states: List<PowerState>,
+    startHour: Int,
+    nowHalfHourIndex: Int?,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(2.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        listOf(0, 4, 8, 12, 16, 20).forEach { hour ->
-            Text(
-                text = hour.toString().padStart(2, '0'),
-                modifier = Modifier.offset(x = maxWidth * (hour / 24f)),
-                color = CardPalette.Muted,
-                fontSize = 11.sp,
+        for (hour in startHour until (startHour + 12)) {
+            val first = states.getOrElse(hour * 2) { PowerState.UNKNOWN }
+            val second = states.getOrElse((hour * 2) + 1) { PowerState.UNKNOWN }
+            val isCurrentHour = nowHalfHourIndex != null && (nowHalfHourIndex / 2 == hour)
+            HourCell(
+                hour = hour,
+                first = first,
+                second = second,
+                marked = isCurrentHour,
+                modifier = Modifier.weight(1f),
             )
         }
     }
+}
+
+@Composable
+private fun HourCell(
+    hour: Int,
+    first: PowerState,
+    second: PowerState,
+    marked: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val outerShape = RoundedCornerShape(4.dp)
+    Box(
+        modifier = modifier
+            .height(26.dp)
+            .clip(outerShape)
+            .then(
+                if (marked) {
+                    Modifier
+                        .background(CardPalette.Marker)
+                        .padding(1.5.dp)
+                } else {
+                    Modifier
+                }
+            ),
+        contentAlignment = Alignment.Center,
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(if (marked) RoundedCornerShape(2.5.dp) else outerShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            if (first == second) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(stateColor(first)),
+                )
+            } else {
+                Row(modifier = Modifier.fillMaxSize()) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxSize()
+                            .background(stateColor(first)),
+                    )
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxSize()
+                            .background(stateColor(second)),
+                    )
+                }
+            }
+            Text(
+                text = hour.toString(),
+                color = hourLabelColor(first, second),
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+            )
+        }
+    }
+}
+
+private fun hourLabelColor(first: PowerState, second: PowerState): Color {
+    val onDark = listOf(first, second).all { it == PowerState.OFF || it == PowerState.UNKNOWN }
+    return if (onDark) Color.White else Color(0xFF1B2437)
 }
 
 @Composable

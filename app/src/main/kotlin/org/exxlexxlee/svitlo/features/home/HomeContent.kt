@@ -2,11 +2,8 @@ package org.exxlexxlee.svitlo.features.home
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -96,9 +93,7 @@ private fun ColumnHeader(
     androidx.compose.foundation.layout.Column(modifier = modifier) {
         Text(
             text = stringResource(R.string.home_title),
-            modifier = Modifier
-                .windowInsetsPadding(WindowInsets.statusBars)
-                .padding(start = 20.dp, top = 16.dp, end = 20.dp, bottom = 8.dp),
+            modifier = Modifier.padding(start = 20.dp, top = 16.dp, end = 20.dp, bottom = 8.dp),
             color = CardPalette.Title,
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
