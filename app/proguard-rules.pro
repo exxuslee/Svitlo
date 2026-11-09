@@ -1,5 +1,20 @@
 -keepattributes *Annotation*, InnerClasses, EnclosingMethod
+
+# Kotlinx Serialization
 -dontwarn kotlinx.serialization.**
--keepclassmembers class kotlinx.serialization.json.** { *** Companion; }
--keepclasseswithmembers class **$$serializer { *; }
--keep class org.exxlexxlee.** { *; }
+-keepclasseswithmembers class **$$serializer {
+    *;
+}
+-keepclassmembers class kotlinx.serialization.json.** {
+    *** Companion;
+}
+
+# WorkManager Workers
+-keep class * extends androidx.work.ListenableWorker {
+    <init>(android.content.Context, androidx.work.WorkerParameters);
+}
+
+# AndroidX Startup Initializers
+-keep class * extends androidx.startup.Initializer {
+    <init>();
+}

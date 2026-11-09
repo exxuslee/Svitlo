@@ -13,8 +13,8 @@ android {
         applicationId = "org.exxlexxlee.svitlo"
         minSdk = 28
         targetSdk = 37
-        versionCode = 2
-        versionName = "1.2"
+        versionCode = 3
+        versionName = "1.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -23,7 +23,6 @@ android {
         release {
             optimization {
                 enable = true
-                packageScope = setOf("androidx.**", "kotlin.**", "kotlinx.**")
             }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
