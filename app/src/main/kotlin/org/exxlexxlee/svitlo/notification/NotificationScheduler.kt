@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import androidx.core.content.edit
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
@@ -25,9 +26,11 @@ object NotificationScheduler {
         placeSchedulePairs: List<Pair<Place, OutageSchedule?>>,
         clock: Clock = Clock.System,
     ) {
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager ?: return
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE)
+                as? AlarmManager ?: return
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val previousScheduledIds = prefs.getStringSet(KEY_SCHEDULED_IDS, emptySet()) ?: emptySet()
+        val previousScheduledIds = prefs.getStringSet(KEY_SCHEDULED_IDS, emptySet())
+            ?: emptySet()
 
         val newScheduledIds = mutableSetOf<String>()
         val nowMs = clock.now().toEpochMilliseconds()
@@ -73,12 +76,13 @@ object NotificationScheduler {
                         // Check quiet night (23:00 to 07:00)
                         val triggerInstant = Instant.fromEpochMilliseconds(triggerEpochMs)
                         val triggerHour = triggerInstant.toLocalDateTime(KyivTime.ZONE).hour
-                        if (quietNight && (triggerHour >= 23 || triggerHour < 7)) {
+                        if (quietNight && (triggerHour !in 7..<23)) {
                             return@forEach
                         }
 
                         val timeFormatted = OutageWindows.formatClock(startMinutes)
-                        val notificationId = abs((place.id.hashCode() * 31 + startEpochMs.hashCode()))
+                        val notificationId =
+                            abs((place.id.hashCode() * 31 + startEpochMs.hashCode()))
                         val notificationIdStr = notificationId.toString()
 
                         newScheduledIds.add(notificationIdStr)
@@ -86,8 +90,14 @@ object NotificationScheduler {
                         val intent = Intent(context, OutageNotificationReceiver::class.java).apply {
                             putExtra(OutageNotificationReceiver.EXTRA_PLACE_NAME, placeName)
                             putExtra(OutageNotificationReceiver.EXTRA_OUTAGE_TIME, timeFormatted)
-                            putExtra(OutageNotificationReceiver.EXTRA_REMINDER_MINUTES, reminderMinutes)
-                            putExtra(OutageNotificationReceiver.EXTRA_NOTIFICATION_ID, notificationId)
+                            putExtra(
+                                OutageNotificationReceiver.EXTRA_REMINDER_MINUTES,
+                                reminderMinutes
+                            )
+                            putExtra(
+                                OutageNotificationReceiver.EXTRA_NOTIFICATION_ID,
+                                notificationId
+                            )
                         }
 
                         val pendingIntent = PendingIntent.getBroadcast(
@@ -120,7 +130,7 @@ object NotificationScheduler {
             }
         }
 
-        prefs.edit().putStringSet(KEY_SCHEDULED_IDS, newScheduledIds).apply()
+        prefs.edit { putStringSet(KEY_SCHEDULED_IDS, newScheduledIds) }
     }
 
     private fun scheduleAlarm(
@@ -130,12 +140,24 @@ object NotificationScheduler {
     ) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (alarmManager.canScheduleExactAlarms()) {
-                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerEpochMs, pendingIntent)
+                alarmManager.setExactAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP,
+                    triggerEpochMs,
+                    pendingIntent
+                )
             } else {
-                alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerEpochMs, pendingIntent)
+                alarmManager.setAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP,
+                    triggerEpochMs,
+                    pendingIntent
+                )
             }
         } else {
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerEpochMs, pendingIntent)
+            alarmManager.setExactAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                triggerEpochMs,
+                pendingIntent
+            )
         }
     }
 }
