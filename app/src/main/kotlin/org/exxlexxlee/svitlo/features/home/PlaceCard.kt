@@ -61,6 +61,7 @@ import org.exxlexxlee.domain.model.PowerState
 import org.exxlexxlee.svitlo.R
 import org.exxlexxlee.svitlo.features.address.AddressIcon
 import org.exxlexxlee.svitlo.features.home.models.Event
+import org.exxlexxlee.svitlo.ui.theme.LocalDarkTheme
 import org.exxlexxlee.svitlo.ui.theme.SvitloTheme
 import kotlin.math.roundToInt
 
@@ -615,6 +616,7 @@ private fun EmergencyNotice() {
     )
 }
 
+@Composable
 private fun stateColor(state: PowerState?): Color = when (state) {
     PowerState.ON -> CardPalette.On
     PowerState.OFF -> CardPalette.Off
@@ -623,22 +625,74 @@ private fun stateColor(state: PowerState?): Color = when (state) {
 }
 
 internal object CardPalette {
-    val Screen = Color(0xFFF2F4F8)
-    val Card = Color(0xFFFFFFFF)
-    val Title = Color(0xFF1B2437)
+    val Screen: Color
+        @Composable get() = if (LocalDarkTheme.current) Color(0xFF121418) else Color(0xFFF2F4F8)
+
+    val Card: Color
+        @Composable get() = if (LocalDarkTheme.current) Color(0xFF1E2128) else Color(0xFFFFFFFF)
+
+    val Title: Color
+        @Composable get() = if (LocalDarkTheme.current) Color(0xFFF0F2F5) else Color(0xFF1B2437)
+
     val Muted = Color(0xFF8B95A7)
+
     val Off = Color(0xFFE23B3B)
     val On = Color(0xFFFFE826)
     val Yes = Color(0xFF2EAE4E)
     val Maybe = Color(0xFF4DAF98)
-    val Unknown = Color(0xFF2C3444)
+
+    val Unknown: Color
+        @Composable get() = if (LocalDarkTheme.current) Color(0xFF353C4A) else Color(0xFF2C3444)
+
     val Accent = Color(0xFF5B6CFF)
     val Marker = Color(0xFF2F6FED)
-    val Banner = Color(0xFFF0F1F4)
-    val BannerText = Color(0xFF6D7686)
-    val GroupBadge = Color(0xFFF0F1F4)
-    val GroupBadgeText = Color(0xFF1B2437)
+
+    val Banner: Color
+        @Composable get() = if (LocalDarkTheme.current) Color(0xFF252932) else Color(0xFFF0F1F4)
+
+    val BannerText: Color
+        @Composable get() = if (LocalDarkTheme.current) Color(0xFFB0B7C3) else Color(0xFF6D7686)
+
+    val GroupBadge: Color
+        @Composable get() = if (LocalDarkTheme.current) Color(0xFF252932) else Color(0xFFF0F1F4)
+
+    val GroupBadgeText: Color
+        @Composable get() = if (LocalDarkTheme.current) Color(0xFFF0F2F5) else Color(0xFF1B2437)
+
     val Range = Color(0xFFE14D4D)
+}
+
+@Preview(showBackground = true, widthDp = 400, backgroundColor = 0xFF121418)
+@Composable
+private fun PlaceCard_Dark_Preview() {
+    val halves = MutableList(48) { PowerState.ON }
+    for (index in 3 until 18) halves[index] = PowerState.OFF
+    for (index in 26 until 41) halves[index] = PowerState.OFF
+    halves[47] = PowerState.OFF
+    SvitloTheme(darkTheme = true) {
+        Box(modifier = Modifier.padding(16.dp)) {
+            PlaceCard(
+                card = PlaceCardUi(
+                    id = 1,
+                    title = "Київська область",
+                    groupLabel = "Група 2.2",
+                    iconId = "home",
+                    todayRanges = "01:30–09:00, 13:00–20:30, 23:30–24:00",
+                    tomorrowRanges = null,
+                    todayStates = halves,
+                    tomorrowStates = List(48) { PowerState.UNKNOWN },
+                    showNowMarker = true,
+                    nowIndex = 37,
+                    currentState = PowerState.OFF,
+                    minutesUntilChange = 154,
+                    countdownTarget = CountdownTarget.PowerOn,
+                    schedulesSuspended = false,
+                    error = null,
+                ),
+                eventHandler = {},
+            )
+        }
+    }
 }
 
 @Preview(showBackground = true, widthDp = 400, backgroundColor = 0xFFF2F4F8)

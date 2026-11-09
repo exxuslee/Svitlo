@@ -7,4 +7,5 @@ sealed interface Event {
     data class Edit(val id: Long) : Event
     data object ConfirmDelete : Event
     data object DismissDelete : Event
+    data object Settings : Event
 }

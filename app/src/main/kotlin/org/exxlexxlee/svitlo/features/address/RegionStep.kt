@@ -56,7 +56,7 @@ private fun AreaCard(
             .fillMaxWidth()
             .shadow(2.dp, CardShape)
             .clip(CardShape)
-            .background(if (isSelected) AddressPalette.AccentSoft else Color.White)
+            .background(if (isSelected) AddressPalette.AccentSoft else AddressPalette.Card)
             .then(
                 if (isSelected) Modifier.border(1.5.dp, AddressPalette.Accent, CardShape)
                 else Modifier

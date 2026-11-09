@@ -31,6 +31,12 @@
     <string name="hours_pm">12–24</string>
     <string name="change_selection">Змінити</string>
     <string name="home_title">Графіки відключень</string>
+    <string name="settings_title">Налаштування</string>
+    <string name="settings_dark_theme">Темна тема</string>
+    <string name="settings_dark_theme_desc">Використовувати темне оформлення додатку</string>
+    <string name="settings_about">Про додаток</string>
+    <string name="settings_version">Версія %1$s</string>
+    <string name="about_description">Зручний перегляд графіків відключень електроенергії</string>
     <string name="home_empty">Додайте адресу, щоб бачити графік відключень</string>
     <string name="add_address">Додати адресу</string>
     <string name="delete">Видалити</string>

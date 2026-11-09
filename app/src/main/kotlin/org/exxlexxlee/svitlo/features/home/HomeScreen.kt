@@ -29,6 +29,11 @@ fun HomeScreen(
             navController.navigate(Routes.Address.create(placeId))
         }
 
+        Action.OpenSettings -> {
+            viewModel.clearAction()
+            navController.navigate(Routes.Settings.route)
+        }
+
         null -> {}
     }
 }

@@ -93,7 +93,7 @@ private fun GroupChip(
             .height(64.dp)
             .shadow(2.dp, RoundedCornerShape(18.dp))
             .clip(RoundedCornerShape(18.dp))
-            .background(if (isSelected) AddressPalette.AccentSoft else Color.White)
+            .background(if (isSelected) AddressPalette.AccentSoft else AddressPalette.Card)
             .then(
                 if (isSelected) Modifier.border(1.5.dp, AddressPalette.Accent, RoundedCornerShape(18.dp))
                 else Modifier

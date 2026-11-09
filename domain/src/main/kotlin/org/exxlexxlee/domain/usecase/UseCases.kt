@@ -18,6 +18,7 @@ import org.exxlexxlee.domain.model.Street
 import org.exxlexxlee.domain.repository.LocationRepository
 import org.exxlexxlee.domain.repository.ScheduleRepository
 import org.exxlexxlee.domain.repository.SelectionRepository
+import org.exxlexxlee.domain.repository.SettingsRepository
 
 class GetRegions(private val locationRepository: LocationRepository) {
     suspend operator fun invoke(): List<Region> = locationRepository.regions()
@@ -105,4 +106,16 @@ class ObserveDials(private val observeSchedule: ObserveSchedule) {
             )
         }
     }
+}
+
+class ObserveDarkTheme(private val settingsRepository: SettingsRepository) {
+    operator fun invoke(): Flow<Boolean> = settingsRepository.observeDarkTheme()
+}
+
+class GetDarkTheme(private val settingsRepository: SettingsRepository) {
+    operator fun invoke(): Boolean = settingsRepository.isDarkTheme()
+}
+
+class SetDarkTheme(private val settingsRepository: SettingsRepository) {
+    suspend operator fun invoke(isDark: Boolean) = settingsRepository.setDarkTheme(isDark)
 }

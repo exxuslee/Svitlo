@@ -10,6 +10,8 @@ import androidx.navigation.navArgument
 import org.exxlexxlee.svitlo.features.address.AddressScreen
 import org.exxlexxlee.svitlo.features.home.HomeScreen
 import org.exxlexxlee.svitlo.features.main.models.ViewState
+import org.exxlexxlee.svitlo.features.settings.AboutScreen
+import org.exxlexxlee.svitlo.features.settings.SettingsScreen
 import org.exxlexxlee.svitlo.navigation.Routes
 
 @Composable
@@ -33,5 +35,7 @@ fun NavHostContent(
                 },
             ),
         ) { AddressScreen() }
+        composable(Routes.Settings.route) { SettingsScreen() }
+        composable(Routes.About.route) { AboutScreen() }
     }
 }

@@ -18,9 +18,11 @@ import org.exxlexxlee.data.remote.YasnoApi
 import org.exxlexxlee.data.repository.LocationRepositoryImpl
 import org.exxlexxlee.data.repository.ScheduleRepositoryImpl
 import org.exxlexxlee.data.repository.SelectionRepositoryImpl
+import org.exxlexxlee.data.repository.SettingsRepositoryImpl
 import org.exxlexxlee.domain.repository.LocationRepository
 import org.exxlexxlee.domain.repository.ScheduleRepository
 import org.exxlexxlee.domain.repository.SelectionRepository
+import org.exxlexxlee.domain.repository.SettingsRepository
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
@@ -72,4 +74,5 @@ val dataModule = module {
         ScheduleRepositoryImpl(get(), get(), get(), get(), get(), get())
     }
     single<SelectionRepository> { SelectionRepositoryImpl(get(), get()) }
+    single<SettingsRepository> { SettingsRepositoryImpl(androidContext()) }
 }

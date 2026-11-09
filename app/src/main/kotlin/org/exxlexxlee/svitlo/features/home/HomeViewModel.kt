@@ -98,6 +98,7 @@ class HomeViewModel(
                 viewModelScope.launch { deletePlace(id) }
             }
             is Event.Edit -> viewAction = Action.OpenAddress(viewEvent.id)
+            Event.Settings -> viewAction = Action.OpenSettings
         }
     }
 

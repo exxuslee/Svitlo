@@ -75,7 +75,7 @@ fun DetailsStep(viewState: ViewState, eventHandler: (Event) -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(FieldShape)
-                    .background(Color.White)
+                    .background(AddressPalette.Card)
                     .clickable { eventHandler(Event.OpenReminder) }
                     .padding(horizontal = 16.dp, vertical = 18.dp),
                 color = AddressPalette.Title,
@@ -121,7 +121,7 @@ fun DetailsStep(viewState: ViewState, eventHandler: (Event) -> Unit) {
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = AddressPalette.Accent,
-                contentColor = AddressPalette.Title,
+                contentColor = Color.White,
                 disabledContainerColor = AddressPalette.Banner,
                 disabledContentColor = AddressPalette.Subtitle,
             ),
@@ -162,7 +162,7 @@ private fun IconPicker(selected: AddressIcon, onSelect: (AddressIcon) -> Unit) {
                             .aspectRatio(1f)
                             .shadow(1.dp, RoundedCornerShape(16.dp))
                             .clip(RoundedCornerShape(16.dp))
-                            .background(if (isSelected) AddressPalette.AccentSoft else Color.White)
+                            .background(if (isSelected) AddressPalette.AccentSoft else AddressPalette.Card)
                             .border(1.5.dp, AddressPalette.Accent, RoundedCornerShape(16.dp))
                             .clickable { onSelect(icon) },
                         contentAlignment = Alignment.Center,
@@ -181,9 +181,9 @@ private fun IconPicker(selected: AddressIcon, onSelect: (AddressIcon) -> Unit) {
 
 @Composable
 private fun fieldColors() = TextFieldDefaults.colors(
-    focusedContainerColor = Color.White,
-    unfocusedContainerColor = Color.White,
-    disabledContainerColor = Color.White,
+    focusedContainerColor = AddressPalette.Card,
+    unfocusedContainerColor = AddressPalette.Card,
+    disabledContainerColor = AddressPalette.Card,
     focusedIndicatorColor = Color.Transparent,
     unfocusedIndicatorColor = Color.Transparent,
     focusedTextColor = AddressPalette.Title,

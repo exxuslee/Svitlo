@@ -243,3 +243,32 @@ private fun AddressContent_Preview() {
         )
     }
 }
+
+@Preview
+@Composable
+private fun AddressContent_Dark_Preview() {
+    SvitloTheme(darkTheme = true) {
+        AddressContent(
+            viewState = ViewState(
+                isLoadingAreas = false,
+                areas = listOf(
+                    ServiceArea(
+                        id = "kyiv-region",
+                        name = "Київська область",
+                        suppliers = listOf(
+                            Supplier(
+                                region = Region(
+                                    id = "kyiv-region",
+                                    name = "ПрАТ «ДТЕК Київські регіональні електромережі»",
+                                    providerId = "dtek",
+                                ),
+                                primary = true,
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+            eventHandler = {},
+        )
+    }
+}

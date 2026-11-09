@@ -1,18 +1,23 @@
 package org.exxlexxlee.svitlo.features.home
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -91,13 +96,27 @@ private fun ColumnHeader(
     modifier: Modifier = Modifier,
 ) {
     androidx.compose.foundation.layout.Column(modifier = modifier) {
-        Text(
-            text = stringResource(R.string.home_title),
-            modifier = Modifier.padding(start = 20.dp, top = 16.dp, end = 20.dp, bottom = 8.dp),
-            color = CardPalette.Title,
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold,
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 20.dp, top = 16.dp, end = 12.dp, bottom = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = stringResource(R.string.home_title),
+                color = CardPalette.Title,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+            )
+            IconButton(onClick = { eventHandler(Event.Settings) }) {
+                Icon(
+                    imageVector = Icons.Filled.Settings,
+                    contentDescription = stringResource(R.string.settings_title),
+                    tint = CardPalette.Title,
+                )
+            }
+        }
         PullToRefreshBox(
             isRefreshing = viewState.isRefreshing,
             onRefresh = { eventHandler(Event.Refresh) },
@@ -143,6 +162,42 @@ private fun HomeContent_Preview() {
     for (index in 26 until 41) halves[index] = PowerState.OFF
     halves[47] = PowerState.OFF
     SvitloTheme {
+        HomeContent(
+            viewState = ViewState(
+                loaded = true,
+                cards = listOf(
+                    PlaceCardUi(
+                        id = 1,
+                        title = "Київська область",
+                        groupLabel = "Група 2.2",
+                        iconId = "home",
+                        todayRanges = "01:30–09:00, 13:00–20:30, 23:30–24:00",
+                        tomorrowRanges = null,
+                        todayStates = halves,
+                        tomorrowStates = List(48) { PowerState.UNKNOWN },
+                        showNowMarker = true,
+                        nowIndex = 37,
+                        currentState = PowerState.OFF,
+                        minutesUntilChange = 154,
+                        countdownTarget = CountdownTarget.PowerOn,
+                        schedulesSuspended = true,
+                        error = null,
+                    ),
+                ),
+            ),
+            eventHandler = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, widthDp = 400, heightDp = 860)
+@Composable
+private fun HomeContent_Dark_Preview() {
+    val halves = MutableList(48) { PowerState.ON }
+    for (index in 3 until 18) halves[index] = PowerState.OFF
+    for (index in 26 until 41) halves[index] = PowerState.OFF
+    halves[47] = PowerState.OFF
+    SvitloTheme(darkTheme = true) {
         HomeContent(
             viewState = ViewState(
                 loaded = true,

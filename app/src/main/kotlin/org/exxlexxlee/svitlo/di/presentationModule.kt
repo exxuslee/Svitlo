@@ -3,17 +3,22 @@ package org.exxlexxlee.svitlo.di
 import kotlinx.datetime.Clock
 import org.exxlexxlee.domain.usecase.DeletePlace
 import org.exxlexxlee.domain.usecase.GetAreas
+import org.exxlexxlee.domain.usecase.GetDarkTheme
 import org.exxlexxlee.domain.usecase.GetGroups
 import org.exxlexxlee.domain.usecase.GetRegions
+import org.exxlexxlee.domain.usecase.ObserveDarkTheme
 import org.exxlexxlee.domain.usecase.ObservePlace
 import org.exxlexxlee.domain.usecase.ObservePlaces
 import org.exxlexxlee.domain.usecase.ObserveSchedule
 import org.exxlexxlee.domain.usecase.ObserveSelection
 import org.exxlexxlee.domain.usecase.RefreshSchedule
 import org.exxlexxlee.domain.usecase.SaveSelection
+import org.exxlexxlee.domain.usecase.SetDarkTheme
 import org.exxlexxlee.svitlo.features.address.AddressViewModel
 import org.exxlexxlee.svitlo.features.home.HomeViewModel
 import org.exxlexxlee.svitlo.features.main.MainViewModel
+import org.exxlexxlee.svitlo.features.settings.SettingsViewModel
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -28,9 +33,13 @@ val presentationModule = module {
     factory { DeletePlace(get()) }
     factory { ObserveSchedule(get()) }
     factory { RefreshSchedule(get()) }
+    factory { ObserveDarkTheme(get()) }
+    factory { GetDarkTheme(get()) }
+    factory { SetDarkTheme(get()) }
     single<Clock> { Clock.System }
 
-    viewModel { MainViewModel() }
+    viewModel { MainViewModel(get(), get()) }
     viewModel { HomeViewModel(get(), get(), get(), get(), get()) }
     viewModel { AddressViewModel(get<GetAreas>(), get(), get(), get(), get()) }
+    viewModel { SettingsViewModel(get(), get(), get(), androidContext()) }
 }
