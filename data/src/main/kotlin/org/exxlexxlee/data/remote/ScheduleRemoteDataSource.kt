@@ -22,6 +22,7 @@ class ScheduleRemoteDataSource(
                 yasnoMapper.toSchedule(payload, group, clock)
             }
         }
+
         "github_json" -> {
             val url = source.url ?: error("GitHub JSON url missing")
             val payload = gpvMapper.decode(githubJsonApi.fetch(url))
@@ -29,6 +30,7 @@ class ScheduleRemoteDataSource(
                 gpvMapper.toSchedule(payload, group, clock)
             }
         }
+
         else -> error("Unknown source type: ${source.type}")
     }
 }

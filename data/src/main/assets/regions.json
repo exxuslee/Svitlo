@@ -9,7 +9,11 @@
           "name": "ПрАТ «ДТЕК Київські електромережі»",
           "providerId": "yasno",
           "primary": true,
-          "source": { "type": "yasno", "regionId": 25, "dsoId": 902 }
+          "source": {
+            "type": "yasno",
+            "regionId": 25,
+            "dsoId": 902
+          }
         }
       ]
     },
@@ -54,13 +58,21 @@
           "name": "ПрАТ «ДТЕК Дніпровські електромережі»",
           "providerId": "yasno",
           "primary": true,
-          "source": { "type": "yasno", "regionId": 3, "dsoId": 301 }
+          "source": {
+            "type": "yasno",
+            "regionId": 3,
+            "dsoId": 301
+          }
         },
         {
           "id": "dnipro-cek",
           "name": "АТ «ЦЕК»",
           "providerId": "yasno",
-          "source": { "type": "yasno", "regionId": 3, "dsoId": 303 }
+          "source": {
+            "type": "yasno",
+            "regionId": 3,
+            "dsoId": 303
+          }
         },
         {
           "id": "dnipro-json",

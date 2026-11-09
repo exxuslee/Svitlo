@@ -4,10 +4,10 @@ import android.Manifest
 import android.appwidget.AppWidgetHost
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
-import android.view.View
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Parcel
+import android.view.View
 import android.widget.FrameLayout
 import android.widget.RemoteViews
 import androidx.compose.ui.unit.DpSize
@@ -85,7 +85,10 @@ class ScheduleWidgetInteractionTest {
         instrumentation.runOnMainSync {
             val root = views.apply(context, FrameLayout(context))
             assertEquals(View.GONE, root.findViewById<View>(R.id.widget_today_panel).visibility)
-            assertEquals(View.VISIBLE, root.findViewById<View>(R.id.widget_tomorrow_panel).visibility)
+            assertEquals(
+                View.VISIBLE,
+                root.findViewById<View>(R.id.widget_tomorrow_panel).visibility
+            )
         }
     }
 
@@ -97,7 +100,10 @@ class ScheduleWidgetInteractionTest {
         instrumentation.runOnMainSync {
             val root = views.apply(context, FrameLayout(context))
             WidgetDayReceiver.dayVisibility(context, true).reapply(context, root)
-            assertEquals(View.VISIBLE, root.findViewById<View>(R.id.widget_tomorrow_panel).visibility)
+            assertEquals(
+                View.VISIBLE,
+                root.findViewById<View>(R.id.widget_tomorrow_panel).visibility
+            )
             renderSnapshot(root, "tomorrow-unavailable")
             WidgetDayReceiver.dayVisibility(context, false).reapply(context, root)
             assertEquals(View.VISIBLE, root.findViewById<View>(R.id.widget_today_panel).visibility)
@@ -112,9 +118,11 @@ class ScheduleWidgetInteractionTest {
         try {
             instrumentation.uiAutomation.adoptShellPermissionIdentity(Manifest.permission.BIND_APPWIDGET)
             try {
-                assertTrue(manager.bindAppWidgetIdIfAllowed(
-                    id, ComponentName(context, ScheduleWidgetReceiver::class.java),
-                ))
+                assertTrue(
+                    manager.bindAppWidgetIdIfAllowed(
+                        id, ComponentName(context, ScheduleWidgetReceiver::class.java),
+                    )
+                )
             } finally {
                 instrumentation.uiAutomation.dropShellPermissionIdentity()
             }
@@ -126,14 +134,26 @@ class ScheduleWidgetInteractionTest {
                 val receiver = WidgetDayReceiver()
                 receiver.onReceive(context, WidgetDayReceiver.intent(context, id, true))
                 val tomorrowHost = host.createView(context, id, manager.getAppWidgetInfo(id))
-                assertEquals(View.VISIBLE, tomorrowHost.findViewById<View>(R.id.widget_tomorrow_panel).visibility)
-                assertEquals(View.GONE, tomorrowHost.findViewById<View>(R.id.widget_today_panel).visibility)
+                assertEquals(
+                    View.VISIBLE,
+                    tomorrowHost.findViewById<View>(R.id.widget_tomorrow_panel).visibility
+                )
+                assertEquals(
+                    View.GONE,
+                    tomorrowHost.findViewById<View>(R.id.widget_today_panel).visibility
+                )
                 assertTrue(WidgetDaySelection.read(context, id))
 
                 receiver.onReceive(context, WidgetDayReceiver.intent(context, id, false))
                 val todayHost = host.createView(context, id, manager.getAppWidgetInfo(id))
-                assertEquals(View.VISIBLE, todayHost.findViewById<View>(R.id.widget_today_panel).visibility)
-                assertEquals(View.GONE, todayHost.findViewById<View>(R.id.widget_tomorrow_panel).visibility)
+                assertEquals(
+                    View.VISIBLE,
+                    todayHost.findViewById<View>(R.id.widget_today_panel).visibility
+                )
+                assertEquals(
+                    View.GONE,
+                    todayHost.findViewById<View>(R.id.widget_tomorrow_panel).visibility
+                )
                 assertFalse(WidgetDaySelection.read(context, id))
             }
         } finally {

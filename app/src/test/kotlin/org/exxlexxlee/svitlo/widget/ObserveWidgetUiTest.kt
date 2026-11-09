@@ -30,24 +30,31 @@ class ObserveWidgetUiTest {
     private val clock = object : Clock {
         override fun now() = Instant.parse("2026-11-09T08:00:00Z")
     }
-    private val selection = MutableStateFlow<Selection?>(Selection.ByGroup(
-        Region("kyiv", "Київ", "yasno"), OutageGroup("3.1", "3.1"), AddressDetails("Дім"),
-    ))
-    private val schedule = MutableStateFlow<OutageSchedule?>(OutageSchedule(
-        group = selection.value!!.group,
-        today = DaySchedule(LocalDate(2026, 11, 9), List(48) { PowerState.ON }),
-        tomorrow = null, sourceUpdatedAt = null, fetchedAt = clock.now(),
-    ))
+    private val selection = MutableStateFlow<Selection?>(
+        Selection.ByGroup(
+            Region("kyiv", "Київ", "yasno"), OutageGroup("3.1", "3.1"), AddressDetails("Дім"),
+        )
+    )
+    private val schedule = MutableStateFlow<OutageSchedule?>(
+        OutageSchedule(
+            group = selection.value!!.group,
+            today = DaySchedule(LocalDate(2026, 11, 9), List(48) { PowerState.ON }),
+            tomorrow = null, sourceUpdatedAt = null, fetchedAt = clock.now(),
+        )
+    )
     private val selections = object : SelectionRepository {
         override fun observe() = selection
-        override fun observePlaces(): Flow<List<Place>> = error("Widget should only observe first selection")
+        override fun observePlaces(): Flow<List<Place>> =
+            error("Widget should only observe first selection")
+
         override fun observePlace(id: Long): Flow<Place?> = error("Not used")
         override suspend fun save(selection: Selection, placeId: Long?) = error("Not used")
         override suspend fun delete(id: Long) = error("Not used")
     }
     private val schedules = object : ScheduleRepository {
         override fun observe(selection: Selection) = schedule
-        override suspend fun refresh(selection: Selection): Result<Unit> = error("Widget must not fetch")
+        override suspend fun refresh(selection: Selection): Result<Unit> =
+            error("Widget must not fetch")
     }
 
     @Test
@@ -60,11 +67,14 @@ class ObserveWidgetUiTest {
         assertEquals(1, received.size)
         schedule.value = schedule.value!!.copy(fetchedAt = Instant.parse("2026-11-09T08:30:00Z"))
         assertEquals(1, received.size)
-        schedule.value = schedule.value!!.copy(tomorrow = DaySchedule(
-            LocalDate(2026, 11, 10), List(48) { PowerState.OFF },
-        ))
+        schedule.value = schedule.value!!.copy(
+            tomorrow = DaySchedule(
+                LocalDate(2026, 11, 10), List(48) { PowerState.OFF },
+            )
+        )
         assertEquals(PowerState.OFF, received.last().tomorrow!!.states.first())
-        selection.value = (selection.value as Selection.ByGroup).copy(details = AddressDetails("Офіс"))
+        selection.value =
+            (selection.value as Selection.ByGroup).copy(details = AddressDetails("Офіс"))
         assertEquals("Офіс", received.last().title)
         selection.value = null
         assertNull(received.last().today)

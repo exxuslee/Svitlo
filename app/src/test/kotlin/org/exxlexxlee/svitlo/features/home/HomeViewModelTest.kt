@@ -5,13 +5,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.Clock
@@ -28,8 +28,8 @@ import org.exxlexxlee.domain.model.Selection
 import org.exxlexxlee.domain.repository.ScheduleRepository
 import org.exxlexxlee.domain.repository.SelectionRepository
 import org.exxlexxlee.domain.usecase.DeletePlace
-import org.exxlexxlee.domain.usecase.ObservePlaces
 import org.exxlexxlee.domain.usecase.ObservePlaceSchedules
+import org.exxlexxlee.domain.usecase.ObservePlaces
 import org.exxlexxlee.domain.usecase.ObserveSchedule
 import org.exxlexxlee.domain.usecase.RefreshSchedules
 import org.exxlexxlee.svitlo.features.home.models.Action
@@ -57,6 +57,7 @@ class HomeViewModelTest {
             placeCollections += 1
             emitAll(placesFlow)
         }
+
         override fun observePlace(id: Long): Flow<Place?> = MutableStateFlow(null)
         override fun observe(): Flow<Selection?> = MutableStateFlow(null)
         override suspend fun save(selection: Selection, placeId: Long?): Long = 1L
@@ -82,6 +83,7 @@ class HomeViewModelTest {
         override fun setBannerDismissed(dismissed: Boolean) {
             isDismissed = dismissed
         }
+
         override fun requestPinWidget(): Boolean {
             requestedPin = true
             return true
@@ -286,9 +288,11 @@ class HomeViewModelTest {
     @Test
     fun addressesInTheSameGroupRefreshOnceButKeepSeparateCards() = runViewModelTest {
         val home = createPlace()
-        val office = createPlace(2).copy(selection = (home.selection as Selection.ByGroup).copy(
-            details = AddressDetails("Офіс"),
-        ))
+        val office = createPlace(2).copy(
+            selection = (home.selection as Selection.ByGroup).copy(
+                details = AddressDetails("Офіс"),
+            )
+        )
         placesFlow.value = listOf(home, office)
         val viewModel = createViewModel(FakeWidgetManager())
         runCurrent()

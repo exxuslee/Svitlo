@@ -15,7 +15,7 @@ class SettingsRepositoryImpl(
 
     private val isSystemDark: Boolean =
         (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
-            Configuration.UI_MODE_NIGHT_YES
+                Configuration.UI_MODE_NIGHT_YES
 
     private val initialDarkTheme: Boolean =
         if (prefs.contains(KEY_DARK_THEME)) {

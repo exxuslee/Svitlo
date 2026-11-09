@@ -22,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -80,7 +79,6 @@ fun GroupStep(viewState: ViewState, eventHandler: (Event) -> Unit) {
 }
 
 
-
 @Composable
 private fun GroupChip(
     group: OutageGroup,
@@ -95,7 +93,11 @@ private fun GroupChip(
             .clip(RoundedCornerShape(18.dp))
             .background(if (isSelected) AddressPalette.AccentSoft else AddressPalette.Card)
             .then(
-                if (isSelected) Modifier.border(1.5.dp, AddressPalette.Accent, RoundedCornerShape(18.dp))
+                if (isSelected) Modifier.border(
+                    1.5.dp,
+                    AddressPalette.Accent,
+                    RoundedCornerShape(18.dp)
+                )
                 else Modifier
             )
             .clickable(onClick = onClick),

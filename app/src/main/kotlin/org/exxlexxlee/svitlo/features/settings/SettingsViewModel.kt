@@ -37,9 +37,11 @@ class SettingsViewModel(
                     setDarkTheme(viewEvent.isDark)
                 }
             }
+
             Event.AboutClicked -> {
                 viewAction = Action.NavigateToAbout
             }
+
             Event.BackClicked -> {
                 viewAction = Action.NavigateBack
             }

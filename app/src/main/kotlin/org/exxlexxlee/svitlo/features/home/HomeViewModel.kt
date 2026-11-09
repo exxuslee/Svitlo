@@ -52,7 +52,12 @@ class HomeViewModel(
                     refreshAll(places)
                 }
             }
-            combine(schedules, refreshing, errors, minuteOfDay) { cards, isRefreshing, errorMap, minute ->
+            combine(
+                schedules,
+                refreshing,
+                errors,
+                minuteOfDay
+            ) { cards, isRefreshing, errorMap, minute ->
                 val mappedCards = cards.map { source ->
                     PlaceCardMapper.map(
                         place = source.place,
@@ -87,6 +92,7 @@ class HomeViewModel(
                 viewState = viewState.copy(pendingDeleteId = null)
                 viewModelScope.launch { deletePlace(id) }
             }
+
             is Event.Edit -> viewAction = Action.OpenAddress(viewEvent.id)
             Event.Settings -> viewAction = Action.OpenSettings
             Event.AddWidgetClicked -> viewAction = Action.RequestPinWidget
@@ -94,6 +100,7 @@ class HomeViewModel(
                 widgetManager.setBannerDismissed(true)
                 viewState = viewState.copy(showWidgetBanner = false)
             }
+
             Event.CheckWidget -> {
                 val shouldShow = shouldShowWidgetBanner(viewState.cards.size)
                 if (viewState.showWidgetBanner != shouldShow) {
@@ -105,8 +112,8 @@ class HomeViewModel(
 
     private fun shouldShowWidgetBanner(cardsCount: Int): Boolean {
         return (cardsCount > 0) &&
-            !widgetManager.hasInstalledWidgets() &&
-            !widgetManager.isBannerDismissed()
+                !widgetManager.hasInstalledWidgets() &&
+                !widgetManager.isBannerDismissed()
     }
 
     private fun refreshAll(places: List<Place>) {

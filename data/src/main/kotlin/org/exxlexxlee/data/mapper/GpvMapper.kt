@@ -89,8 +89,9 @@ class GpvMapper(
             runCatching { Instant.parse(value) }.getOrNull()?.let { return it }
         }
         val update = dto.fact?.update ?: return null
-        val match = Regex("""(\d{2})\.(\d{2})\.(\d{4}) (\d{2}):(\d{2})""").matchEntire(update.trim())
-            ?: return null
+        val match =
+            Regex("""(\d{2})\.(\d{2})\.(\d{4}) (\d{2}):(\d{2})""").matchEntire(update.trim())
+                ?: return null
         val (day, month, year, hour, minute) = match.destructured
         val local = LocalDateTime(
             year.toInt(),

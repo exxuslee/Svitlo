@@ -19,7 +19,10 @@ import org.exxlexxlee.svitlo.R
 class WidgetDayReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action != ACTION_SELECT_DAY || !intent.hasExtra(EXTRA_TOMORROW)) return
-        val id = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
+        val id = intent.getIntExtra(
+            AppWidgetManager.EXTRA_APPWIDGET_ID,
+            AppWidgetManager.INVALID_APPWIDGET_ID
+        )
         val manager = AppWidgetManager.getInstance(context)
         if (manager.getAppWidgetInfo(id)?.provider?.className != ScheduleWidgetReceiver::class.java.name) return
         val tomorrow = intent.getBooleanExtra(EXTRA_TOMORROW, false)
@@ -43,8 +46,14 @@ class WidgetDayReceiver : BroadcastReceiver() {
 
         internal fun dayVisibility(context: Context, tomorrow: Boolean): RemoteViews =
             RemoteViews(context.packageName, R.layout.schedule_widget_days).apply {
-                setViewVisibility(R.id.widget_today_panel, if (tomorrow) View.GONE else View.VISIBLE)
-                setViewVisibility(R.id.widget_tomorrow_panel, if (tomorrow) View.VISIBLE else View.GONE)
+                setViewVisibility(
+                    R.id.widget_today_panel,
+                    if (tomorrow) View.GONE else View.VISIBLE
+                )
+                setViewVisibility(
+                    R.id.widget_tomorrow_panel,
+                    if (tomorrow) View.VISIBLE else View.GONE
+                )
             }
     }
 }
@@ -58,7 +67,8 @@ internal object WidgetDaySelection {
 
     fun save(context: Context, id: Int, tomorrow: Boolean) {
         // apply updates memory immediately; disk persistence does not block the click response.
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit { putBoolean(key(id), tomorrow) }
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            .edit { putBoolean(key(id), tomorrow) }
     }
 
     fun remove(context: Context, id: Int) {
@@ -70,7 +80,11 @@ internal object WidgetDaySelection {
         if (prefs.contains(key(appWidgetId))) return
         val legacy = getAppWidgetState<Preferences>(context, PreferencesGlanceStateDefinition, id)
         if (!prefs.contains(key(appWidgetId))) {
-            save(context, appWidgetId, legacy[booleanPreferencesKey("widget_show_tomorrow")] == true)
+            save(
+                context,
+                appWidgetId,
+                legacy[booleanPreferencesKey("widget_show_tomorrow")] == true
+            )
         }
     }
 }

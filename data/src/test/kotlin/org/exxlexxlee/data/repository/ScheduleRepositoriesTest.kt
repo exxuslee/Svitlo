@@ -26,8 +26,8 @@ import org.exxlexxlee.data.mapper.YasnoMapper
 import org.exxlexxlee.data.remote.GithubJsonApi
 import org.exxlexxlee.data.remote.ScheduleRemoteDataSource
 import org.exxlexxlee.data.remote.YasnoApi
-import org.exxlexxlee.domain.model.OutageGroup
 import org.exxlexxlee.domain.model.AddressDetails
+import org.exxlexxlee.domain.model.OutageGroup
 import org.exxlexxlee.domain.model.Region
 import org.exxlexxlee.domain.model.Selection
 import org.junit.After
@@ -169,7 +169,8 @@ class ScheduleRepositoriesTest {
         val missingGroup = fixture.selection.copy(group = OutageGroup("missing", "missing"))
         val missingRegion = fixture.selection.copy(region = Region("missing", "missing", "missing"))
 
-        val results = fixture.schedules.refreshAll(listOf(missingRegion, missingGroup, fixture.selection))
+        val results =
+            fixture.schedules.refreshAll(listOf(missingRegion, missingGroup, fixture.selection))
 
         assertTrue(results.getValue(missingRegion).isFailure)
         assertTrue(results.getValue(missingGroup).isFailure)
@@ -191,16 +192,32 @@ class ScheduleRepositoriesTest {
         val remote = ScheduleRemoteDataSource(
             YasnoApi(client), GithubJsonApi(client), YasnoMapper(json), GpvMapper(json),
         )
-        val catalog = RegionCatalog(RegionsFile(listOf(AreaConfig(
-            id = "area",
-            name = "Область",
-            suppliers = listOf(SupplierConfig("region", "Київ", "provider", source = source)),
-        ))))
+        val catalog = RegionCatalog(
+            RegionsFile(
+                listOf(
+                    AreaConfig(
+                        id = "area",
+                        name = "Область",
+                        suppliers = listOf(
+                            SupplierConfig(
+                                "region",
+                                "Київ",
+                                "provider",
+                                source = source
+                            )
+                        ),
+                    )
+                )
+            )
+        )
         val dao = FakeScheduleDao()
         return Fixture(
             locations = LocationRepositoryImpl(catalog, remote),
             schedules = ScheduleRepositoryImpl(catalog, remote, dao, clock),
-            selection = Selection.ByGroup(Region("region", "Київ", "provider"), OutageGroup(groupId, groupId)),
+            selection = Selection.ByGroup(
+                Region("region", "Київ", "provider"),
+                OutageGroup(groupId, groupId)
+            ),
             dao = dao,
             response = response,
         )

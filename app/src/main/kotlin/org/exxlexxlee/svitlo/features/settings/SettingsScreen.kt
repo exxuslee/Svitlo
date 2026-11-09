@@ -68,10 +68,12 @@ fun SettingsScreen(
             viewModel.clearAction()
             navController.navigate(Routes.About.route)
         }
+
         Action.NavigateBack -> {
             viewModel.clearAction()
             navController.popBackStack()
         }
+
         null -> {}
     }
 

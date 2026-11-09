@@ -30,7 +30,10 @@ object NotificationScheduler {
             val intent = Intent(context, OutageNotificationReceiver::class.java).apply {
                 putExtra(OutageNotificationReceiver.EXTRA_PLACE_NAME, notification.placeName)
                 putExtra(OutageNotificationReceiver.EXTRA_OUTAGE_TIME, notification.outageTime)
-                putExtra(OutageNotificationReceiver.EXTRA_REMINDER_MINUTES, notification.reminderMinutes)
+                putExtra(
+                    OutageNotificationReceiver.EXTRA_REMINDER_MINUTES,
+                    notification.reminderMinutes
+                )
                 putExtra(OutageNotificationReceiver.EXTRA_NOTIFICATION_ID, notification.id)
             }
             val pendingIntent = PendingIntent.getBroadcast(

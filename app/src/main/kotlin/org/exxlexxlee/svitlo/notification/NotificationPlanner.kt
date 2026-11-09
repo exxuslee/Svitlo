@@ -30,13 +30,12 @@ internal object NotificationPlanner {
             if (details.reminderMinutes <= 0) continue
 
             val days = listOfNotNull(schedule.today, schedule.tomorrow).filter { it.published }
-            for (day in days) {
-                for (window in OutageWindows.windows(day.halfHours)) {
-                    val startMinutes = window.startMinutes
+            for ((date, halfHours) in days) {
+                for ((startMinutes) in OutageWindows.windows(halfHours)) {
                     val startEpochMs = LocalDateTime(
-                        year = day.date.year,
-                        monthNumber = day.date.monthNumber,
-                        dayOfMonth = day.date.dayOfMonth,
+                        year = date.year,
+                        monthNumber = date.monthNumber,
+                        dayOfMonth = date.dayOfMonth,
                         hour = startMinutes / 60,
                         minute = startMinutes % 60,
                     ).toInstant(KyivTime.ZONE).toEpochMilliseconds()

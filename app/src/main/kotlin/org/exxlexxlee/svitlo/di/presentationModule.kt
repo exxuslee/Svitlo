@@ -8,8 +8,8 @@ import org.exxlexxlee.domain.usecase.GetGroups
 import org.exxlexxlee.domain.usecase.GetRegions
 import org.exxlexxlee.domain.usecase.ObserveDarkTheme
 import org.exxlexxlee.domain.usecase.ObservePlace
-import org.exxlexxlee.domain.usecase.ObservePlaces
 import org.exxlexxlee.domain.usecase.ObservePlaceSchedules
+import org.exxlexxlee.domain.usecase.ObservePlaces
 import org.exxlexxlee.domain.usecase.ObserveSchedule
 import org.exxlexxlee.domain.usecase.ObserveSelection
 import org.exxlexxlee.domain.usecase.RefreshSchedules

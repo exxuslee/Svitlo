@@ -46,7 +46,11 @@ object WidgetCoordinator {
     private fun observeAndUpdate(context: Context) {
         scope.launch {
             val koin = GlobalContext.getOrNull() ?: return@launch
-            observeWidgetUi(koin.get<ObserveSelection>(), koin.get<ObserveSchedule>(), koin.get<Clock>())
+            observeWidgetUi(
+                koin.get<ObserveSelection>(),
+                koin.get<ObserveSchedule>(),
+                koin.get<Clock>()
+            )
                 .collect { update(context) }
         }
     }
@@ -82,7 +86,10 @@ class WidgetRefreshWorker(
             PlaceSchedule(place, schedule)
         }
         WidgetCoordinator.update(applicationContext)
-        org.exxlexxlee.svitlo.notification.NotificationScheduler.scheduleNotifications(applicationContext, placeSchedules)
+        org.exxlexxlee.svitlo.notification.NotificationScheduler.scheduleNotifications(
+            applicationContext,
+            placeSchedules
+        )
         return Result.success()
     }
 }

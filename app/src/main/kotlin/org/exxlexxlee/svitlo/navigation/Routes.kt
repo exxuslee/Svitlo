@@ -6,6 +6,7 @@ sealed class Routes(val route: String) {
         fun create(placeId: Long? = null): String =
             if (placeId != null) "address?placeId=$placeId" else "address"
     }
+
     data object Settings : Routes("settings")
     data object About : Routes("about")
 }

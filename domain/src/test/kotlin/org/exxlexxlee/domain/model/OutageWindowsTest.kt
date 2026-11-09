@@ -16,7 +16,10 @@ class OutageWindowsTest {
             "08:00–11:00 · 14:00–17:30 · 20:00–22:00",
             OutageWindows.formatRanges(halves),
         )
-        assertEquals("8 год 30 хв", OutageWindows.formatDuration(OutageWindows.totalOffMinutes(halves)))
+        assertEquals(
+            "8 год 30 хв",
+            OutageWindows.formatDuration(OutageWindows.totalOffMinutes(halves))
+        )
     }
 
     @Test

@@ -14,9 +14,9 @@ class KyivTimeTest {
         assertNotNull(KyivTime.ZONE)
         assertTrue(
             KyivTime.ZONE.id == "Europe/Kyiv" ||
-                KyivTime.ZONE.id == "Europe/Kiev" ||
-                KyivTime.ZONE.id.startsWith("UTC") ||
-                KyivTime.ZONE.id.startsWith("+02"),
+                    KyivTime.ZONE.id == "Europe/Kiev" ||
+                    KyivTime.ZONE.id.startsWith("UTC") ||
+                    KyivTime.ZONE.id.startsWith("+02"),
         )
     }
 

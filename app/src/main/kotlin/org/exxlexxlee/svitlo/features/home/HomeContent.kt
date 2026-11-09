@@ -128,6 +128,7 @@ private fun ColumnHeader(
                         CircularProgressIndicator(color = CardPalette.Accent)
                     }
                 }
+
                 viewState.cards.isEmpty() -> {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text(
@@ -139,10 +140,18 @@ private fun ColumnHeader(
                         )
                     }
                 }
+
                 else -> {
                     LazyColumn(
-                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 96.dp),
-                        verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp),
+                        contentPadding = PaddingValues(
+                            start = 16.dp,
+                            end = 16.dp,
+                            top = 8.dp,
+                            bottom = 96.dp
+                        ),
+                        verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(
+                            12.dp
+                        ),
                     ) {
                         if (viewState.showWidgetBanner) {
                             item(key = "widget_banner") {

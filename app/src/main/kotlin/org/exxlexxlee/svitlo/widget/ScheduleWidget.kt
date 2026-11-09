@@ -18,8 +18,8 @@ import androidx.glance.action.ActionParameters
 import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.AndroidRemoteViews
-import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.GlanceAppWidget
+import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.action.actionSendBroadcast
@@ -64,7 +64,10 @@ class ScheduleWidget : GlanceAppWidget() {
         val koin = GlobalContext.getOrNull()
         if (koin == null) {
             provideContent {
-                ScheduleWidgetContent(ScheduleWidgetMapper.map(null, null, Clock.System), appWidgetId)
+                ScheduleWidgetContent(
+                    ScheduleWidgetMapper.map(null, null, Clock.System),
+                    appWidgetId
+                )
             }
         } else {
             // Share the initial load and live observation instead of subscribing to Room twice.
@@ -92,7 +95,11 @@ class ScheduleWidgetReceiver : GlanceAppWidgetReceiver() {
 
 /** Handles PendingIntents left in a launcher by an older installed version. */
 class SelectDayAction : ActionCallback {
-    override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
+    override suspend fun onAction(
+        context: Context,
+        glanceId: GlanceId,
+        parameters: ActionParameters
+    ) {
         val tomorrow = parameters[ActionParameters.Key<Boolean>("widget_show_tomorrow")] ?: return
         val appWidgetId = GlanceAppWidgetManager(context).getAppWidgetId(glanceId)
         WidgetDaySelection.save(context, appWidgetId, tomorrow)
@@ -150,7 +157,8 @@ private fun DayPanel(
     visible: Boolean,
 ) {
     val context = LocalContext.current
-    val layout = if (showTomorrow) R.layout.schedule_widget_tomorrow else R.layout.schedule_widget_today
+    val layout =
+        if (showTomorrow) R.layout.schedule_widget_tomorrow else R.layout.schedule_widget_today
     val panel = if (showTomorrow) R.id.widget_tomorrow_panel else R.id.widget_today_panel
     AndroidRemoteViews(
         remoteViews = RemoteViews(context.packageName, layout).apply {
@@ -242,7 +250,13 @@ private fun DaySwitch(appWidgetId: Int, showTomorrow: Boolean) {
 @Composable
 private fun DayChip(appWidgetId: Int, text: String, selected: Boolean, showTomorrow: Boolean) {
     val click = if (selected) GlanceModifier else GlanceModifier.clickable(
-        actionSendBroadcast(WidgetDayReceiver.intent(LocalContext.current, appWidgetId, showTomorrow)),
+        actionSendBroadcast(
+            WidgetDayReceiver.intent(
+                LocalContext.current,
+                appWidgetId,
+                showTomorrow
+            )
+        ),
     )
     Box(
         modifier = GlanceModifier
