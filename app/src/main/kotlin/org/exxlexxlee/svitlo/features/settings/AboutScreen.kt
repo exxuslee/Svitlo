@@ -1,6 +1,5 @@
 package org.exxlexxlee.svitlo.features.settings
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,12 +25,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -41,17 +38,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import org.exxlexxlee.svitlo.R
-import org.exxlexxlee.svitlo.features.address.AddressPalette
+import org.exxlexxlee.svitlo.di.appVersion
 import org.exxlexxlee.svitlo.ui.common.LocalNavController
-import org.exxlexxlee.svitlo.ui.theme.LocalDarkTheme
+import org.exxlexxlee.svitlo.ui.theme.AppColors
 import org.exxlexxlee.svitlo.ui.theme.SvitloTheme
+import org.koin.compose.koinInject
 
 @Composable
 fun AboutScreen(
     navController: NavController = LocalNavController.current,
 ) {
-    val context = LocalContext.current
-    val appVersion = remember(context) { resolveAppVersion(context) }
+    val appVersion: String = koinInject(qualifier = appVersion)
     AboutContent(
         appVersion = appVersion,
         onBack = { navController.popBackStack() },
@@ -63,11 +60,10 @@ fun AboutContent(
     appVersion: String,
     onBack: () -> Unit,
 ) {
-    val isDark = LocalDarkTheme.current
-    val backgroundColor = if (isDark) Color(0xFF121418) else AddressPalette.Background
-    val cardColor = if (isDark) Color(0xFF1E2128) else Color.White
-    val titleColor = if (isDark) Color(0xFFF0F2F5) else AddressPalette.Title
-    val subtitleColor = if (isDark) Color(0xFF8B95A7) else AddressPalette.Subtitle
+    val backgroundColor = AppColors.Background
+    val cardColor = AppColors.Card
+    val titleColor = AppColors.Title
+    val subtitleColor = AppColors.Subtitle
 
     Column(
         modifier = Modifier
@@ -114,13 +110,13 @@ fun AboutContent(
                 modifier = Modifier
                     .size(96.dp)
                     .clip(RoundedCornerShape(24.dp))
-                    .background(if (isDark) Color(0xFF2B2F3A) else AddressPalette.AccentSoft),
+                    .background(AppColors.AccentSoft),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     imageVector = Icons.Filled.Bolt,
                     contentDescription = stringResource(R.string.app_name),
-                    tint = AddressPalette.Accent,
+                    tint = AppColors.Accent,
                     modifier = Modifier.size(56.dp),
                 )
             }
@@ -161,15 +157,6 @@ fun AboutContent(
                 )
             }
         }
-    }
-}
-
-private fun resolveAppVersion(context: Context?): String {
-    return try {
-        val pInfo = context?.packageManager?.getPackageInfo(context.packageName, 0)
-        pInfo?.versionName ?: "1.0"
-    } catch (_: Throwable) {
-        "1.0"
     }
 }
 

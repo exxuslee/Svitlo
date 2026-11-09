@@ -31,12 +31,13 @@ import org.exxlexxlee.domain.model.OutageGroup
 import org.exxlexxlee.svitlo.R
 import org.exxlexxlee.svitlo.features.address.models.Event
 import org.exxlexxlee.svitlo.features.address.models.ViewState
+import org.exxlexxlee.svitlo.ui.theme.AppColors
 
 @Composable
 fun GroupStep(viewState: ViewState, eventHandler: (Event) -> Unit) {
     if (viewState.isLoadingGroups) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(color = AddressPalette.Accent)
+            CircularProgressIndicator(color = AppColors.Accent)
         }
         return
     }
@@ -53,10 +54,10 @@ fun GroupStep(viewState: ViewState, eventHandler: (Event) -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
-                    .background(AddressPalette.Banner)
+                    .background(AppColors.Banner)
                     .clickable { eventHandler(Event.FindByAddress) }
                     .padding(horizontal = 16.dp, vertical = 14.dp),
-                color = AddressPalette.Title,
+                color = AppColors.Title,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium,
                 letterSpacing = 0.3.sp,
@@ -72,7 +73,7 @@ fun GroupStep(viewState: ViewState, eventHandler: (Event) -> Unit) {
         }
         if (viewState.error != null) {
             item(span = { GridItemSpan(3) }) {
-                Text(text = viewState.error, color = AddressPalette.Title)
+                Text(text = viewState.error, color = AppColors.Title)
             }
         }
     }
@@ -91,11 +92,11 @@ private fun GroupChip(
             .height(64.dp)
             .shadow(2.dp, RoundedCornerShape(18.dp))
             .clip(RoundedCornerShape(18.dp))
-            .background(if (isSelected) AddressPalette.AccentSoft else AddressPalette.Card)
+            .background(if (isSelected) AppColors.AccentSoft else AppColors.Card)
             .then(
                 if (isSelected) Modifier.border(
                     1.5.dp,
-                    AddressPalette.Accent,
+                    AppColors.Accent,
                     RoundedCornerShape(18.dp)
                 )
                 else Modifier
@@ -105,7 +106,7 @@ private fun GroupChip(
     ) {
         Text(
             text = group.id,
-            color = AddressPalette.Title,
+            color = AppColors.Title,
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,

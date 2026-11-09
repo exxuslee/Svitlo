@@ -1,6 +1,5 @@
 package org.exxlexxlee.svitlo.features.settings
 
-import android.content.Context
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.exxlexxlee.domain.usecase.GetDarkTheme
@@ -15,11 +14,11 @@ class SettingsViewModel(
     private val observeDarkTheme: ObserveDarkTheme,
     getDarkTheme: GetDarkTheme,
     private val setDarkTheme: SetDarkTheme,
-    context: Context,
+    appVersion: String,
 ) : BaseViewModel<ViewState, Action, Event>(
     initialState = ViewState(
         isDarkTheme = getDarkTheme(),
-        appVersion = resolveAppVersion(context),
+        appVersion = appVersion,
     ),
 ) {
     init {
@@ -39,22 +38,11 @@ class SettingsViewModel(
             }
 
             Event.AboutClicked -> {
-                viewAction = Action.NavigateToAbout
+                sendAction(Action.NavigateToAbout)
             }
 
             Event.BackClicked -> {
-                viewAction = Action.NavigateBack
-            }
-        }
-    }
-
-    companion object {
-        private fun resolveAppVersion(context: Context?): String {
-            return try {
-                val pInfo = context?.packageManager?.getPackageInfo(context.packageName, 0)
-                pInfo?.versionName ?: "1.0"
-            } catch (_: Throwable) {
-                "1.0"
+                sendAction(Action.NavigateBack)
             }
         }
     }

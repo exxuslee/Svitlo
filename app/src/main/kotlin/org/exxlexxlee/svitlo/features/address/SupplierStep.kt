@@ -27,6 +27,7 @@ import org.exxlexxlee.domain.model.Supplier
 import org.exxlexxlee.svitlo.R
 import org.exxlexxlee.svitlo.features.address.models.Event
 import org.exxlexxlee.svitlo.features.address.models.ViewState
+import org.exxlexxlee.svitlo.ui.theme.AppColors
 
 
 private val CardShape = RoundedCornerShape(20.dp)
@@ -60,9 +61,9 @@ private fun SupplierCard(
             .fillMaxWidth()
             .shadow(2.dp, CardShape)
             .clip(CardShape)
-            .background(if (isSelected) AddressPalette.AccentSoft else AddressPalette.Card)
+            .background(if (isSelected) AppColors.AccentSoft else AppColors.Card)
             .then(
-                if (isSelected) Modifier.border(1.5.dp, AddressPalette.Accent, CardShape)
+                if (isSelected) Modifier.border(1.5.dp, AppColors.Accent, CardShape)
                 else Modifier
             )
             .clickable(onClick = onClick)
@@ -73,7 +74,7 @@ private fun SupplierCard(
         Text(
             text = supplier.region.name,
             modifier = Modifier.weight(1f),
-            color = AddressPalette.Title,
+            color = AppColors.Title,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             lineHeight = 24.sp,
@@ -83,7 +84,7 @@ private fun SupplierCard(
                 text = stringResource(R.string.supplier_primary),
                 modifier = Modifier
                     .clip(RoundedCornerShape(8.dp))
-                    .background(AddressPalette.Accent)
+                    .background(AppColors.Accent)
                     .padding(horizontal = 10.dp, vertical = 8.dp),
                 color = Color.White,
                 fontSize = 12.sp,

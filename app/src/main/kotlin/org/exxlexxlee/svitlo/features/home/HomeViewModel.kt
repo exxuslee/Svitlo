@@ -83,7 +83,7 @@ class HomeViewModel(
 
     override fun obtainEvent(viewEvent: Event) {
         when (viewEvent) {
-            Event.Add -> viewAction = Action.OpenAddress()
+            Event.Add -> sendAction(Action.OpenAddress())
             Event.Refresh -> refreshAll(latestPlaces)
             is Event.DeleteRequested -> viewState = viewState.copy(pendingDeleteId = viewEvent.id)
             Event.DismissDelete -> viewState = viewState.copy(pendingDeleteId = null)
@@ -93,9 +93,9 @@ class HomeViewModel(
                 viewModelScope.launch { deletePlace(id) }
             }
 
-            is Event.Edit -> viewAction = Action.OpenAddress(viewEvent.id)
-            Event.Settings -> viewAction = Action.OpenSettings
-            Event.AddWidgetClicked -> viewAction = Action.RequestPinWidget
+            is Event.Edit -> sendAction(Action.OpenAddress(viewEvent.id))
+            Event.Settings -> sendAction(Action.OpenSettings)
+            Event.AddWidgetClicked -> sendAction(Action.RequestPinWidget)
             Event.DismissWidgetBanner -> {
                 widgetManager.setBannerDismissed(true)
                 viewState = viewState.copy(showWidgetBanner = false)

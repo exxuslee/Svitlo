@@ -1,18 +1,18 @@
-package org.exxlexxlee.svitlo.features.address
+package org.exxlexxlee.svitlo.ui.theme
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import org.exxlexxlee.svitlo.ui.theme.LocalDarkTheme
 
-object AddressPalette {
+object AppColors {
     val Background: Color
-        @Composable get() = if (LocalDarkTheme.current) Color(0xFF121418) else Color(0xFFF2F4F8)
+        @Composable get() = MaterialTheme.colorScheme.background
 
     val Card: Color
-        @Composable get() = if (LocalDarkTheme.current) Color(0xFF1E2128) else Color(0xFFFFFFFF)
+        @Composable get() = MaterialTheme.colorScheme.surface
 
     val Title: Color
-        @Composable get() = if (LocalDarkTheme.current) Color(0xFFF0F2F5) else Color(0xFF1B2437)
+        @Composable get() = MaterialTheme.colorScheme.onSurface
 
     val Subtitle: Color
         @Composable get() = if (LocalDarkTheme.current) Color(0xFF8B95A7) else Color(0xFF9AA3B2)

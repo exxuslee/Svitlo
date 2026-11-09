@@ -44,6 +44,7 @@ import org.exxlexxlee.svitlo.R
 import org.exxlexxlee.svitlo.features.address.models.AddressStep
 import org.exxlexxlee.svitlo.features.address.models.Event
 import org.exxlexxlee.svitlo.features.address.models.ViewState
+import org.exxlexxlee.svitlo.ui.theme.AppColors
 import org.exxlexxlee.svitlo.ui.theme.SvitloTheme
 
 @Composable
@@ -58,7 +59,7 @@ fun AddressContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(AddressPalette.Background)
+            .background(AppColors.Background)
             .windowInsetsPadding(WindowInsets.statusBars)
             .windowInsetsPadding(WindowInsets.navigationBars),
     ) {
@@ -76,7 +77,7 @@ fun AddressContent(
             if (viewState.isLoadingAreas && viewState.step == AddressStep.Region) {
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center),
-                    color = AddressPalette.Accent,
+                    color = AppColors.Accent,
                 )
             } else {
                 when (viewState.step) {
@@ -114,7 +115,7 @@ fun AddressContent(
                                 .fillMaxWidth()
                                 .clickable { eventHandler(Event.ReminderSelected(minutes)) }
                                 .padding(vertical = 12.dp),
-                            color = AddressPalette.Title,
+                            color = AppColors.Title,
                             fontSize = 16.sp,
                         )
                     }
@@ -147,14 +148,14 @@ private fun AddressHeader(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.Undo,
                     contentDescription = stringResource(R.string.back),
-                    tint = AddressPalette.Title,
+                    tint = AppColors.Title,
                     modifier = Modifier.size(28.dp),
                 )
             }
             Text(
                 text = stringResource(if (isEditing) R.string.edit_address_title else R.string.address_title),
                 modifier = Modifier.weight(1f),
-                color = AddressPalette.Title,
+                color = AppColors.Title,
                 fontSize = 26.sp,
                 fontWeight = FontWeight.Bold,
                 lineHeight = 32.sp,
@@ -166,7 +167,7 @@ private fun AddressHeader(
                     Icon(
                         imageVector = Icons.Filled.Close,
                         contentDescription = stringResource(R.string.cancel),
-                        tint = AddressPalette.Title,
+                        tint = AppColors.Title,
                         modifier = Modifier.size(28.dp),
                     )
                 }
@@ -177,7 +178,7 @@ private fun AddressHeader(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 4.dp, bottom = 14.dp),
-            color = AddressPalette.Subtitle,
+            color = AppColors.Subtitle,
             fontSize = 16.sp,
             textAlign = TextAlign.Center,
         )
@@ -187,14 +188,14 @@ private fun AddressHeader(
                 .fillMaxWidth()
                 .height(6.dp)
                 .clip(RoundedCornerShape(3.dp))
-                .background(AddressPalette.Track),
+                .background(AppColors.Track),
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth(step.fraction)
                     .fillMaxHeight()
                     .clip(RoundedCornerShape(3.dp))
-                    .background(AddressPalette.Accent),
+                    .background(AppColors.Accent),
             )
         }
     }

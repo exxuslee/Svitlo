@@ -9,13 +9,16 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
-import org.exxlexxlee.svitlo.features.main.MainContent
-import org.exxlexxlee.svitlo.features.main.MainViewModel
-import org.exxlexxlee.svitlo.notification.NotificationHelper
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.compose.rememberNavController
+import org.exxlexxlee.svitlo.navigation.AppNavHost
+import org.exxlexxlee.svitlo.ui.common.LocalNavController
 import org.exxlexxlee.svitlo.ui.theme.SvitloTheme
 import org.koin.androidx.compose.koinViewModel
 
@@ -26,29 +29,32 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        NotificationHelper.createNotificationChannel(this)
         requestNotificationPermission()
-        enableEdgeToEdge()
         setContent {
-            val mainViewModel: MainViewModel = koinViewModel()
-            val viewState by mainViewModel.viewStates().collectAsState()
+            val appViewModel: AppViewModel = koinViewModel()
+            val isDarkTheme by appViewModel.isDarkTheme.collectAsStateWithLifecycle()
+            val navController = rememberNavController()
 
-            DisposableEffect(viewState.isDarkTheme) {
+            LaunchedEffect(isDarkTheme) {
                 enableEdgeToEdge(
                     statusBarStyle = SystemBarStyle.auto(
                         android.graphics.Color.TRANSPARENT,
                         android.graphics.Color.TRANSPARENT,
-                    ) { viewState.isDarkTheme },
+                    ) { isDarkTheme },
                     navigationBarStyle = SystemBarStyle.auto(
                         android.graphics.Color.TRANSPARENT,
                         android.graphics.Color.TRANSPARENT,
-                    ) { viewState.isDarkTheme },
+                    ) { isDarkTheme },
                 )
-                onDispose {}
             }
 
-            SvitloTheme(darkTheme = viewState.isDarkTheme) {
-                MainContent(mainViewModel = mainViewModel)
+            SvitloTheme(darkTheme = isDarkTheme) {
+                CompositionLocalProvider(LocalNavController provides navController) {
+                    AppNavHost(
+                        navController = navController,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                }
             }
         }
     }

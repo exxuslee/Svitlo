@@ -4,6 +4,5 @@ import org.exxlexxlee.data.di.dataModule
 import org.koin.dsl.module
 
 val appModule = module {
-    includes(dataModule)
-    includes(presentationModule)
+    includes(dataModule, useCaseModule, platformModule, presentationModule)
 }

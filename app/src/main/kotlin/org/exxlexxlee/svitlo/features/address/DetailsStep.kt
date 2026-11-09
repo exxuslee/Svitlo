@@ -38,6 +38,7 @@ import org.exxlexxlee.svitlo.R
 import org.exxlexxlee.svitlo.features.address.models.Event
 import org.exxlexxlee.svitlo.features.address.models.ViewState
 import org.exxlexxlee.svitlo.features.address.models.detailLabel
+import org.exxlexxlee.svitlo.ui.theme.AppColors
 
 private val FieldShape = RoundedCornerShape(16.dp)
 
@@ -54,7 +55,7 @@ fun DetailsStep(viewState: ViewState, eventHandler: (Event) -> Unit) {
             viewState.selectedGroup?.let { group ->
                 Text(
                     text = stringResource(R.string.address_group, group.detailLabel()),
-                    color = AddressPalette.Subtitle,
+                    color = AppColors.Subtitle,
                     fontSize = 16.sp,
                 )
                 Spacer(Modifier.height(16.dp))
@@ -75,10 +76,10 @@ fun DetailsStep(viewState: ViewState, eventHandler: (Event) -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(FieldShape)
-                    .background(AddressPalette.Card)
+                    .background(AppColors.Card)
                     .clickable { eventHandler(Event.OpenReminder) }
                     .padding(horizontal = 16.dp, vertical = 18.dp),
-                color = AddressPalette.Title,
+                color = AppColors.Title,
                 fontSize = 16.sp,
             )
             Spacer(Modifier.height(8.dp))
@@ -90,13 +91,13 @@ fun DetailsStep(viewState: ViewState, eventHandler: (Event) -> Unit) {
                     checked = viewState.quietNight,
                     onCheckedChange = { eventHandler(Event.QuietNightChanged(it)) },
                     colors = CheckboxDefaults.colors(
-                        checkedColor = AddressPalette.Accent,
-                        uncheckedColor = AddressPalette.Subtitle,
+                        checkedColor = AppColors.Accent,
+                        uncheckedColor = AppColors.Subtitle,
                     ),
                 )
                 Text(
                     text = stringResource(R.string.quiet_night),
-                    color = AddressPalette.Title,
+                    color = AppColors.Title,
                     fontSize = 15.sp,
                 )
             }
@@ -107,7 +108,7 @@ fun DetailsStep(viewState: ViewState, eventHandler: (Event) -> Unit) {
                 Text(
                     text = error,
                     modifier = Modifier.padding(top = 12.dp),
-                    color = AddressPalette.Title,
+                    color = AppColors.Title,
                 )
             }
         }
@@ -120,10 +121,10 @@ fun DetailsStep(viewState: ViewState, eventHandler: (Event) -> Unit) {
             enabled = viewState.canSave,
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = AddressPalette.Accent,
+                containerColor = AppColors.Accent,
                 contentColor = Color.White,
-                disabledContainerColor = AddressPalette.Banner,
-                disabledContentColor = AddressPalette.Subtitle,
+                disabledContainerColor = AppColors.Banner,
+                disabledContentColor = AppColors.Subtitle,
             ),
         ) {
             Text(
@@ -141,7 +142,7 @@ private fun FieldLabel(text: String) {
     Text(
         text = text,
         modifier = Modifier.padding(bottom = 8.dp),
-        color = AddressPalette.Subtitle,
+        color = AppColors.Subtitle,
         fontSize = 15.sp,
     )
 }
@@ -162,15 +163,15 @@ private fun IconPicker(selected: AddressIcon, onSelect: (AddressIcon) -> Unit) {
                             .aspectRatio(1f)
                             .shadow(1.dp, RoundedCornerShape(16.dp))
                             .clip(RoundedCornerShape(16.dp))
-                            .background(if (isSelected) AddressPalette.AccentSoft else AddressPalette.Card)
-                            .border(1.5.dp, AddressPalette.Accent, RoundedCornerShape(16.dp))
+                            .background(if (isSelected) AppColors.AccentSoft else AppColors.Card)
+                            .border(1.5.dp, AppColors.Accent, RoundedCornerShape(16.dp))
                             .clickable { onSelect(icon) },
                         contentAlignment = Alignment.Center,
                     ) {
                         Icon(
                             imageVector = icon.image,
                             contentDescription = icon.id,
-                            tint = AddressPalette.Title,
+                            tint = AppColors.Title,
                         )
                     }
                 }
@@ -181,12 +182,12 @@ private fun IconPicker(selected: AddressIcon, onSelect: (AddressIcon) -> Unit) {
 
 @Composable
 private fun fieldColors() = TextFieldDefaults.colors(
-    focusedContainerColor = AddressPalette.Card,
-    unfocusedContainerColor = AddressPalette.Card,
-    disabledContainerColor = AddressPalette.Card,
+    focusedContainerColor = AppColors.Card,
+    unfocusedContainerColor = AppColors.Card,
+    disabledContainerColor = AppColors.Card,
     focusedIndicatorColor = Color.Transparent,
     unfocusedIndicatorColor = Color.Transparent,
-    focusedTextColor = AddressPalette.Title,
-    unfocusedTextColor = AddressPalette.Title,
-    cursorColor = AddressPalette.Accent,
+    focusedTextColor = AppColors.Title,
+    unfocusedTextColor = AppColors.Title,
+    cursorColor = AppColors.Accent,
 )

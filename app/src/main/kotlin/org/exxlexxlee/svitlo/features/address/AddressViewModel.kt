@@ -95,7 +95,7 @@ class AddressViewModel(
 
     override fun obtainEvent(viewEvent: Event) {
         when (viewEvent) {
-            Event.Close -> viewAction = Action.Close
+            Event.Close -> sendAction(Action.Close)
             Event.Back -> onBack()
             is Event.AreaSelected -> onAreaSelected(viewEvent.area)
             is Event.SupplierSelected -> onSupplierSelected(viewEvent.supplier)
@@ -123,7 +123,7 @@ class AddressViewModel(
     private fun onBack() {
         viewState = when (viewState.step) {
             AddressStep.Region -> {
-                viewAction = Action.Close
+                sendAction(Action.Close)
                 viewState
             }
 
@@ -207,7 +207,7 @@ class AddressViewModel(
                 ),
             )
             runCatching { saveSelection(selection, editingPlaceId) }
-                .onSuccess { viewAction = Action.Saved }
+                .onSuccess { sendAction(Action.Saved) }
                 .onFailure { error -> viewState = viewState.copy(error = error.message) }
         }
     }

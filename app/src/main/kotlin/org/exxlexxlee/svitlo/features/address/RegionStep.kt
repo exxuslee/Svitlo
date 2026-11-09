@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import org.exxlexxlee.domain.model.ServiceArea
 import org.exxlexxlee.svitlo.features.address.models.Event
 import org.exxlexxlee.svitlo.features.address.models.ViewState
+import org.exxlexxlee.svitlo.ui.theme.AppColors
 
 
 private val CardShape = RoundedCornerShape(20.dp)
@@ -55,9 +56,9 @@ private fun AreaCard(
             .fillMaxWidth()
             .shadow(2.dp, CardShape)
             .clip(CardShape)
-            .background(if (isSelected) AddressPalette.AccentSoft else AddressPalette.Card)
+            .background(if (isSelected) AppColors.AccentSoft else AppColors.Card)
             .then(
-                if (isSelected) Modifier.border(1.5.dp, AddressPalette.Accent, CardShape)
+                if (isSelected) Modifier.border(1.5.dp, AppColors.Accent, CardShape)
                 else Modifier
             )
             .clickable(onClick = onClick)
@@ -65,14 +66,14 @@ private fun AreaCard(
     ) {
         Text(
             text = area.name,
-            color = AddressPalette.Title,
+            color = AppColors.Title,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
         )
         Text(
             text = area.suppliers.joinToString(", ") { it.region.name },
             modifier = Modifier.padding(top = 6.dp),
-            color = AddressPalette.Body,
+            color = AppColors.Body,
             fontSize = 15.sp,
             lineHeight = 20.sp,
         )

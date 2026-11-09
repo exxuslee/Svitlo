@@ -31,7 +31,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,14 +43,16 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import org.exxlexxlee.svitlo.R
-import org.exxlexxlee.svitlo.features.address.AddressPalette
 import org.exxlexxlee.svitlo.features.settings.models.Action
 import org.exxlexxlee.svitlo.features.settings.models.Event
 import org.exxlexxlee.svitlo.features.settings.models.ViewState
 import org.exxlexxlee.svitlo.navigation.Routes
 import org.exxlexxlee.svitlo.ui.common.LocalNavController
+import org.exxlexxlee.svitlo.ui.common.ObserveActions
+import org.exxlexxlee.svitlo.ui.theme.AppColors
 import org.exxlexxlee.svitlo.ui.theme.SvitloTheme
 import org.koin.androidx.compose.koinViewModel
 
@@ -60,21 +61,18 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = koinViewModel(),
     navController: NavController = LocalNavController.current,
 ) {
-    val viewState by viewModel.viewStates().collectAsState()
-    val viewAction by viewModel.viewActions().collectAsState(initial = null)
+    val viewState by viewModel.viewStates().collectAsStateWithLifecycle()
 
-    when (viewAction) {
-        Action.NavigateToAbout -> {
-            viewModel.clearAction()
-            navController.navigate(Routes.About.route)
+    ObserveActions(viewModel.viewActions()) { action ->
+        when (action) {
+            Action.NavigateToAbout -> {
+                navController.navigate(Routes.About.route)
+            }
+
+            Action.NavigateBack -> {
+                navController.popBackStack()
+            }
         }
-
-        Action.NavigateBack -> {
-            viewModel.clearAction()
-            navController.popBackStack()
-        }
-
-        null -> {}
     }
 
     SettingsContent(
@@ -89,11 +87,11 @@ fun SettingsContent(
     eventHandler: (Event) -> Unit,
 ) {
     val isDark = viewState.isDarkTheme
-    val backgroundColor = if (isDark) Color(0xFF121418) else AddressPalette.Background
-    val cardColor = if (isDark) Color(0xFF1E2128) else Color.White
-    val titleColor = if (isDark) Color(0xFFF0F2F5) else AddressPalette.Title
-    val subtitleColor = if (isDark) Color(0xFF8B95A7) else AddressPalette.Subtitle
-    val dividerColor = if (isDark) Color(0xFF2A2E38) else Color(0xFFEEF0F4)
+    val backgroundColor = AppColors.Background
+    val cardColor = AppColors.Card
+    val titleColor = AppColors.Title
+    val subtitleColor = AppColors.Subtitle
+    val dividerColor = AppColors.Divider
 
     Column(
         modifier = Modifier
@@ -154,13 +152,13 @@ fun SettingsContent(
                         modifier = Modifier
                             .size(40.dp)
                             .clip(RoundedCornerShape(12.dp))
-                            .background(if (isDark) Color(0xFF2B2F3A) else AddressPalette.AccentSoft),
+                            .background(AppColors.AccentSoft),
                         contentAlignment = Alignment.Center,
                     ) {
                         Icon(
                             imageVector = if (isDark) Icons.Filled.DarkMode else Icons.Filled.LightMode,
                             contentDescription = null,
-                            tint = AddressPalette.Accent,
+                            tint = AppColors.Accent,
                             modifier = Modifier.size(22.dp),
                         )
                     }
@@ -183,9 +181,9 @@ fun SettingsContent(
                         onCheckedChange = { eventHandler(Event.DarkThemeChanged(it)) },
                         colors = SwitchDefaults.colors(
                             checkedThumbColor = Color.White,
-                            checkedTrackColor = AddressPalette.Accent,
+                            checkedTrackColor = AppColors.Accent,
                             uncheckedThumbColor = Color.White,
-                            uncheckedTrackColor = AddressPalette.Track,
+                            uncheckedTrackColor = AppColors.Track,
                         ),
                     )
                 }
@@ -208,13 +206,13 @@ fun SettingsContent(
                         modifier = Modifier
                             .size(40.dp)
                             .clip(RoundedCornerShape(12.dp))
-                            .background(if (isDark) Color(0xFF2B2F3A) else AddressPalette.AccentSoft),
+                            .background(AppColors.AccentSoft),
                         contentAlignment = Alignment.Center,
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.Info,
                             contentDescription = null,
-                            tint = AddressPalette.Accent,
+                            tint = AppColors.Accent,
                             modifier = Modifier.size(22.dp),
                         )
                     }

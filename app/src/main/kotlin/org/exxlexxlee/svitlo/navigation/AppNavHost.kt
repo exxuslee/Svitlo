@@ -1,4 +1,4 @@
-package org.exxlexxlee.svitlo.features.main
+package org.exxlexxlee.svitlo.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -9,20 +9,17 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import org.exxlexxlee.svitlo.features.address.AddressScreen
 import org.exxlexxlee.svitlo.features.home.HomeScreen
-import org.exxlexxlee.svitlo.features.main.models.ViewState
 import org.exxlexxlee.svitlo.features.settings.AboutScreen
 import org.exxlexxlee.svitlo.features.settings.SettingsScreen
-import org.exxlexxlee.svitlo.navigation.Routes
 
 @Composable
-fun NavHostContent(
+fun AppNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    viewState: ViewState,
 ) {
     NavHost(
         navController = navController,
-        startDestination = viewState.initialRoute,
+        startDestination = Routes.Home.route,
         modifier = modifier,
     ) {
         composable(Routes.Home.route) { HomeScreen() }
