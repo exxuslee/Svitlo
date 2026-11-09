@@ -7,13 +7,14 @@ import org.exxlexxlee.domain.model.Region
 import org.exxlexxlee.domain.model.ServiceArea
 import org.exxlexxlee.domain.model.Supplier
 
-class RegionCatalog(
-    context: Context,
-    private val json: Json,
+class RegionCatalog internal constructor(
+    private val file: RegionsFile,
 ) {
-    private val file: RegionsFile = json.decodeFromString(
-        RegionsFile.serializer(),
-        context.assets.open("regions.json").bufferedReader().use { it.readText() },
+    constructor(context: Context, json: Json) : this(
+        json.decodeFromString(
+            RegionsFile.serializer(),
+            context.assets.open("regions.json").bufferedReader().use { it.readText() },
+        ),
     )
 
     fun areas(): List<ServiceArea> = file.areas.map { area ->

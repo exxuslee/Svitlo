@@ -1,37 +1,30 @@
 package org.exxlexxlee.svitlo.features.home
 
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 import org.exxlexxlee.domain.model.KyivTime
-import org.exxlexxlee.domain.model.OutageSchedule
 import org.exxlexxlee.domain.model.Place
 import org.exxlexxlee.domain.usecase.DeletePlace
-import org.exxlexxlee.domain.usecase.ObservePlaces
-import org.exxlexxlee.domain.usecase.ObserveSchedule
+import org.exxlexxlee.domain.usecase.ObservePlaceSchedules
 import org.exxlexxlee.domain.usecase.RefreshSchedule
 import org.exxlexxlee.svitlo.features.home.models.Action
 import org.exxlexxlee.svitlo.features.home.models.Event
 import org.exxlexxlee.svitlo.features.home.models.ViewState
 import org.exxlexxlee.svitlo.ui.common.BaseViewModel
 import org.exxlexxlee.svitlo.widget.WidgetManager
-import kotlinx.datetime.Clock
 import kotlin.time.Duration.Companion.milliseconds
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModel(
-    observePlaces: ObservePlaces,
-    private val observeSchedule: ObserveSchedule,
+    observePlaceSchedules: ObservePlaceSchedules,
     private val refreshSchedule: RefreshSchedule,
     private val deletePlace: DeletePlace,
     private val clock: Clock,
@@ -51,45 +44,33 @@ class HomeViewModel(
 
     init {
         viewModelScope.launch {
-            observePlaces()
-                .flatMapLatest { places ->
-                    val schedules = if (places.isEmpty()) {
-                        flowOf(emptyList())
-                    } else {
-                        combine(places.map { place ->
-                            observeSchedule(place.selection).map { schedule ->
-                                CardSource(place, schedule)
-                            }
-                        }) { sources -> sources.toList() }
-                    }
-                    combine(schedules, refreshing, errors, minuteOfDay) { cards, isRefreshing, errorMap, minute ->
-                        val mappedCards = cards.map { source ->
-                            PlaceCardMapper.map(
-                                place = source.place,
-                                schedule = source.schedule,
-                                minuteOfDay = minute,
-                                error = errorMap[source.place.id],
-                            )
-                        }
-                        ViewState(
-                            loaded = true,
-                            isRefreshing = isRefreshing,
-                            cards = mappedCards,
-                            showWidgetBanner = shouldShowWidgetBanner(mappedCards.size),
-                        )
-                    }
+            val schedules = observePlaceSchedules().onEach { sources ->
+                val places = sources.map { it.place }
+                if (places != latestPlaces) {
+                    latestPlaces = places
+                    refreshAll(places)
                 }
-                .collect { incoming ->
-                    viewState = incoming.copy(
-                        pendingDeleteId = viewState.pendingDeleteId,
-                        showWidgetBanner = shouldShowWidgetBanner(incoming.cards.size),
+            }
+            combine(schedules, refreshing, errors, minuteOfDay) { cards, isRefreshing, errorMap, minute ->
+                val mappedCards = cards.map { source ->
+                    PlaceCardMapper.map(
+                        place = source.place,
+                        schedule = source.schedule,
+                        minuteOfDay = minute,
+                        error = errorMap[source.place.id],
                     )
                 }
-        }
-        viewModelScope.launch {
-            observePlaces().collect { places ->
-                latestPlaces = places
-                refreshAll(places)
+                ViewState(
+                    loaded = true,
+                    isRefreshing = isRefreshing,
+                    cards = mappedCards,
+                    showWidgetBanner = shouldShowWidgetBanner(mappedCards.size),
+                )
+            }.collect { incoming ->
+                viewState = incoming.copy(
+                    pendingDeleteId = viewState.pendingDeleteId,
+                    showWidgetBanner = shouldShowWidgetBanner(incoming.cards.size),
+                )
             }
         }
     }
@@ -148,9 +129,4 @@ class HomeViewModel(
             }
         }
     }
-
-    private data class CardSource(
-        val place: Place,
-        val schedule: OutageSchedule?,
-    )
 }

@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import org.exxlexxlee.domain.model.PlaceSchedule
 import org.exxlexxlee.domain.usecase.ObservePlaces
 import org.exxlexxlee.domain.usecase.ObserveSchedule
 import org.exxlexxlee.domain.usecase.ObserveSelection
@@ -85,13 +86,13 @@ class WidgetRefreshWorker(
         val places = koin.get<ObservePlaces>()().first()
         val refresh = koin.get<RefreshSchedule>()
         val observeSchedule = koin.get<ObserveSchedule>()
-        val pairs = places.map { place ->
+        val placeSchedules = places.map { place ->
             refresh(place.selection)
             val schedule = observeSchedule(place.selection).first()
-            place to schedule
+            PlaceSchedule(place, schedule)
         }
         WidgetCoordinator.update(applicationContext)
-        org.exxlexxlee.svitlo.notification.NotificationScheduler.scheduleNotifications(applicationContext, pairs)
+        org.exxlexxlee.svitlo.notification.NotificationScheduler.scheduleNotifications(applicationContext, placeSchedules)
         return Result.success()
     }
 }

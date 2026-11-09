@@ -14,6 +14,7 @@ import org.exxlexxlee.data.local.AppDatabase
 import org.exxlexxlee.data.mapper.GpvMapper
 import org.exxlexxlee.data.mapper.YasnoMapper
 import org.exxlexxlee.data.remote.GithubJsonApi
+import org.exxlexxlee.data.remote.ScheduleRemoteDataSource
 import org.exxlexxlee.data.remote.YasnoApi
 import org.exxlexxlee.data.repository.LocationRepositoryImpl
 import org.exxlexxlee.data.repository.ScheduleRepositoryImpl
@@ -67,11 +68,12 @@ val dataModule = module {
     single { GithubJsonApi(get()) }
     single { YasnoMapper(get()) }
     single { GpvMapper(get()) }
+    single { ScheduleRemoteDataSource(get(), get(), get(), get()) }
     single<LocationRepository> {
-        LocationRepositoryImpl(get(), get(), get(), get(), get())
+        LocationRepositoryImpl(get(), get())
     }
     single<ScheduleRepository> {
-        ScheduleRepositoryImpl(get(), get(), get(), get(), get(), get())
+        ScheduleRepositoryImpl(get(), get(), get())
     }
     single<SelectionRepository> { SelectionRepositoryImpl(get(), get()) }
     single<SettingsRepository> { SettingsRepositoryImpl(androidContext()) }

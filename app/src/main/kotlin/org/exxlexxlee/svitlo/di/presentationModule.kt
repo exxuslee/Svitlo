@@ -9,6 +9,7 @@ import org.exxlexxlee.domain.usecase.GetRegions
 import org.exxlexxlee.domain.usecase.ObserveDarkTheme
 import org.exxlexxlee.domain.usecase.ObservePlace
 import org.exxlexxlee.domain.usecase.ObservePlaces
+import org.exxlexxlee.domain.usecase.ObservePlaceSchedules
 import org.exxlexxlee.domain.usecase.ObserveSchedule
 import org.exxlexxlee.domain.usecase.ObserveSelection
 import org.exxlexxlee.domain.usecase.RefreshSchedule
@@ -34,6 +35,7 @@ val presentationModule = module {
     factory { ObservePlace(get()) }
     factory { DeletePlace(get()) }
     factory { ObserveSchedule(get()) }
+    factory { ObservePlaceSchedules(get(), get()) }
     factory { RefreshSchedule(get()) }
     factory { ObserveDarkTheme(get()) }
     factory { GetDarkTheme(get()) }
@@ -42,7 +44,7 @@ val presentationModule = module {
     single<WidgetManager> { WidgetManagerImpl(androidContext()) }
 
     viewModel { MainViewModel(get(), get()) }
-    viewModel { HomeViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { HomeViewModel(get(), get(), get(), get(), get()) }
     viewModel { AddressViewModel(get<GetAreas>(), get(), get(), get(), get()) }
     viewModel { SettingsViewModel(get(), get(), get(), androidContext()) }
 }
