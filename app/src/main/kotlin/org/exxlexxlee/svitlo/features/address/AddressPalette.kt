@@ -11,5 +11,4 @@ object AddressPalette {
     val AccentSoft = Color(0xFFE8EBFF)
     val Banner = Color(0xFFE4E6EC)
     val Track = Color(0xFFD5D8E0)
-    val Save = Color(0xFFD0D3DC)
 }

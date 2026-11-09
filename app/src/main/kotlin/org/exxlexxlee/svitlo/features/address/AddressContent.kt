@@ -3,7 +3,6 @@ package org.exxlexxlee.svitlo.features.address
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -108,7 +107,7 @@ fun AddressContent(
             title = { Text(stringResource(R.string.reminder_label)) },
             text = {
                 Column {
-                    listOf(15, 30, 60).forEach { minutes ->
+                    listOf(0, 15, 30, 60).forEach { minutes ->
                         Text(
                             text = reminderText(minutes),
                             modifier = Modifier
@@ -211,6 +210,7 @@ private fun stepTitle(step: AddressStep): String = when (step) {
 
 @Composable
 fun reminderText(minutes: Int): String = when {
+    minutes == 0 -> stringResource(R.string.reminder_never)
     minutes >= 60 && minutes % 60 == 0 -> stringResource(R.string.reminder_hours, minutes / 60)
     else -> stringResource(R.string.reminder_minutes, minutes)
 }

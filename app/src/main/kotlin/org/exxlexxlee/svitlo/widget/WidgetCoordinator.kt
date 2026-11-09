@@ -78,8 +78,14 @@ class WidgetRefreshWorker(
         val koin = GlobalContext.getOrNull() ?: return Result.retry()
         val places = koin.get<ObservePlaces>()().first()
         val refresh = koin.get<RefreshSchedule>()
-        places.forEach { place -> refresh(place.selection) }
+        val observeSchedule = koin.get<ObserveSchedule>()
+        val pairs = places.map { place ->
+            refresh(place.selection)
+            val schedule = observeSchedule(place.selection).first()
+            place to schedule
+        }
         WidgetCoordinator.update(applicationContext)
+        org.exxlexxlee.svitlo.notification.NotificationScheduler.scheduleNotifications(applicationContext, pairs)
         return Result.success()
     }
 }

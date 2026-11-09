@@ -17,5 +17,6 @@ class App : Application() {
             modules(appModule)
         }
         WidgetCoordinator.start(this)
+        org.exxlexxlee.svitlo.notification.NotificationCoordinator.start(this)
     }
 }

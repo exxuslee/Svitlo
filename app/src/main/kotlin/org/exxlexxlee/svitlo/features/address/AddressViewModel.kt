@@ -48,10 +48,15 @@ class AddressViewModel(
                             name = region.name,
                             suppliers = listOf(Supplier(region = region, primary = true)),
                         )
-                        val selectedSupplier = selectedArea.suppliers.find { it.region.id == region.id }
-                            ?: Supplier(region = region, primary = true)
-                        val groups = runCatching { getGroups(selectedSupplier.region.id) }.getOrDefault(emptyList())
-                        val selectedGroup = groups.find { it.id == selection.group.id } ?: selection.group
+                        val selectedSupplier =
+                            selectedArea.suppliers.find { it.region.id == region.id }
+                                ?: Supplier(region = region, primary = true)
+                        val groups =
+                            runCatching { getGroups(selectedSupplier.region.id) }.getOrDefault(
+                                emptyList()
+                            )
+                        val selectedGroup =
+                            groups.find { it.id == selection.group.id } ?: selection.group
                         val details = selection.details
                         viewState = viewState.copy(
                             areas = areas,
@@ -70,7 +75,8 @@ class AddressViewModel(
                             isEditing = true,
                         )
                     } else {
-                        viewState = viewState.copy(areas = areas, isLoadingAreas = false, isEditing = false)
+                        viewState =
+                            viewState.copy(areas = areas, isLoadingAreas = false, isEditing = false)
                     }
                 }.onFailure { error ->
                     viewState = viewState.copy(isLoadingAreas = false, error = error.message)
@@ -100,11 +106,13 @@ class AddressViewModel(
                 addressName = viewEvent.name,
                 nameEdited = true,
             )
+
             Event.OpenReminder -> viewState = viewState.copy(showReminderPicker = true)
             is Event.ReminderSelected -> viewState = viewState.copy(
                 reminderMinutes = viewEvent.minutes,
                 showReminderPicker = false,
             )
+
             Event.DismissReminder -> viewState = viewState.copy(showReminderPicker = false)
             is Event.QuietNightChanged -> viewState = viewState.copy(quietNight = viewEvent.enabled)
             is Event.IconSelected -> viewState = viewState.copy(icon = viewEvent.icon)
@@ -118,6 +126,7 @@ class AddressViewModel(
                 viewAction = Action.Close
                 viewState
             }
+
             AddressStep.Supplier -> viewState.copy(step = AddressStep.Region, error = null)
             AddressStep.Group -> viewState.copy(step = AddressStep.Supplier, error = null)
             AddressStep.Details -> viewState.copy(step = AddressStep.Group, error = null)

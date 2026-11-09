@@ -13,9 +13,14 @@
     <string name="address_group">Група: %1$s</string>
     <string name="address_name_label">Назва адреси</string>
     <string name="reminder_label">Нагадування про відключення</string>
+    <string name="reminder_never">Ніколи</string>
     <string name="reminder_minutes">За %1$d хв</string>
     <string name="reminder_hours">За %1$d год</string>
     <string name="quiet_night">Не турбувати вночі (23:00–07:00)</string>
+    <string name="notification_channel_name">Нагадування про відключення</string>
+    <string name="notification_channel_desc">Сповіщення про скоре відключення світла за обраними адресами</string>
+    <string name="notification_outage_title">Відключення світла</string>
+    <string name="notification_outage_message">Через %1$d хв буде відключено світло за адресою «%2$s» (о %3$s)</string>
     <string name="address_icon_label">Іконка адреси</string>
     <string name="save">ЗБЕРЕГТИ</string>
     <string name="back">Назад</string>
