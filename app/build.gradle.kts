@@ -3,6 +3,27 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+val releaseVersionName = providers.gradleProperty("releaseVersionName")
+val releaseVersionCode = providers.gradleProperty("releaseVersionCode")
+require(releaseVersionName.isPresent == releaseVersionCode.isPresent) {
+    "releaseVersionName and releaseVersionCode must be provided together"
+}
+
+val releaseKeystorePath = providers.environmentVariable("ANDROID_KEYSTORE_PATH")
+val releaseKeystorePassword = providers.environmentVariable("ANDROID_KEYSTORE_PASSWORD")
+val releaseKeyAlias = providers.environmentVariable("ANDROID_KEY_ALIAS")
+val releaseKeyPassword = providers.environmentVariable("ANDROID_KEY_PASSWORD")
+val releaseSigningValues = listOf(
+    releaseKeystorePath,
+    releaseKeystorePassword,
+    releaseKeyAlias,
+    releaseKeyPassword,
+)
+val hasReleaseSigning = releaseSigningValues.any { it.isPresent }
+require(!hasReleaseSigning || releaseSigningValues.all { it.orNull?.isNotBlank() == true }) {
+    "Release signing requires ANDROID_KEYSTORE_PATH, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS and ANDROID_KEY_PASSWORD"
+}
+
 android {
     namespace = "org.exxlexxlee.svitlo"
     compileSdk {
@@ -13,14 +34,30 @@ android {
         applicationId = "org.exxlexxlee.svitlo"
         minSdk = 28
         targetSdk = 37
-        versionCode = 3
-        versionName = "1.3"
+        versionCode = releaseVersionCode.map { value ->
+            value.toInt().also { require(it in 1..2_100_000_000) { "Invalid releaseVersionCode" } }
+        }.getOrElse(3)
+        versionName = releaseVersionName.getOrElse("1.3")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                storeFile = file(releaseKeystorePath.get())
+                storePassword = releaseKeystorePassword.get()
+                keyAlias = releaseKeyAlias.get()
+                keyPassword = releaseKeyPassword.get()
+            }
+        }
+    }
+
     buildTypes {
         release {
+            if (hasReleaseSigning) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             optimization {
                 enable = true
             }

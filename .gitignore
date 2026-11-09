@@ -15,3 +15,9 @@
 .externalNativeBuild
 .cxx
 local.properties
+*.jks
+*.keystore
+key.properties
+keystore.properties
+google-play-service-account*.json
+svitlo-play-releases-exxuslee-*.json
