@@ -12,7 +12,7 @@ import org.exxlexxlee.domain.usecase.ObservePlaces
 import org.exxlexxlee.domain.usecase.ObservePlaceSchedules
 import org.exxlexxlee.domain.usecase.ObserveSchedule
 import org.exxlexxlee.domain.usecase.ObserveSelection
-import org.exxlexxlee.domain.usecase.RefreshSchedule
+import org.exxlexxlee.domain.usecase.RefreshSchedules
 import org.exxlexxlee.domain.usecase.SaveSelection
 import org.exxlexxlee.domain.usecase.SetDarkTheme
 import org.exxlexxlee.svitlo.features.address.AddressViewModel
@@ -36,7 +36,7 @@ val presentationModule = module {
     factory { DeletePlace(get()) }
     factory { ObserveSchedule(get()) }
     factory { ObservePlaceSchedules(get(), get()) }
-    factory { RefreshSchedule(get()) }
+    factory { RefreshSchedules(get()) }
     factory { ObserveDarkTheme(get()) }
     factory { GetDarkTheme(get()) }
     factory { SetDarkTheme(get()) }

@@ -12,6 +12,8 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonObject
 import org.exxlexxlee.data.catalog.AreaConfig
 import org.exxlexxlee.data.catalog.RegionCatalog
 import org.exxlexxlee.data.catalog.RegionSourceConfig
@@ -25,6 +27,7 @@ import org.exxlexxlee.data.remote.GithubJsonApi
 import org.exxlexxlee.data.remote.ScheduleRemoteDataSource
 import org.exxlexxlee.data.remote.YasnoApi
 import org.exxlexxlee.domain.model.OutageGroup
+import org.exxlexxlee.domain.model.AddressDetails
 import org.exxlexxlee.domain.model.Region
 import org.exxlexxlee.domain.model.Selection
 import org.junit.After
@@ -134,6 +137,47 @@ class ScheduleRepositoriesTest {
         assertTrue(requests.isEmpty())
     }
 
+    @Test
+    fun batchDownloadsRegionOnceAndWritesEachGroupOnceForMultipleAddresses() = runTest {
+        val fixture = fixture(
+            RegionSourceConfig("yasno", regionId = 25, dsoId = 902),
+            "yasno-kyiv-sample.json", "3.1",
+        )
+        val groups = json.parseToJsonElement(fixture.response.body).jsonObject
+        fixture.response.body = JsonObject(groups + ("3.2" to groups.getValue("3.1"))).toString()
+        val home = fixture.selection.copy(details = AddressDetails("Дім"))
+        val office = fixture.selection.copy(details = AddressDetails("Офіс"))
+        val otherGroup = fixture.selection.copy(group = OutageGroup("3.2", "3.2"))
+
+        val results = fixture.schedules.refreshAll(listOf(home, office, otherGroup, home))
+
+        assertEquals(1, requests.size)
+        assertEquals(listOf("region|3.1", "region|3.2"), fixture.dao.writtenKeys)
+        assertEquals(setOf(home, office, otherGroup), results.keys)
+        assertTrue(results.values.all { it.isSuccess })
+        // A separate manual refresh must still go to the network.
+        fixture.schedules.refresh(home)
+        assertEquals(2, requests.size)
+    }
+
+    @Test
+    fun batchPreservesSuccessfulGroupsWhenAnotherGroupOrRegionFails() = runTest {
+        val fixture = fixture(
+            RegionSourceConfig("yasno", regionId = 25, dsoId = 902),
+            "yasno-kyiv-sample.json", "3.1",
+        )
+        val missingGroup = fixture.selection.copy(group = OutageGroup("missing", "missing"))
+        val missingRegion = fixture.selection.copy(region = Region("missing", "missing", "missing"))
+
+        val results = fixture.schedules.refreshAll(listOf(missingRegion, missingGroup, fixture.selection))
+
+        assertTrue(results.getValue(missingRegion).isFailure)
+        assertTrue(results.getValue(missingGroup).isFailure)
+        assertTrue(results.getValue(fixture.selection).isSuccess)
+        assertEquals(1, requests.size)
+        assertEquals(listOf("region|3.1"), fixture.dao.writtenKeys)
+    }
+
     private fun fixture(source: RegionSourceConfig, resource: String, groupId: String): Fixture {
         val body = checkNotNull(javaClass.classLoader?.getResourceAsStream(resource))
             .bufferedReader().use { it.readText() }
@@ -178,6 +222,7 @@ class ScheduleRepositoriesTest {
     private class FakeScheduleDao : ScheduleDao {
         val entity = MutableStateFlow<ScheduleCacheEntity?>(null)
         val observedKeys = mutableListOf<String>()
+        val writtenKeys = mutableListOf<String>()
         var writeFailure: Exception? = null
 
         override fun observe(cacheKey: String): Flow<ScheduleCacheEntity?> {
@@ -187,6 +232,7 @@ class ScheduleRepositoriesTest {
 
         override suspend fun upsert(entity: ScheduleCacheEntity) {
             writeFailure?.let { throw it }
+            writtenKeys += entity.cacheKey
             this.entity.value = entity
         }
     }

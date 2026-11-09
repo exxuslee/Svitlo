@@ -76,6 +76,11 @@ class RefreshSchedule(private val scheduleRepository: ScheduleRepository) {
         scheduleRepository.refresh(selection)
 }
 
+class RefreshSchedules(private val scheduleRepository: ScheduleRepository) {
+    suspend operator fun invoke(selections: List<Selection>): Map<Selection, Result<Unit>> =
+        scheduleRepository.refreshAll(selections)
+}
+
 class ObserveDials(private val observeSchedule: ObserveSchedule) {
     operator fun invoke(selection: Selection): Flow<Dials?> =
         observeSchedule(selection).map { schedule -> schedule?.let { toDials(it) } }

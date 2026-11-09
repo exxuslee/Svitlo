@@ -2,30 +2,31 @@ package org.exxlexxlee.svitlo.widget
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.view.View
+import android.widget.RemoteViews
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
 import androidx.glance.action.ActionParameters
-import androidx.glance.action.actionParametersOf
 import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
+import androidx.glance.appwidget.AndroidRemoteViews
+import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.action.ActionCallback
-import androidx.glance.appwidget.action.actionRunCallback
+import androidx.glance.appwidget.action.actionSendBroadcast
 import androidx.glance.appwidget.appWidgetBackground
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.provideContent
-import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.background
-import androidx.glance.currentState
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
 import androidx.glance.layout.Column
@@ -42,7 +43,10 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.datetime.Clock
 import org.exxlexxlee.domain.model.PowerState
 import org.exxlexxlee.domain.usecase.ObserveSchedule
@@ -51,27 +55,34 @@ import org.exxlexxlee.svitlo.MainActivity
 import org.exxlexxlee.svitlo.R
 import org.koin.core.context.GlobalContext
 
-private val ShowTomorrowKey = booleanPreferencesKey("widget_show_tomorrow")
-private val ShowTomorrowParam = ActionParameters.Key<Boolean>("widget_show_tomorrow")
-
 class ScheduleWidget : GlanceAppWidget() {
     override val stateDefinition = PreferencesGlanceStateDefinition
 
-    override suspend fun provideGlance(context: Context, id: GlanceId) {
-        val data = loadUi()
-        provideContent {
-            val showTomorrow = currentState<Preferences>()[ShowTomorrowKey] == true
-            ScheduleWidgetContent(data, showTomorrow)
+    override suspend fun provideGlance(context: Context, id: GlanceId) = coroutineScope {
+        val appWidgetId = GlanceAppWidgetManager(context).getAppWidgetId(id)
+        WidgetDaySelection.migrate(context, id, appWidgetId)
+        val koin = GlobalContext.getOrNull()
+        if (koin == null) {
+            provideContent {
+                ScheduleWidgetContent(ScheduleWidgetMapper.map(null, null, Clock.System), appWidgetId)
+            }
+        } else {
+            // Share the initial load and live observation instead of subscribing to Room twice.
+            val ui = observeWidgetUi(
+                koin.get<ObserveSelection>(),
+                koin.get<ObserveSchedule>(),
+                koin.getOrNull<Clock>() ?: Clock.System,
+            ).shareIn(this, SharingStarted.Eagerly, replay = 1)
+            val initial = ui.first()
+            provideContent {
+                val data by ui.collectAsState(initial)
+                ScheduleWidgetContent(data, appWidgetId)
+            }
         }
     }
 
-    private suspend fun loadUi(): ScheduleWidgetUi {
-        val koin =
-            GlobalContext.getOrNull() ?: return ScheduleWidgetMapper.map(null, null, Clock.System)
-        val selection = koin.get<ObserveSelection>()().first()
-        val schedule = selection?.let { koin.get<ObserveSchedule>()(it).first() }
-        val clock = koin.getOrNull<Clock>() ?: Clock.System
-        return ScheduleWidgetMapper.map(selection, schedule, clock)
+    override suspend fun onDelete(context: Context, glanceId: GlanceId) {
+        WidgetDaySelection.remove(context, GlanceAppWidgetManager(context).getAppWidgetId(glanceId))
     }
 }
 
@@ -79,22 +90,18 @@ class ScheduleWidgetReceiver : GlanceAppWidgetReceiver() {
     override val glanceAppWidget: GlanceAppWidget = ScheduleWidget()
 }
 
+/** Handles PendingIntents left in a launcher by an older installed version. */
 class SelectDayAction : ActionCallback {
-    override suspend fun onAction(
-        context: Context,
-        glanceId: GlanceId,
-        parameters: ActionParameters,
-    ) {
-        val showTomorrow = parameters[ShowTomorrowParam] ?: return
-        updateAppWidgetState(context, glanceId) { prefs ->
-            prefs[ShowTomorrowKey] = showTomorrow
-        }
+    override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
+        val tomorrow = parameters[ActionParameters.Key<Boolean>("widget_show_tomorrow")] ?: return
+        val appWidgetId = GlanceAppWidgetManager(context).getAppWidgetId(glanceId)
+        WidgetDaySelection.save(context, appWidgetId, tomorrow)
         ScheduleWidget().update(context, glanceId)
     }
 }
 
 @Composable
-private fun ScheduleWidgetContent(data: ScheduleWidgetUi, showTomorrow: Boolean) {
+internal fun ScheduleWidgetContent(data: ScheduleWidgetUi, appWidgetId: Int) {
     val openApp = actionStartActivity<MainActivity>()
     Box(
         modifier = GlanceModifier
@@ -119,34 +126,65 @@ private fun ScheduleWidgetContent(data: ScheduleWidgetUi, showTomorrow: Boolean)
                     modifier = GlanceModifier.clickable(openApp),
                 )
             } else {
-                val day = if (showTomorrow) data.tomorrow else today
-                if (day == null) {
-                    Box(
-                        modifier = GlanceModifier
-                            .fillMaxWidth()
-                            .height(47.dp)
-                            .clickable(openApp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            text = LocalContext.current.getString(R.string.tomorrow_unavailable),
-                            style = TextStyle(
-                                color = WidgetColors.muted,
-                                fontSize = 13.sp,
-                                textAlign = TextAlign.Center,
-                            ),
-                        )
-                    }
-                } else {
-                    Timeline(
-                        states = day.states,
-                        nowHalfHourIndex = if (showTomorrow) null else data.nowHalfHourIndex,
-                        modifier = GlanceModifier.clickable(openApp),
+                val context = LocalContext.current
+                val showTomorrow = WidgetDaySelection.read(context, appWidgetId)
+                // Both pages are sent to the launcher once. A day click only changes visibility.
+                AndroidRemoteViews(
+                    remoteViews = RemoteViews(context.packageName, R.layout.schedule_widget_days),
+                    containerViewId = R.id.widget_days,
+                    modifier = GlanceModifier.fillMaxWidth(),
+                ) {
+                    DayPanel(data, appWidgetId, showTomorrow = false, visible = !showTomorrow)
+                    DayPanel(data, appWidgetId, showTomorrow = true, visible = showTomorrow)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DayPanel(
+    data: ScheduleWidgetUi,
+    appWidgetId: Int,
+    showTomorrow: Boolean,
+    visible: Boolean,
+) {
+    val context = LocalContext.current
+    val layout = if (showTomorrow) R.layout.schedule_widget_tomorrow else R.layout.schedule_widget_today
+    val panel = if (showTomorrow) R.id.widget_tomorrow_panel else R.id.widget_today_panel
+    AndroidRemoteViews(
+        remoteViews = RemoteViews(context.packageName, layout).apply {
+            setViewVisibility(panel, if (visible) View.VISIBLE else View.GONE)
+        },
+        containerViewId = panel,
+        modifier = GlanceModifier.fillMaxWidth(),
+    ) {
+        Column(modifier = GlanceModifier.fillMaxWidth()) {
+            val day = if (showTomorrow) data.tomorrow else data.today
+            if (day == null) {
+                Box(
+                    modifier = GlanceModifier.fillMaxWidth().height(47.dp)
+                        .clickable(actionStartActivity<MainActivity>()),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = context.getString(R.string.tomorrow_unavailable),
+                        style = TextStyle(
+                            color = WidgetColors.muted,
+                            fontSize = 13.sp,
+                            textAlign = TextAlign.Center,
+                        ),
                     )
                 }
-                Spacer(GlanceModifier.height(8.dp))
-                DaySwitch(showTomorrow = showTomorrow)
+            } else {
+                Timeline(
+                    states = day.states,
+                    nowHalfHourIndex = if (showTomorrow) null else data.nowHalfHourIndex,
+                    modifier = GlanceModifier.clickable(actionStartActivity<MainActivity>()),
+                )
             }
+            Spacer(GlanceModifier.height(8.dp))
+            DaySwitch(appWidgetId, showTomorrow)
         }
     }
 }
@@ -178,7 +216,7 @@ private fun Header(title: String, groupLabel: String, modifier: GlanceModifier) 
 }
 
 @Composable
-private fun DaySwitch(showTomorrow: Boolean) {
+private fun DaySwitch(appWidgetId: Int, showTomorrow: Boolean) {
     Row(
         modifier = GlanceModifier
             .background(WidgetColors.switchTrack)
@@ -187,11 +225,13 @@ private fun DaySwitch(showTomorrow: Boolean) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         DayChip(
+            appWidgetId = appWidgetId,
             text = LocalContext.current.getString(R.string.today),
             selected = !showTomorrow,
             showTomorrow = false,
         )
         DayChip(
+            appWidgetId = appWidgetId,
             text = LocalContext.current.getString(R.string.tomorrow),
             selected = showTomorrow,
             showTomorrow = true,
@@ -200,16 +240,15 @@ private fun DaySwitch(showTomorrow: Boolean) {
 }
 
 @Composable
-private fun DayChip(text: String, selected: Boolean, showTomorrow: Boolean) {
+private fun DayChip(appWidgetId: Int, text: String, selected: Boolean, showTomorrow: Boolean) {
+    val click = if (selected) GlanceModifier else GlanceModifier.clickable(
+        actionSendBroadcast(WidgetDayReceiver.intent(LocalContext.current, appWidgetId, showTomorrow)),
+    )
     Box(
         modifier = GlanceModifier
             .background(if (selected) WidgetColors.switchSelected else WidgetColors.transparent)
             .cornerRadius(14.dp)
-            .clickable(
-                actionRunCallback<SelectDayAction>(
-                    actionParametersOf(ShowTomorrowParam to showTomorrow),
-                ),
-            )
+            .then(click)
             .padding(horizontal = 12.dp, vertical = 4.dp),
         contentAlignment = Alignment.Center,
     ) {

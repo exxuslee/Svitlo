@@ -19,3 +19,5 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew :domain:test :data:testDebugUnitTest :app:testDebugUnitTest assembleDebug --stacktrace
+      - name: Assemble optimized release with R8
+        run: ./gradlew :app:assembleRelease --stacktrace

@@ -1,6 +1,7 @@
 package org.exxlexxlee.data.repository
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -25,9 +26,9 @@ class SelectionRepositoryImpl(
     override fun observePlace(id: Long): Flow<Place?> =
         placeDao.observe(id).map { entity -> entity?.toPlace() }
 
-    override fun observe(): Flow<Selection?> = observePlaces().map { places ->
-        places.firstOrNull()?.selection
-    }
+    override fun observe(): Flow<Selection?> = placeDao.observeFirst()
+        .map { it?.toPlace()?.selection }
+        .distinctUntilChanged()
 
     override suspend fun save(selection: Selection, placeId: Long?): Long {
         val stored = selection.toStored()

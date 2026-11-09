@@ -6,6 +6,7 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
@@ -15,7 +16,7 @@ import org.exxlexxlee.domain.model.KyivTime
 import org.exxlexxlee.domain.model.Place
 import org.exxlexxlee.domain.usecase.DeletePlace
 import org.exxlexxlee.domain.usecase.ObservePlaceSchedules
-import org.exxlexxlee.domain.usecase.RefreshSchedule
+import org.exxlexxlee.domain.usecase.RefreshSchedules
 import org.exxlexxlee.svitlo.features.home.models.Action
 import org.exxlexxlee.svitlo.features.home.models.Event
 import org.exxlexxlee.svitlo.features.home.models.ViewState
@@ -25,7 +26,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 class HomeViewModel(
     observePlaceSchedules: ObservePlaceSchedules,
-    private val refreshSchedule: RefreshSchedule,
+    private val refreshSchedules: RefreshSchedules,
     private val deletePlace: DeletePlace,
     private val clock: Clock,
     private val widgetManager: WidgetManager,
@@ -38,7 +39,7 @@ class HomeViewModel(
             emit(KyivTime.minuteOfDay(clock))
             delay(30_000.milliseconds)
         }
-    }
+    }.distinctUntilChanged()
     private var latestPlaces: List<Place> = emptyList()
     private var refreshJob: Job? = null
 
@@ -119,8 +120,9 @@ class HomeViewModel(
             refreshing.value = true
             val failures = mutableMapOf<Long, String>()
             try {
+                val results = refreshSchedules(places.map { it.selection })
                 places.forEach { place ->
-                    val message = refreshSchedule(place.selection).exceptionOrNull()?.message
+                    val message = results[place.selection]?.exceptionOrNull()?.message
                     if (message != null) failures[place.id] = message
                 }
                 errors.value = failures

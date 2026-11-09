@@ -12,6 +12,9 @@ interface PlaceDao {
     @Query("SELECT * FROM places ORDER BY position ASC, id ASC")
     fun observeAll(): Flow<List<PlaceEntity>>
 
+    @Query("SELECT * FROM places ORDER BY position ASC, id ASC LIMIT 1")
+    fun observeFirst(): Flow<PlaceEntity?>
+
     @Query("SELECT * FROM places WHERE id = :id")
     fun observe(id: Long): Flow<PlaceEntity?>
 

@@ -24,14 +24,35 @@ class ScheduleRepositoryImpl(
     override fun observe(selection: Selection): Flow<OutageSchedule?> =
         scheduleDao.observe(cacheKey(selection)).map { entity -> entity?.toDomain() }
 
-    override suspend fun refresh(selection: Selection): Result<Unit> = try {
-        val schedule = remoteDataSource.fetch(catalog.source(selection.region.id))
-            .toSchedule(selection.group, clock)
-        scheduleDao.upsert(schedule.toEntity(selection))
-        Result.success(Unit)
-    } catch (cancelled: CancellationException) {
-        throw cancelled
-    } catch (error: Exception) {
-        Result.failure(error)
+    override suspend fun refresh(selection: Selection): Result<Unit> =
+        refreshAll(listOf(selection)).getValue(selection)
+
+    override suspend fun refreshAll(selections: List<Selection>): Map<Selection, Result<Unit>> {
+        val results = mutableMapOf<Selection, Result<Unit>>()
+        for (regionalSelections in selections.groupBy { it.region.id }.values) {
+            // A source response contains every group: download and decode it only once per region.
+            val payload = try {
+                remoteDataSource.fetch(catalog.source(regionalSelections.first().region.id))
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (error: Exception) {
+                regionalSelections.forEach { results[it] = Result.failure(error) }
+                continue
+            }
+            for (groupSelections in regionalSelections.groupBy { it.group.id }.values) {
+                val selection = groupSelections.first()
+                val result = try {
+                    val schedule = payload.toSchedule(selection.group, clock)
+                    scheduleDao.upsert(schedule.toEntity(selection))
+                    Result.success(Unit)
+                } catch (cancelled: CancellationException) {
+                    throw cancelled
+                } catch (error: Exception) {
+                    Result.failure<Unit>(error)
+                }
+                groupSelections.forEach { results[it] = result }
+            }
+        }
+        return results
     }
 }

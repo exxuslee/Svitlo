@@ -31,7 +31,7 @@ import org.exxlexxlee.domain.usecase.DeletePlace
 import org.exxlexxlee.domain.usecase.ObservePlaces
 import org.exxlexxlee.domain.usecase.ObservePlaceSchedules
 import org.exxlexxlee.domain.usecase.ObserveSchedule
-import org.exxlexxlee.domain.usecase.RefreshSchedule
+import org.exxlexxlee.domain.usecase.RefreshSchedules
 import org.exxlexxlee.svitlo.features.home.models.Action
 import org.exxlexxlee.svitlo.features.home.models.Event
 import org.exxlexxlee.svitlo.widget.WidgetManager
@@ -117,7 +117,7 @@ class HomeViewModelTest {
                 ObservePlaces(fakeSelectionRepository),
                 ObserveSchedule(fakeScheduleRepository),
             ),
-            refreshSchedule = RefreshSchedule(fakeScheduleRepository),
+            refreshSchedules = RefreshSchedules(fakeScheduleRepository),
             deletePlace = DeletePlace(fakeSelectionRepository),
             clock = fixedClock,
             widgetManager = widgetManager,
@@ -281,5 +281,23 @@ class HomeViewModelTest {
         assertTrue(viewModel.viewStates().value.cards.isEmpty())
         assertFalse(viewModel.viewStates().value.isRefreshing)
         assertFalse(viewModel.viewStates().value.showWidgetBanner)
+    }
+
+    @Test
+    fun addressesInTheSameGroupRefreshOnceButKeepSeparateCards() = runViewModelTest {
+        val home = createPlace()
+        val office = createPlace(2).copy(selection = (home.selection as Selection.ByGroup).copy(
+            details = AddressDetails("Офіс"),
+        ))
+        placesFlow.value = listOf(home, office)
+        val viewModel = createViewModel(FakeWidgetManager())
+        runCurrent()
+
+        assertEquals(2, viewModel.viewStates().value.cards.size)
+        assertEquals(listOf(home.selection), refreshedSelections)
+        viewModel.obtainEvent(Event.Refresh)
+        runCurrent()
+        assertEquals(listOf(home.selection, home.selection), refreshedSelections)
+        assertFalse(viewModel.viewStates().value.isRefreshing)
     }
 }

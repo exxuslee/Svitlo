@@ -21,8 +21,8 @@ Nov 8, 2026 · @Exx
 | Источник | Регионы | Адрес данных |
 | --- | --- | --- |
 | [Yasno API](https://yasno.ua) | Киев (ДТЭК), Днепр (DnEM и CEK) | `https://app.yasno.ua/api/blackout-service/public/shutdowns/regions/{regionId}/dsos/{dsoId}/planned-outages`; Киев — 25/902, Днепр — 3/301 и 3/303 |
-| [Baskerville42/outage-data-ua](https://github.com/Baskerville42/outage-data-ua/blob/main/data/kyiv-region.json) | Киевская область, Днепр и область, Одесса и область (ДТЭК) | JSON-файлы в `data/`, например `kyiv-region.json` |
-| [yaroslav2901/OE\_OUTAGE\_DATA](https://github.com/yaroslav2901/OE_OUTAGE_DATA/blob/main/data/Lvivoblenerho.json) | Хмельницкая, Ивано-Франковская, Закарпатская, Львовская, Тернопольская, Черниговская, Запорожская, Житомирская, Полтавская, Ровенская области | JSON-файл на область в `data/` |
+| [Baskerville42/outage-data-ua](https://github.com/Baskerville42/outage-data-ua/blob/main/data/kyiv-region.json) | Киевская область, Днепр и область, Одесса и область (ДТЭК) | JSON-файлы в `../data`, например `kyiv-region.json` |
+| [yaroslav2901/OE\_OUTAGE\_DATA](https://github.com/yaroslav2901/OE_OUTAGE_DATA/blob/main/data/Lvivoblenerho.json) | Хмельницкая, Ивано-Франковская, Закарпатская, Львовская, Тернопольская, Черниговская, Запорожская, Житомирская, Полтавская, Ровенская области | JSON-файл на область в `../data` |
 | [olnet93/gpv-voe-vinnytsia](https://github.com/olnet93/gpv-voe-vinnytsia/blob/main/data/Vinnytsiaoblenerho.json) | Винницкая область | JSON-файл, есть зеркало vn-progr |
 | [E-Svitlo](https://sm.e-svitlo.com.ua/) | Сумская область | нужен логин и пароль личного кабинета, в MVP не берём |
 
@@ -61,11 +61,11 @@ Sources: [ha-svitlo-yeah](https://github.com/ALERTua/ha-svitlo-yeah), [Baskervil
 | `data` | Ktor-клиент, Room, мапперы, реализации репозиториев | Compose, ViewModel, модуль `app` |
 | `app` | Compose-экраны, ViewModel, навигация, Koin-модуль приложения | детали сети и базы: видит только интерфейсы и юзкейсы домена |
 
-Экраны и ViewModel работают только с юзкейсами. Пакеты: в `domain` — `model`, `repository`, `usecase`; в `data` — как в разделе «Модуль data»; в `app` — `ui/address`, `ui/schedule`, `ui/dial`, `di`. В `settings.gradle.kts`: `include(":app", ":domain", ":data")`.
+Экраны и ViewModel работают только с юзкейсами. Пакеты: в `domain` — `model`, `repository`, `usecase`; в `data` — как в разделе «Модуль data»; в `app` — `ui/address`, `ui/schedule`, `ui/dial`, `di`. В `../settings.gradle.kts`: `include(":app", ":domain", ":data")`.
 
 ## Каталог версий (libs.versions.toml)
 
-Все библиотеки и плагины описываются в одном файле `gradle/libs.versions.toml`, модули ссылаются на них через `libs.*`. Номера версий ниже — ориентир по памяти, не проверенный по свежим релизам: перед стартом обновите их (Android Studio подсвечивает устаревшие версии в toml).
+Все библиотеки и плагины описываются в одном файле `../gradle/libs.versions.toml`, модули ссылаются на них через `libs.*`. Номера версий ниже — ориентир по памяти, не проверенный по свежим релизам: перед стартом обновите их (Android Studio подсвечивает устаревшие версии в toml).
 
 ```toml
 [versions]
