@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Clock
 import org.exxlexxlee.domain.model.DaySchedule
 import org.exxlexxlee.domain.model.KyivTime
+import org.exxlexxlee.svitlo.ui.common.groupLabel
 import org.exxlexxlee.domain.model.OutageSchedule
 import org.exxlexxlee.domain.model.PowerState
 import org.exxlexxlee.domain.model.Selection
@@ -66,15 +67,4 @@ object ScheduleWidgetMapper {
 
     private fun DaySchedule.toUi(): WidgetDayUi = WidgetDayUi(states = halfHours)
 
-    private fun groupLabel(name: String): String {
-        val normalized = name.trim()
-        return if (
-            normalized.startsWith("Група", ignoreCase = true) ||
-            normalized.startsWith("Черга", ignoreCase = true)
-        ) {
-            normalized
-        } else {
-            "Група $normalized"
-        }
-    }
 }

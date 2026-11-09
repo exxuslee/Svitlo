@@ -11,6 +11,7 @@ class NotificationCoordinator(
     private val context: Context,
     private val scope: CoroutineScope,
     private val observePlaceSchedules: ObservePlaceSchedules,
+    private val scheduler: NotificationScheduler,
 ) {
     private var job: Job? = null
 
@@ -19,7 +20,7 @@ class NotificationCoordinator(
         NotificationHelper.createNotificationChannel(context)
         job = scope.launch {
             observePlaceSchedules().distinctUntilChanged().collect { schedules ->
-                NotificationScheduler.scheduleNotifications(context, schedules)
+                scheduler.scheduleNotifications(schedules)
             }
         }
     }

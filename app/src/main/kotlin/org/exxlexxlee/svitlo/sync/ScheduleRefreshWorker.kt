@@ -17,13 +17,19 @@ class ScheduleRefreshWorker(
     private val refreshSchedules: RefreshSchedules,
     private val observePlaceSchedules: ObservePlaceSchedules,
     private val widgetCoordinator: WidgetCoordinator,
+    private val notificationScheduler: NotificationScheduler,
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
         val places = observePlaces().first()
-        refreshSchedules(places.map { it.selection })
+        val results = refreshSchedules(places.map { it.selection })
         val schedules = observePlaceSchedules().first()
         widgetCoordinator.update()
-        NotificationScheduler.scheduleNotifications(applicationContext, schedules)
-        return Result.success()
+        notificationScheduler.scheduleNotifications(schedules)
+        // Apply cached and successfully refreshed data even when some requests failed.
+        return when (refreshOutcome(results.values, runAttemptCount)) {
+            RefreshOutcome.Success -> Result.success()
+            RefreshOutcome.Retry -> Result.retry()
+            RefreshOutcome.Failure -> Result.failure()
+        }
     }
 }

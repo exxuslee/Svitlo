@@ -2,6 +2,10 @@ package org.exxlexxlee.svitlo.features.address
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import org.exxlexxlee.domain.model.AddressDetails
@@ -31,66 +35,57 @@ class AddressViewModel(
 ) {
     private val editingPlaceId: Long? = savedStateHandle.get<Long>("placeId")?.takeIf { it > 0 }
 
+    private var groupsJob: Job? = null
+
     init {
+        viewState = viewState.copy(isEditing = editingPlaceId != null)
         viewModelScope.launch {
-            if (editingPlaceId != null) {
-                viewState = viewState.copy(isLoadingAreas = true, isEditing = true)
-                runCatching {
-                    val areas = getAreas()
-                    val place = observePlace(editingPlaceId).firstOrNull()
-                    val selection = place?.selection
-                    if (selection != null) {
-                        val region = selection.region
-                        val selectedArea = areas.find { area ->
-                            area.suppliers.any { it.region.id == region.id }
-                        } ?: ServiceArea(
-                            id = region.id,
-                            name = region.name,
-                            suppliers = listOf(Supplier(region = region, primary = true)),
-                        )
-                        val selectedSupplier =
-                            selectedArea.suppliers.find { it.region.id == region.id }
-                                ?: Supplier(region = region, primary = true)
-                        val groups =
-                            runCatching { getGroups(selectedSupplier.region.id) }.getOrDefault(
-                                emptyList()
-                            )
-                        val selectedGroup =
-                            groups.find { it.id == selection.group.id } ?: selection.group
-                        val details = selection.details
-                        viewState = viewState.copy(
-                            areas = areas,
-                            selectedArea = selectedArea,
-                            selectedSupplier = selectedSupplier,
-                            groups = groups,
-                            selectedGroup = selectedGroup,
-                            addressName = details?.name.orEmpty(),
-                            nameEdited = true,
-                            reminderMinutes = details?.reminderMinutes ?: 15,
-                            quietNight = details?.quietNight ?: false,
-                            icon = AddressIcon.fromId(details?.iconId ?: "home"),
-                            step = AddressStep.Region,
-                            isLoadingAreas = false,
-                            isLoadingGroups = false,
-                            isEditing = true,
-                        )
-                    } else {
-                        viewState =
-                            viewState.copy(areas = areas, isLoadingAreas = false, isEditing = false)
-                    }
-                }.onFailure { error ->
-                    viewState = viewState.copy(isLoadingAreas = false, error = error.message)
+            try {
+                val areas = getAreas()
+                val selection = editingPlaceId?.let { observePlace(it).firstOrNull()?.selection }
+                if (selection == null) {
+                    viewState = viewState.copy(areas = areas, isLoadingAreas = false, isEditing = false)
+                } else {
+                    restoreSelection(areas, selection)
                 }
-            } else {
-                runCatching { getAreas() }
-                    .onSuccess { areas ->
-                        viewState = viewState.copy(areas = areas, isLoadingAreas = false)
-                    }
-                    .onFailure { error ->
-                        viewState = viewState.copy(isLoadingAreas = false, error = error.message)
-                    }
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (error: Exception) {
+                viewState = viewState.copy(isLoadingAreas = false, error = error.message)
             }
         }
+    }
+
+    private suspend fun restoreSelection(areas: List<ServiceArea>, selection: Selection) {
+        val region = selection.region
+        val area = areas.find { area -> area.suppliers.any { it.region.id == region.id } }
+            ?: ServiceArea(region.id, region.name, listOf(Supplier(region, primary = true)))
+        val supplier = area.suppliers.find { it.region.id == region.id }
+            ?: Supplier(region, primary = true)
+        val groups = try {
+            getGroups(region.id)
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (_: Exception) {
+            emptyList()
+        }
+        val details = selection.details
+        viewState = viewState.copy(
+            areas = areas,
+            selectedArea = area,
+            selectedSupplier = supplier,
+            groups = groups,
+            selectedGroup = groups.find { it.id == selection.group.id } ?: selection.group,
+            addressName = details?.name.orEmpty(),
+            nameEdited = true,
+            reminderMinutes = details?.reminderMinutes ?: 15,
+            quietNight = details?.quietNight ?: false,
+            icon = AddressIcon.fromId(details?.iconId ?: "home"),
+            step = AddressStep.Region,
+            isLoadingAreas = false,
+            isLoadingGroups = false,
+            isEditing = true,
+        )
     }
 
     override fun obtainEvent(viewEvent: Event) {
@@ -135,7 +130,9 @@ class AddressViewModel(
 
     private fun onAreaSelected(area: ServiceArea) {
         val sameArea = area.id == viewState.selectedArea?.id
+        if (!sameArea) groupsJob?.cancel()
         viewState = viewState.copy(
+            isLoadingGroups = sameArea && viewState.isLoadingGroups,
             selectedArea = area,
             selectedSupplier = if (sameArea) viewState.selectedSupplier else null,
             selectedGroup = if (sameArea) viewState.selectedGroup else null,
@@ -149,6 +146,7 @@ class AddressViewModel(
     private fun onSupplierSelected(supplier: Supplier) {
         val sameSupplier = supplier.region.id == viewState.selectedSupplier?.region?.id
         val hasGroups = sameSupplier && viewState.groups.isNotEmpty()
+        groupsJob?.cancel()
         viewState = viewState.copy(
             selectedSupplier = supplier,
             selectedGroup = if (sameSupplier) viewState.selectedGroup else null,
@@ -158,18 +156,20 @@ class AddressViewModel(
             nameEdited = viewState.isEditing && viewState.nameEdited,
             error = null,
         )
-        if (!hasGroups) {
-            val supplierId = supplier.region.id
-            viewModelScope.launch {
-                runCatching { getGroups(supplierId) }
-                    .onSuccess { groups ->
-                        if (viewState.selectedSupplier?.region?.id != supplierId) return@onSuccess
-                        viewState = viewState.copy(groups = groups, isLoadingGroups = false)
-                    }
-                    .onFailure { error ->
-                        if (viewState.selectedSupplier?.region?.id != supplierId) return@onFailure
-                        viewState = viewState.copy(isLoadingGroups = false, error = error.message)
-                    }
+        if (!hasGroups) loadGroups(supplier.region.id)
+    }
+
+    private fun loadGroups(supplierId: String) {
+        groupsJob = viewModelScope.launch {
+            try {
+                val groups = getGroups(supplierId)
+                currentCoroutineContext().ensureActive()
+                viewState = viewState.copy(groups = groups, isLoadingGroups = false)
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (error: Exception) {
+                currentCoroutineContext().ensureActive()
+                viewState = viewState.copy(isLoadingGroups = false, error = error.message)
             }
         }
     }
@@ -206,9 +206,14 @@ class AddressViewModel(
                     iconId = viewState.icon.id,
                 ),
             )
-            runCatching { saveSelection(selection, editingPlaceId) }
-                .onSuccess { sendAction(Action.Saved) }
-                .onFailure { error -> viewState = viewState.copy(error = error.message) }
+            try {
+                saveSelection(selection, editingPlaceId)
+                sendAction(Action.Saved)
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (error: Exception) {
+                viewState = viewState.copy(error = error.message)
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.datetime.Clock
+import org.exxlexxlee.svitlo.notification.NotificationScheduler
 import org.exxlexxlee.svitlo.notification.NotificationCoordinator
 import org.exxlexxlee.svitlo.sync.ScheduleRefreshScheduler
 import org.exxlexxlee.svitlo.sync.ScheduleWorkerFactory
@@ -27,8 +28,9 @@ val platformModule = module {
     }
     single<WidgetManager> { WidgetManagerImpl(androidContext()) }
     single { WidgetCoordinator(androidContext(), get(applicationScope), get(), get(), get()) }
-    single { NotificationCoordinator(androidContext(), get(applicationScope), get()) }
-    single { ScheduleWorkerFactory(get(), get(), get(), get()) }
+    single { NotificationScheduler(androidContext(), get()) }
+    single { NotificationCoordinator(androidContext(), get(applicationScope), get(), get()) }
+    single { ScheduleWorkerFactory(get(), get(), get(), get(), get()) }
     single { WorkManager.getInstance(androidContext()) }
     single { ScheduleRefreshScheduler(get()) }
 }

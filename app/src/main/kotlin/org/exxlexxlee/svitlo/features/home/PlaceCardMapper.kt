@@ -1,5 +1,6 @@
 package org.exxlexxlee.svitlo.features.home
 
+import org.exxlexxlee.svitlo.ui.common.groupLabel
 import org.exxlexxlee.domain.model.OutageSchedule
 import org.exxlexxlee.domain.model.OutageWindows
 import org.exxlexxlee.domain.model.Place
@@ -66,17 +67,6 @@ object PlaceCardMapper {
             "${OutageWindows.formatClock(window.startMinutes)}–${OutageWindows.formatClock(window.endMinutes)}"
         }
 
-    private fun groupLabel(name: String): String {
-        val normalized = name.trim()
-        return if (
-            normalized.startsWith("Група", ignoreCase = true) ||
-            normalized.startsWith("Черга", ignoreCase = true)
-        ) {
-            normalized
-        } else {
-            "Група $normalized"
-        }
-    }
 
     private val unknownDay = List(48) { PowerState.UNKNOWN }
     private const val MINUTES_IN_DAY = 24 * 60

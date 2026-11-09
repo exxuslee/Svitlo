@@ -9,14 +9,18 @@ import androidx.core.content.edit
 import kotlinx.datetime.Clock
 import org.exxlexxlee.domain.model.PlaceSchedule
 
-object NotificationScheduler {
-    private const val PREFS_NAME = "svitlo_notification_prefs"
-    private const val KEY_SCHEDULED_IDS = "scheduled_notification_ids"
+class NotificationScheduler(
+    private val context: Context,
+    private val clock: Clock,
+) {
+    private companion object {
+        const val PREFS_NAME = "svitlo_notification_prefs"
+        const val KEY_SCHEDULED_IDS = "scheduled_notification_ids"
+    }
 
+    @Synchronized
     fun scheduleNotifications(
-        context: Context,
         placeSchedules: List<PlaceSchedule>,
-        clock: Clock = Clock.System,
     ) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE)
                 as? AlarmManager ?: return
