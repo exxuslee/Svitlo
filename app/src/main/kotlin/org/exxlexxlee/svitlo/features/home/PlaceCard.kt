@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.DragIndicator
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -241,39 +242,47 @@ internal fun PlaceCardSwipeable(
                 modifier = Modifier.padding(12.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
+                // Ряд 1: иконка + название
                 CardHeader(card)
 
                 card.error?.let { error ->
                     Text(text = error, color = CardPalette.Off, fontSize = 13.sp)
                 }
 
+                // Ряд 2: переключатель дня + бейдж очереди с кружочком
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    DaySwitch(
+                        showTomorrow = showTomorrow,
+                        onTabSelected = { showTomorrow = it },
+                    )
+                    GroupBadgeWithStatus(card = card)
+                }
+
+                // Ряд 3: периоды отключений + время до включения с молнией
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.Top,
                 ) {
-                    Column(
+                    DayLabel(
+                        prefix = if (showTomorrow) {
+                            stringResource(R.string.tomorrow)
+                        } else {
+                            stringResource(R.string.today)
+                        },
+                        ranges = if (showTomorrow) card.tomorrowRanges else card.todayRanges,
                         modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        DaySwitch(
-                            showTomorrow = showTomorrow,
-                            onTabSelected = { showTomorrow = it },
-                        )
-                        DayLabel(
-                            prefix = if (showTomorrow) stringResource(R.string.tomorrow) else stringResource(
-                                R.string.today
-                            ),
-                            ranges = if (showTomorrow) card.tomorrowRanges else card.todayRanges,
-                        )
-                    }
-                    StatusColumn(
+                    )
+                    CountdownColumn(
                         card = card,
-                        modifier = Modifier
-                            .width(120.dp)
-                            .padding(start = 8.dp),
+                        modifier = Modifier.padding(start = 8.dp),
                     )
                 }
 
+                // Ряд 4: почасовой график (без изменений)
                 val currentStates = if (showTomorrow) card.tomorrowStates else card.todayStates
                 val hasData = if (showTomorrow) {
                     card.tomorrowRanges != null || currentStates.any { it != PowerState.UNKNOWN }
@@ -325,19 +334,43 @@ private fun CardHeader(card: PlaceCardUi) {
             text = card.title,
             modifier = Modifier
                 .weight(1f)
-                .padding(horizontal = 8.dp),
+                .padding(start = 8.dp),
             color = CardPalette.Title,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
+        Icon(
+            imageVector = Icons.Outlined.DragIndicator,
+            contentDescription = null,
+            tint = CardPalette.BannerText,
+            modifier = Modifier.size(28.dp),
+        )
+    }
+}
+
+@Composable
+private fun GroupBadgeWithStatus(card: PlaceCardUi, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(30))
+            .background(CardPalette.GroupBadge)
+            .padding(horizontal = 12.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Box(
+            modifier = Modifier
+                .size(18.dp)
+                .clip(CircleShape)
+                .background(
+                    if (card.currentState == PowerState.ON) CardPalette.Yes
+                    else stateColor(card.currentState)
+                ),
+        )
         Text(
             text = card.groupLabel,
-            modifier = Modifier
-                .clip(RoundedCornerShape(30))
-                .background(CardPalette.GroupBadge)
-                .padding(horizontal = 12.dp, vertical = 6.dp),
             color = CardPalette.GroupBadgeText,
             fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold,
@@ -354,7 +387,7 @@ private fun DaySwitch(
 ) {
     Row(
         modifier = modifier
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(30))
             .background(CardPalette.Banner)
             .padding(2.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -380,16 +413,16 @@ private fun DayChip(
 ) {
     Box(
         modifier = Modifier
-            .clip(RoundedCornerShape(14.dp))
+            .clip(RoundedCornerShape(30))
             .background(if (selected) CardPalette.Accent else Color.Transparent)
             .clickable(onClick = onClick)
-            .padding(horizontal = 14.dp, vertical = 6.dp),
+            .padding(horizontal = 12.dp, vertical = 4.dp),
         contentAlignment = Alignment.Center,
     ) {
         Text(
             text = text,
             color = if (selected) Color.White else CardPalette.Muted,
-            fontSize = 13.sp,
+            fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
         )
@@ -397,7 +430,7 @@ private fun DayChip(
 }
 
 @Composable
-private fun DayLabel(prefix: String, ranges: String?) {
+private fun DayLabel(prefix: String, ranges: String?, modifier: Modifier = Modifier) {
     val value = when (ranges) {
         null -> stringResource(R.string.day_missing)
         "" -> stringResource(R.string.no_outages)
@@ -405,6 +438,7 @@ private fun DayLabel(prefix: String, ranges: String?) {
     }
     val valueColor = if (ranges.isNullOrEmpty()) CardPalette.Muted else CardPalette.Range
     Text(
+        modifier = modifier,
         text = buildAnnotatedString {
             withStyle(SpanStyle(color = CardPalette.Muted, fontWeight = FontWeight.Medium)) {
                 append("$prefix: ")
@@ -419,50 +453,44 @@ private fun DayLabel(prefix: String, ranges: String?) {
 }
 
 @Composable
-private fun StatusColumn(card: PlaceCardUi, modifier: Modifier = Modifier) {
-    Column(
+private fun CountdownColumn(card: PlaceCardUi, modifier: Modifier = Modifier) {
+    Row(
         modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(
-            modifier = Modifier
-                .size(22.dp)
-                .clip(CircleShape)
-                .background(
-                    if (card.currentState == PowerState.ON) CardPalette.Yes
-                    else stateColor(card.currentState)
-                ),
-        )
-        if (card.schedulesSuspended) {
-            Text(
-                text = stringResource(R.string.schedules_suspended),
-                modifier = Modifier.padding(top = 8.dp),
-                color = CardPalette.Off,
-                fontWeight = FontWeight.Bold,
-                fontSize = 14.sp,
-                textAlign = TextAlign.Center,
-                lineHeight = 18.sp,
-            )
-        }
-        val minutes = card.minutesUntilChange
-        val target = card.countdownTarget
-        if (minutes != null && target != null) {
-            Text(
-                text = OutageWindows.formatDuration(minutes),
-                modifier = Modifier.padding(top = 6.dp),
-                color = CardPalette.Title,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
-                textAlign = TextAlign.Center,
-            )
-            Text(
-                text = stringResource(
-                    if (target == CountdownTarget.PowerOn) R.string.until_on else R.string.until_off,
-                ),
-                color = CardPalette.Muted,
-                fontSize = 13.sp,
-                textAlign = TextAlign.Center,
-            )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            if (card.schedulesSuspended) {
+                Text(
+                    text = stringResource(R.string.schedules_suspended),
+                    color = CardPalette.Off,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 18.sp,
+                )
+            }
+            val minutes = card.minutesUntilChange
+            val target = card.countdownTarget
+            if (minutes != null && target != null) {
+                Text(
+                    text = OutageWindows.formatDuration(minutes),
+                    modifier = Modifier.padding(top = if (card.schedulesSuspended) 6.dp else 0.dp),
+                    color = CardPalette.Title,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Center,
+                )
+                Text(
+                    text = stringResource(
+                        if (target == CountdownTarget.PowerOn) R.string.until_on else R.string.until_off,
+                    ),
+                    color = CardPalette.Muted,
+                    fontSize = 13.sp,
+                    textAlign = TextAlign.Center,
+                )
+            }
         }
         if (card.currentState == PowerState.OFF) {
             Icon(
@@ -535,7 +563,7 @@ private fun HourCell(
                 if (marked) {
                     Modifier
                         .background(CardPalette.Marker)
-                        .padding(2.dp)
+                        .padding(horizontal = 2.dp, vertical = 3.5.dp)
                 } else {
                     Modifier
                 }

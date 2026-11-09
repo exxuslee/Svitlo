@@ -26,6 +26,7 @@ import org.exxlexxlee.svitlo.features.home.models.ViewState
 import org.exxlexxlee.svitlo.ui.common.BaseViewModel
 import org.exxlexxlee.svitlo.widget.WidgetManager
 import kotlinx.datetime.Clock
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModel(
@@ -42,7 +43,7 @@ class HomeViewModel(
     private val minuteOfDay = flow {
         while (currentCoroutineContext().isActive) {
             emit(KyivTime.minuteOfDay(clock))
-            delay(30_000)
+            delay(30_000.milliseconds)
         }
     }
     private var latestPlaces: List<Place> = emptyList()

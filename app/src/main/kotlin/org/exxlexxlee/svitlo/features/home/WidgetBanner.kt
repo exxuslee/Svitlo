@@ -51,8 +51,8 @@ fun WidgetBanner(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp),
+            modifier = Modifier.padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -67,7 +67,7 @@ fun WidgetBanner(
                     Box(
                         modifier = Modifier
                             .size(46.dp)
-                            .clip(RoundedCornerShape(14.dp))
+                            .clip(RoundedCornerShape(12.dp))
                             .background(CardPalette.Accent.copy(alpha = 0.12f)),
                         contentAlignment = Alignment.Center,
                     ) {
@@ -91,7 +91,7 @@ fun WidgetBanner(
                         )
                         Text(
                             text = stringResource(R.string.widget_banner_subtitle),
-                            fontSize = 13.sp,
+                            fontSize = 12.sp,
                             color = CardPalette.Muted,
                             lineHeight = 17.sp,
                         )
@@ -102,13 +102,13 @@ fun WidgetBanner(
                     onClick = onDismiss,
                     modifier = Modifier
                         .size(32.dp)
-                        .offset(x = 6.dp, y = (-4).dp),
+                        .offset(x = 4.dp, y = (-4).dp),
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = stringResource(R.string.close),
                         tint = CardPalette.Muted,
-                        modifier = Modifier.size(18.dp),
+                        modifier = Modifier.size(16.dp),
                     )
                 }
             }
@@ -123,12 +123,12 @@ fun WidgetBanner(
                     containerColor = CardPalette.Accent,
                     contentColor = Color.White,
                 ),
-                contentPadding = PaddingValues(horizontal = 16.dp),
+                contentPadding = PaddingValues(horizontal = 12.dp),
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = null,
-                    modifier = Modifier.size(18.dp),
+                    modifier = Modifier.size(16.dp),
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(

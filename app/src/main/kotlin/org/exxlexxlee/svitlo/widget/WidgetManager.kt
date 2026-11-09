@@ -3,7 +3,6 @@ package org.exxlexxlee.svitlo.widget
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
-import androidx.core.content.edit
 
 interface WidgetManager {
     fun hasInstalledWidgets(): Boolean
@@ -15,7 +14,7 @@ interface WidgetManager {
 class WidgetManagerImpl(
     private val context: Context,
 ) : WidgetManager {
-    private val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    private var bannerDismissed: Boolean = false
 
     override fun hasInstalledWidgets(): Boolean {
         val appWidgetManager = AppWidgetManager.getInstance(context)
@@ -23,12 +22,10 @@ class WidgetManagerImpl(
         return appWidgetManager.getAppWidgetIds(componentName).isNotEmpty()
     }
 
-    override fun isBannerDismissed(): Boolean {
-        return prefs.getBoolean(KEY_BANNER_DISMISSED, false)
-    }
+    override fun isBannerDismissed(): Boolean = bannerDismissed
 
     override fun setBannerDismissed(dismissed: Boolean) {
-        prefs.edit { putBoolean(KEY_BANNER_DISMISSED, dismissed) }
+        bannerDismissed = dismissed
     }
 
     override fun requestPinWidget(): Boolean {
@@ -41,9 +38,5 @@ class WidgetManagerImpl(
             false
         }
     }
-
-    companion object {
-        private const val PREFS_NAME = "svitlo_settings"
-        private const val KEY_BANNER_DISMISSED = "widget_banner_dismissed"
-    }
 }
+
