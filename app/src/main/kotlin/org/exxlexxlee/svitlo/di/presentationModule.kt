@@ -18,6 +18,8 @@ import org.exxlexxlee.svitlo.features.address.AddressViewModel
 import org.exxlexxlee.svitlo.features.home.HomeViewModel
 import org.exxlexxlee.svitlo.features.main.MainViewModel
 import org.exxlexxlee.svitlo.features.settings.SettingsViewModel
+import org.exxlexxlee.svitlo.widget.WidgetManager
+import org.exxlexxlee.svitlo.widget.WidgetManagerImpl
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -37,9 +39,10 @@ val presentationModule = module {
     factory { GetDarkTheme(get()) }
     factory { SetDarkTheme(get()) }
     single<Clock> { Clock.System }
+    single<WidgetManager> { WidgetManagerImpl(androidContext()) }
 
     viewModel { MainViewModel(get(), get()) }
-    viewModel { HomeViewModel(get(), get(), get(), get(), get()) }
+    viewModel { HomeViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { AddressViewModel(get<GetAreas>(), get(), get(), get(), get()) }
     viewModel { SettingsViewModel(get(), get(), get(), androidContext()) }
 }

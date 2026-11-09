@@ -8,4 +8,7 @@ sealed interface Event {
     data object ConfirmDelete : Event
     data object DismissDelete : Event
     data object Settings : Event
+    data object AddWidgetClicked : Event
+    data object DismissWidgetBanner : Event
+    data object CheckWidget : Event
 }

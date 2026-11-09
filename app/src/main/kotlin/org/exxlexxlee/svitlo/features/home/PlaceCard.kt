@@ -535,7 +535,7 @@ private fun HourCell(
                 if (marked) {
                     Modifier
                         .background(CardPalette.Marker)
-                        .padding(1.5.dp)
+                        .padding(2.dp)
                 } else {
                     Modifier
                 }
@@ -573,7 +573,7 @@ private fun HourCell(
             Text(
                 text = hour.toString(),
                 color = hourLabelColor(first, second),
-                fontSize = 11.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 maxLines = 1,
@@ -645,7 +645,7 @@ internal object CardPalette {
         @Composable get() = if (LocalDarkTheme.current) Color(0xFF353C4A) else Color(0xFF2C3444)
 
     val Accent = Color(0xFF5B6CFF)
-    val Marker = Color(0xFF2F6FED)
+    val Marker = Color(0xFF35ED2F)
 
     val Banner: Color
         @Composable get() = if (LocalDarkTheme.current) Color(0xFF252932) else Color(0xFFF0F1F4)

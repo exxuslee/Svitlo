@@ -24,6 +24,7 @@ import org.exxlexxlee.svitlo.features.home.models.Action
 import org.exxlexxlee.svitlo.features.home.models.Event
 import org.exxlexxlee.svitlo.features.home.models.ViewState
 import org.exxlexxlee.svitlo.ui.common.BaseViewModel
+import org.exxlexxlee.svitlo.widget.WidgetManager
 import kotlinx.datetime.Clock
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -33,6 +34,7 @@ class HomeViewModel(
     private val refreshSchedule: RefreshSchedule,
     private val deletePlace: DeletePlace,
     private val clock: Clock,
+    private val widgetManager: WidgetManager,
 ) : BaseViewModel<ViewState, Action, Event>(ViewState()) {
 
     private val refreshing = MutableStateFlow(false)
@@ -60,22 +62,27 @@ class HomeViewModel(
                         }) { sources -> sources.toList() }
                     }
                     combine(schedules, refreshing, errors, minuteOfDay) { cards, isRefreshing, errorMap, minute ->
+                        val mappedCards = cards.map { source ->
+                            PlaceCardMapper.map(
+                                place = source.place,
+                                schedule = source.schedule,
+                                minuteOfDay = minute,
+                                error = errorMap[source.place.id],
+                            )
+                        }
                         ViewState(
                             loaded = true,
                             isRefreshing = isRefreshing,
-                            cards = cards.map { source ->
-                                PlaceCardMapper.map(
-                                    place = source.place,
-                                    schedule = source.schedule,
-                                    minuteOfDay = minute,
-                                    error = errorMap[source.place.id],
-                                )
-                            },
+                            cards = mappedCards,
+                            showWidgetBanner = shouldShowWidgetBanner(mappedCards.size),
                         )
                     }
                 }
                 .collect { incoming ->
-                    viewState = incoming.copy(pendingDeleteId = viewState.pendingDeleteId)
+                    viewState = incoming.copy(
+                        pendingDeleteId = viewState.pendingDeleteId,
+                        showWidgetBanner = shouldShowWidgetBanner(incoming.cards.size),
+                    )
                 }
         }
         viewModelScope.launch {
@@ -99,7 +106,24 @@ class HomeViewModel(
             }
             is Event.Edit -> viewAction = Action.OpenAddress(viewEvent.id)
             Event.Settings -> viewAction = Action.OpenSettings
+            Event.AddWidgetClicked -> viewAction = Action.RequestPinWidget
+            Event.DismissWidgetBanner -> {
+                widgetManager.setBannerDismissed(true)
+                viewState = viewState.copy(showWidgetBanner = false)
+            }
+            Event.CheckWidget -> {
+                val shouldShow = shouldShowWidgetBanner(viewState.cards.size)
+                if (viewState.showWidgetBanner != shouldShow) {
+                    viewState = viewState.copy(showWidgetBanner = shouldShow)
+                }
+            }
         }
+    }
+
+    private fun shouldShowWidgetBanner(cardsCount: Int): Boolean {
+        return (cardsCount > 0) &&
+            !widgetManager.hasInstalledWidgets() &&
+            !widgetManager.isBannerDismissed()
     }
 
     private fun refreshAll(places: List<Place>) {

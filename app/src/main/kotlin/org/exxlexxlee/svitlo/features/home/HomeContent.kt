@@ -144,6 +144,14 @@ private fun ColumnHeader(
                         contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 96.dp),
                         verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp),
                     ) {
+                        if (viewState.showWidgetBanner) {
+                            item(key = "widget_banner") {
+                                WidgetBanner(
+                                    onAddWidget = { eventHandler(Event.AddWidgetClicked) },
+                                    onDismiss = { eventHandler(Event.DismissWidgetBanner) },
+                                )
+                            }
+                        }
                         items(viewState.cards, key = { it.id }) { card ->
                             PlaceCard(card = card, eventHandler = eventHandler)
                         }
@@ -165,6 +173,7 @@ private fun HomeContent_Preview() {
         HomeContent(
             viewState = ViewState(
                 loaded = true,
+                showWidgetBanner = true,
                 cards = listOf(
                     PlaceCardUi(
                         id = 1,
@@ -201,6 +210,7 @@ private fun HomeContent_Dark_Preview() {
         HomeContent(
             viewState = ViewState(
                 loaded = true,
+                showWidgetBanner = true,
                 cards = listOf(
                     PlaceCardUi(
                         id = 1,

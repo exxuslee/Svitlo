@@ -7,4 +7,5 @@ data class ViewState(
     val isRefreshing: Boolean = false,
     val cards: List<PlaceCardUi> = emptyList(),
     val pendingDeleteId: Long? = null,
+    val showWidgetBanner: Boolean = false,
 )

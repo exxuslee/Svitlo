@@ -68,4 +68,9 @@
     <string name="widget_name">Графік світла</string>
     <string name="widget_description">Сьогодні та завтра: слоти світла і відключень</string>
     <string name="widget_empty">Оберіть групу в додатку, щоб побачити графік</string>
+    <string name="widget_banner_title">Віджет на робочий стіл</string>
+    <string name="widget_banner_subtitle">Графік відключень завжди перед очима без відкриття додатка</string>
+    <string name="widget_banner_button">Додати віджет</string>
+    <string name="widget_pin_unsupported">Додайте віджет «Світло» через меню віджетів вашого робочого столу</string>
+    <string name="close">Закрити</string>
 </resources>

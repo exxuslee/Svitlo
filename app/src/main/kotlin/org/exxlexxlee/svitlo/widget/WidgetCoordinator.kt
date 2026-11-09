@@ -39,6 +39,12 @@ object WidgetCoordinator {
         ScheduleWidget().updateAll(context.applicationContext)
     }
 
+    fun hasInstalledWidgets(context: Context): Boolean =
+        WidgetManagerImpl(context).hasInstalledWidgets()
+
+    fun requestPinWidget(context: Context): Boolean =
+        WidgetManagerImpl(context).requestPinWidget()
+
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun observeAndUpdate(context: Context) {
         scope.launch {
