@@ -1,9 +1,16 @@
 name: Release to Google Play
+run-name: Release ${{ inputs.release_tag || github.ref_name }}
 
 on:
   push:
     tags:
       - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Существующий тег релиза, например v1.3.1'
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -19,12 +26,14 @@ jobs:
     steps:
       - name: Checkout tagged commit
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.release_tag && format('refs/tags/{0}', inputs.release_tag) || github.ref }}
 
       - name: Validate tag and calculate Android version
         id: version
         shell: bash
         env:
-          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
         run: |
           if [[ ! "$RELEASE_TAG" =~ ^v(0|[1-9][0-9]{0,3})\.(0|[1-9][0-9]{0,2})\.(0|[1-9][0-9]{0,2})$ ]]; then
             echo "::error::Expected vMAJOR.MINOR.PATCH without leading zeros; MINOR and PATCH must be <= 999."
@@ -65,6 +74,9 @@ jobs:
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3
+        with:
+          packages: platform-tools
+          log-accepted-android-sdk-licenses: false
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4
@@ -100,7 +112,7 @@ jobs:
       - name: Save release artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: svitlo-${{ github.ref_name }}
+          name: svitlo-v${{ steps.version.outputs.name }}
           path: |
             app/build/outputs/bundle/release/app-release.aab
             app/build/outputs/mapping/release/mapping.txt
@@ -116,7 +128,7 @@ jobs:
           mappingFile: app/build/outputs/mapping/release/mapping.txt
           track: production
           status: completed
-          releaseName: ${{ github.ref_name }}
+          releaseName: v${{ steps.version.outputs.name }}
           changesNotSentForReview: false
 
       - name: Remove signing material
