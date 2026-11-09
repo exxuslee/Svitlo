@@ -17,7 +17,7 @@ class RegionCatalog internal constructor(
         ),
     )
 
-    fun areas(): List<ServiceArea> = file.areas.map { area ->
+    private val cachedAreas: List<ServiceArea> = file.areas.map { area ->
         ServiceArea(
             id = area.id,
             name = area.name,
@@ -25,14 +25,20 @@ class RegionCatalog internal constructor(
         )
     }
 
-    fun regions(): List<Region> = areas().flatMap { area -> area.suppliers.map { it.region } }
+    private val cachedRegions = cachedAreas.flatMap { area -> area.suppliers.map { it.region } }
+    private val regionsById = cachedRegions.associateBy { it.id }
+    private val sourcesById = file.areas.flatMap { it.suppliers }.associate { it.id to it.source }
+
+    fun areas(): List<ServiceArea> = cachedAreas
+
+    fun regions(): List<Region> = cachedRegions
 
     fun source(regionId: String): RegionSourceConfig =
-        file.areas.flatMap { it.suppliers }.firstOrNull { it.id == regionId }?.source
+        sourcesById[regionId]
             ?: error("Unknown region: $regionId")
 
     fun region(regionId: String): Region =
-        regions().first { it.id == regionId }
+        regionsById[regionId] ?: error("Unknown region: $regionId")
 }
 
 @Serializable

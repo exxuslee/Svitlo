@@ -10,6 +10,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.exxlexxlee.data.catalog.RegionCatalog
+import org.exxlexxlee.data.local.MIGRATION_1_2
 import org.exxlexxlee.data.local.AppDatabase
 import org.exxlexxlee.data.mapper.GpvMapper
 import org.exxlexxlee.data.mapper.YasnoMapper
@@ -58,7 +59,7 @@ val dataModule = module {
     }
     single {
         Room.databaseBuilder(androidContext(), AppDatabase::class.java, "svitlo.db")
-            .fallbackToDestructiveMigration(dropAllTables = true)
+            .addMigrations(MIGRATION_1_2)
             .build()
     }
     single { get<AppDatabase>().placeDao() }

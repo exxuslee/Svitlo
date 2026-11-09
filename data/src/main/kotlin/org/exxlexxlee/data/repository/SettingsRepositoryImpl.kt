@@ -31,7 +31,7 @@ class SettingsRepositoryImpl(
     override fun observeDarkTheme(): Flow<Boolean> = darkThemeFlow.asStateFlow()
 
     override suspend fun setDarkTheme(isDark: Boolean) {
-        prefs.edit(commit = true) { putBoolean(KEY_DARK_THEME, isDark) }
+        prefs.edit { putBoolean(KEY_DARK_THEME, isDark) }
         darkThemeFlow.value = isDark
     }
 

@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -29,6 +30,16 @@ interface PlaceDao {
 
     @Update
     suspend fun update(entity: PlaceEntity)
+
+    @Transaction
+    suspend fun save(json: String, placeId: Long?): Long {
+        val existing = placeId?.takeIf { it > 0 }?.let { get(it) }
+        if (existing != null) {
+            update(existing.copy(json = json))
+            return existing.id
+        }
+        return insert(PlaceEntity(position = maxPosition() + 1, json = json))
+    }
 
     @Query("DELETE FROM places WHERE id = :id")
     suspend fun delete(id: Long)

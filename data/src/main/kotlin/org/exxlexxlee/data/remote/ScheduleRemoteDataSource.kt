@@ -1,5 +1,8 @@
 package org.exxlexxlee.data.remote
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import org.exxlexxlee.data.catalog.RegionSourceConfig
 import org.exxlexxlee.data.mapper.GpvMapper
@@ -12,26 +15,29 @@ class ScheduleRemoteDataSource(
     private val githubJsonApi: GithubJsonApi,
     private val yasnoMapper: YasnoMapper,
     private val gpvMapper: GpvMapper,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) {
-    suspend fun fetch(source: RegionSourceConfig): SchedulePayload = when (source.type) {
-        "yasno" -> {
-            val region = source.regionId ?: error("Yasno regionId missing")
-            val dso = source.dsoId ?: error("Yasno dsoId missing")
-            val payload = yasnoMapper.decode(yasnoApi.fetchPlannedOutages(region, dso))
-            SchedulePayload(yasnoMapper.groups(payload)) { group, clock ->
-                yasnoMapper.toSchedule(payload, group, clock)
+    suspend fun fetch(source: RegionSourceConfig): SchedulePayload = withContext(dispatcher) {
+        when (source.type) {
+            "yasno" -> {
+                val region = source.regionId ?: error("Yasno regionId missing")
+                val dso = source.dsoId ?: error("Yasno dsoId missing")
+                val payload = yasnoMapper.decode(yasnoApi.fetchPlannedOutages(region, dso))
+                SchedulePayload(yasnoMapper.groups(payload)) { group, clock ->
+                    yasnoMapper.toSchedule(payload, group, clock)
+                }
             }
-        }
 
-        "github_json" -> {
-            val url = source.url ?: error("GitHub JSON url missing")
-            val payload = gpvMapper.decode(githubJsonApi.fetch(url))
-            SchedulePayload(gpvMapper.groups(payload)) { group, clock ->
-                gpvMapper.toSchedule(payload, group, clock)
+            "github_json" -> {
+                val url = source.url ?: error("GitHub JSON url missing")
+                val payload = gpvMapper.decode(githubJsonApi.fetch(url))
+                SchedulePayload(gpvMapper.groups(payload)) { group, clock ->
+                    gpvMapper.toSchedule(payload, group, clock)
+                }
             }
-        }
 
-        else -> error("Unknown source type: ${source.type}")
+            else -> error("Unknown source type: ${source.type}")
+        }
     }
 }
 

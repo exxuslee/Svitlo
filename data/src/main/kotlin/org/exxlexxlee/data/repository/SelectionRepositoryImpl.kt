@@ -1,5 +1,10 @@
 package org.exxlexxlee.data.repository
 
+import java.util.logging.Logger
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -17,35 +22,26 @@ import org.exxlexxlee.domain.repository.SelectionRepository
 class SelectionRepositoryImpl(
     private val placeDao: PlaceDao,
     private val parser: Json,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : SelectionRepository {
 
     override fun observePlaces(): Flow<List<Place>> = placeDao.observeAll().map { entities ->
         entities.mapNotNull { entity -> entity.toPlace() }
-    }
+    }.distinctUntilChanged().flowOn(dispatcher)
 
     override fun observePlace(id: Long): Flow<Place?> =
         placeDao.observe(id).map { entity -> entity?.toPlace() }
+            .distinctUntilChanged().flowOn(dispatcher)
 
     override fun observe(): Flow<Selection?> = placeDao.observeFirst()
         .map { it?.toPlace()?.selection }
-        .distinctUntilChanged()
+        .distinctUntilChanged().flowOn(dispatcher)
 
     override suspend fun save(selection: Selection, placeId: Long?): Long {
-        val stored = selection.toStored()
-        val json = parser.encodeToString(StoredSelection.serializer(), stored)
-        if (placeId != null && placeId > 0) {
-            val existing = placeDao.get(placeId)
-            if (existing != null) {
-                placeDao.update(existing.copy(json = json))
-                return placeId
-            }
+        val json = withContext(dispatcher) {
+            parser.encodeToString(StoredSelection.serializer(), selection.toStored())
         }
-        return placeDao.insert(
-            PlaceEntity(
-                position = placeDao.maxPosition() + 1,
-                json = json,
-            ),
-        )
+        return placeDao.save(json, placeId)
     }
 
     override suspend fun delete(id: Long) {
@@ -55,7 +51,11 @@ class SelectionRepositoryImpl(
     private fun PlaceEntity.toPlace(): Place? {
         val selection = runCatching {
             parser.decodeFromString(StoredSelection.serializer(), json).toDomain()
-        }.getOrNull() ?: return null
+        }.getOrElse { error ->
+            Logger.getLogger(SelectionRepositoryImpl::class.java.name)
+                .warning("Cannot decode saved place $id: ${error.javaClass.simpleName}")
+            return null
+        }
         return Place(id = id, selection = selection)
     }
 

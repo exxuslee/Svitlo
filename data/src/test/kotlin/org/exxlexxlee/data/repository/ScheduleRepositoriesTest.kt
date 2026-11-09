@@ -4,6 +4,14 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,6 +46,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
 
+@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class ScheduleRepositoriesTest {
     private val json = Json { ignoreUnknownKeys = true }
     private val requests = mutableListOf<String>()
@@ -116,7 +125,7 @@ class ScheduleRepositoriesTest {
             fixture.schedules.refresh(fixture.selection)
             fail("Cancellation must propagate")
         } catch (actual: CancellationException) {
-            assertSame(cancellation, actual)
+            assertEquals(cancellation.message, actual.message)
         }
         assertEquals(null, fixture.dao.entity.value)
     }
@@ -179,18 +188,78 @@ class ScheduleRepositoriesTest {
         assertEquals(listOf("region|3.1"), fixture.dao.writtenKeys)
     }
 
-    private fun fixture(source: RegionSourceConfig, resource: String, groupId: String): Fixture {
+    @Test
+    fun concurrentRefreshesOfSameRegionDoNotOverlap() = runTest {
+        val fixture = fixture(RegionSourceConfig("yasno", regionId = 25, dsoId = 902), "yasno-kyiv-sample.json", "3.1", StandardTestDispatcher(testScheduler))
+        val entered = CompletableDeferred<Unit>()
+        val release = CompletableDeferred<Unit>()
+        var active = 0
+        var peak = 0
+        fixture.response.beforeResponse = {
+            active++
+            peak = maxOf(peak, active)
+            entered.complete(Unit)
+            release.await()
+            active--
+        }
+        val first = async { fixture.schedules.refresh(fixture.selection) }
+        entered.await()
+        val second = async { fixture.schedules.refresh(fixture.selection) }
+        runCurrent()
+        assertEquals(1, requests.size)
+        release.complete(Unit)
+        assertTrue(first.await().isSuccess)
+        assertTrue(second.await().isSuccess)
+        assertEquals(1, peak)
+        assertEquals(2, requests.size)
+    }
+
+    @Test
+    fun damagedCacheEmitsNullAndIsRebuiltWithoutClosingObservation() = runTest {
+        val fixture = fixture(RegionSourceConfig("yasno", regionId = 25, dsoId = 902), "yasno-kyiv-sample.json", "3.1")
+        fixture.schedules.refresh(fixture.selection)
+        fixture.dao.entity.value = fixture.dao.entity.value!!.copy(todayHalfHours = "ON")
+        val values = fixture.schedules.observe(fixture.selection).take(2).toList()
+        assertEquals(null, values.first())
+        assertEquals(48, values.last()!!.today.halfHours.size)
+        assertEquals(2, requests.size)
+    }
+
+    @Test
+    fun slowRegionDoesNotBlockAnotherRegion() = runTest {
+        val fixture = fixture(RegionSourceConfig("yasno", regionId = 25, dsoId = 902), "yasno-kyiv-sample.json", "3.1", StandardTestDispatcher(testScheduler))
+        val entered = CompletableDeferred<Unit>()
+        val release = CompletableDeferred<Unit>()
+        fixture.response.beforeResponse = { url ->
+            if (url.contains("/regions/25/")) {
+                entered.complete(Unit)
+                release.await()
+            }
+        }
+        val otherWritten = CompletableDeferred<Unit>()
+        fixture.dao.afterWrite = { key -> if (key == "region2|3.1") otherWritten.complete(Unit) }
+        val other = fixture.selection.copy(region = Region("region2", "Other", "provider"))
+        val refresh = async { fixture.schedules.refreshAll(listOf(fixture.selection, other)) }
+        entered.await()
+        otherWritten.await()
+        assertEquals(listOf("region2|3.1"), fixture.dao.writtenKeys)
+        release.complete(Unit)
+        assertTrue(refresh.await().values.all { it.isSuccess })
+    }
+
+    private fun fixture(source: RegionSourceConfig, resource: String, groupId: String, dispatcher: CoroutineDispatcher = Dispatchers.Default): Fixture {
         val body = checkNotNull(javaClass.classLoader?.getResourceAsStream(resource))
             .bufferedReader().use { it.readText() }
         val response = RemoteResponse(body)
         val client = HttpClient(MockEngine { request ->
             requests += request.url.toString()
+            response.beforeResponse(request.url.toString())
             respond(response.body, response.status)
         }) {
             expectSuccess = true
         }.also { clients += it }
         val remote = ScheduleRemoteDataSource(
-            YasnoApi(client), GithubJsonApi(client), YasnoMapper(json), GpvMapper(json),
+            YasnoApi(client), GithubJsonApi(client), YasnoMapper(json), GpvMapper(json), dispatcher,
         )
         val catalog = RegionCatalog(
             RegionsFile(
@@ -204,7 +273,8 @@ class ScheduleRepositoriesTest {
                                 "Київ",
                                 "provider",
                                 source = source
-                            )
+                            ),
+                            SupplierConfig("region2", "Other", "provider", source = source.copy(regionId = 26))
                         ),
                     )
                 )
@@ -213,7 +283,7 @@ class ScheduleRepositoriesTest {
         val dao = FakeScheduleDao()
         return Fixture(
             locations = LocationRepositoryImpl(catalog, remote),
-            schedules = ScheduleRepositoryImpl(catalog, remote, dao, clock),
+            schedules = ScheduleRepositoryImpl(catalog, remote, dao, clock, dispatcher),
             selection = Selection.ByGroup(
                 Region("region", "Київ", "provider"),
                 OutageGroup(groupId, groupId)
@@ -234,6 +304,7 @@ class ScheduleRepositoriesTest {
     private data class RemoteResponse(
         var body: String,
         var status: HttpStatusCode = HttpStatusCode.OK,
+        var beforeResponse: suspend (String) -> Unit = {},
     )
 
     private class FakeScheduleDao : ScheduleDao {
@@ -241,6 +312,7 @@ class ScheduleRepositoriesTest {
         val observedKeys = mutableListOf<String>()
         val writtenKeys = mutableListOf<String>()
         var writeFailure: Exception? = null
+        var afterWrite: (String) -> Unit = {}
 
         override fun observe(cacheKey: String): Flow<ScheduleCacheEntity?> {
             observedKeys += cacheKey
@@ -251,6 +323,7 @@ class ScheduleRepositoriesTest {
             writeFailure?.let { throw it }
             writtenKeys += entity.cacheKey
             this.entity.value = entity
+            afterWrite(entity.cacheKey)
         }
     }
 }
