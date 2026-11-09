@@ -6,6 +6,39 @@ import org.junit.Test
 class OutageWindowsTest {
 
     @Test
+    fun includesOutagesAtBothEndsOfTheDay() {
+        val halves = MutableList(48) { PowerState.ON }
+        halves[0] = PowerState.OFF
+        halves[47] = PowerState.OFF
+
+        assertEquals(
+            listOf(OutageWindow(0, 30), OutageWindow(1410, 1440)),
+            OutageWindows.windows(halves),
+        )
+        assertEquals("00:00–00:30 · 23:30–24:00", OutageWindows.formatRanges(halves))
+    }
+
+    @Test
+    fun switchesStateExactlyAtHalfHourBoundary() {
+        val halves = MutableList(48) { PowerState.ON }
+        halves[1] = PowerState.MAYBE
+        halves[2] = PowerState.UNKNOWN
+
+        assertEquals(PowerSnapshot(PowerState.ON, 1), OutageWindows.statusAt(halves, 29))
+        assertEquals(PowerSnapshot(PowerState.MAYBE, 30), OutageWindows.statusAt(halves, 30))
+        assertEquals(PowerSnapshot(PowerState.UNKNOWN, 30), OutageWindows.statusAt(halves, 60))
+    }
+
+    @Test
+    fun clampsStatusTimeToTheCurrentDay() {
+        val halves = MutableList(48) { PowerState.ON }
+        halves[0] = PowerState.OFF
+
+        assertEquals(PowerSnapshot(PowerState.OFF, 30), OutageWindows.statusAt(halves, -1))
+        assertEquals(PowerSnapshot(PowerState.ON, null), OutageWindows.statusAt(halves, 1440))
+    }
+
+    @Test
     fun formatsScreenshotTodayWindowsAndTotal() {
         val halves = MutableList(48) { PowerState.ON }
         for (index in 16 until 22) halves[index] = PowerState.OFF

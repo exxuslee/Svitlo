@@ -20,6 +20,17 @@ import org.junit.Test
 class ObserveDialsTest {
 
     @Test
+    fun emitsNullWhenScheduleIsUnavailable() = runTest {
+        val selection = Selection.ByGroup(
+            region = Region("kyiv", "Київ", "yasno"),
+            group = OutageGroup("3.1", "3.1"),
+        )
+        val observe = ObserveDials(ObserveSchedule(FakeScheduleRepository(null)))
+
+        assertNull(observe(selection).first())
+    }
+
+    @Test
     fun splitsTodayIntoAmAndPmHours() {
         val today = day(
             date = LocalDate(2026, 11, 8),

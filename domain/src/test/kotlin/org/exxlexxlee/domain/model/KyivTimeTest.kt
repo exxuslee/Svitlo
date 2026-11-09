@@ -10,6 +10,31 @@ import org.junit.Test
 class KyivTimeTest {
 
     @Test
+    fun derivesDateAndSlotAcrossLocalMidnight() {
+        val clock = object : Clock {
+            override fun now(): Instant = Instant.parse("2026-11-08T22:00:00Z")
+        }
+
+        assertEquals(kotlinx.datetime.LocalDate(2026, 11, 9), KyivTime.today(clock))
+        assertEquals(0, KyivTime.minuteOfDay(clock))
+        assertEquals(0, KyivTime.halfHourIndex(clock))
+    }
+
+    @Test
+    fun advancesSlotAtHalfHourBoundaryInSummerTime() {
+        fun clockAt(instant: String) = object : Clock {
+            override fun now(): Instant = Instant.parse(instant)
+        }
+
+        val before = clockAt("2026-07-08T09:29:59Z")
+        val after = clockAt("2026-07-08T09:30:00Z")
+        assertEquals(12 * 60 + 29, KyivTime.minuteOfDay(before))
+        assertEquals(24, KyivTime.halfHourIndex(before))
+        assertEquals(12 * 60 + 30, KyivTime.minuteOfDay(after))
+        assertEquals(25, KyivTime.halfHourIndex(after))
+    }
+
+    @Test
     fun zoneInitializesWithoutException() {
         assertNotNull(KyivTime.ZONE)
         assertTrue(

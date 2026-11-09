@@ -19,22 +19,22 @@ object OutageWindows {
                 index += 1
                 continue
             }
-            var end = index + 1
-            while (end < halfHours.size && halfHours[end] == PowerState.OFF) {
-                end += 1
-            }
-            result += OutageWindow(startMinutes = index * 30, endMinutes = end * 30)
+            val end = halfHours.endOfRun(index)
+            result += OutageWindow(
+                startMinutes = index * MINUTES_PER_HALF_HOUR,
+                endMinutes = end * MINUTES_PER_HALF_HOUR,
+            )
             index = end
         }
         return result
     }
 
     fun totalOffMinutes(halfHours: List<PowerState>): Int =
-        halfHours.count { it == PowerState.OFF } * 30
+        halfHours.count { it == PowerState.OFF } * MINUTES_PER_HALF_HOUR
 
     fun formatClock(minutes: Int): String {
-        val hour = minutes / 60
-        val minute = minutes % 60
+        val hour = minutes / MINUTES_PER_HOUR
+        val minute = minutes % MINUTES_PER_HOUR
         return hour.toString().padStart(2, '0') + ":" + minute.toString().padStart(2, '0')
     }
 
@@ -44,20 +44,17 @@ object OutageWindows {
         }
 
     fun statusAt(halfHours: List<PowerState>, minuteOfDay: Int): PowerSnapshot {
-        val minute = minuteOfDay.coerceIn(0, MINUTES_IN_DAY - 1)
-        val index = minute / 30
+        val minute = minuteOfDay.coerceIn(0, MINUTES_PER_DAY - 1)
+        val index = minute / MINUTES_PER_HALF_HOUR
         val state = halfHours[index]
-        var cursor = index + 1
-        while (cursor < halfHours.size && halfHours[cursor] == state) {
-            cursor += 1
-        }
-        val until = if (cursor >= halfHours.size) null else cursor * 30 - minute
+        val end = halfHours.endOfRun(index)
+        val until = if (end >= halfHours.size) null else end * MINUTES_PER_HALF_HOUR - minute
         return PowerSnapshot(state = state, minutesUntilChange = until)
     }
 
     fun formatDuration(minutes: Int): String {
-        val hours = minutes / 60
-        val rest = minutes % 60
+        val hours = minutes / MINUTES_PER_HOUR
+        val rest = minutes % MINUTES_PER_HOUR
         return when {
             hours > 0 && rest > 0 -> "$hours год $rest хв"
             hours > 0 -> "$hours год"
@@ -65,5 +62,11 @@ object OutageWindows {
         }
     }
 
-    private const val MINUTES_IN_DAY = 24 * 60
+    private fun List<PowerState>.endOfRun(start: Int): Int {
+        var end = start + 1
+        while (end < size && this[end] == this[start]) {
+            end += 1
+        }
+        return end
+    }
 }
