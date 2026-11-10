@@ -58,13 +58,32 @@ jobs:
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
           GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: |
-          for name in ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD GOOGLE_PLAY_SERVICE_ACCOUNT_JSON; do
+          for name in ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD GOOGLE_PLAY_SERVICE_ACCOUNT_JSON GOOGLE_SERVICES_JSON; do
             if [[ -z "${!name}" ]]; then
               echo "::error::Missing GitHub Actions secret: $name"
               exit 1
             fi
           done
+
+      - name: Restore Firebase configuration
+        shell: python
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          import json
+          import os
+          from pathlib import Path
+
+          config = json.loads(os.environ["GOOGLE_SERVICES_JSON"])
+          if not any(
+              client.get("client_info", {}).get("android_client_info", {}).get("package_name")
+              == "org.exxlexxlee.svitlo"
+              for client in config.get("client", [])
+          ):
+              raise SystemExit("GOOGLE_SERVICES_JSON must contain the org.exxlexxlee.svitlo Android client")
+          Path("app/google-services.json").write_text(json.dumps(config), encoding="utf-8")
 
       - name: Set up Java
         uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4

@@ -14,7 +14,8 @@ Workflow `.github/workflows/release.yml` запускается после от�
 `svitlo-github-releases@svitlo-play-releases-exxuslee.iam.gserviceaccount.com`
 имеет доступ только к приложению `org.exxlexxlee.svitlo`: чтение информации
 и выпуск рабочей версии. Его JSON-ключ хранится в repository secret
-`GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`. Все пять секретов из таблицы ниже настроены.
+`GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`. Пять секретов публикации были настроены;
+для сборок с Firebase дополнительно нужен `GOOGLE_SERVICES_JSON` из таблицы ниже.
 
 9 ноября 2026 года проверены доступ к production через API, совпадение сертификата
 ключа загрузки с локальным keystore и выключенная управляемая публикация.
@@ -48,6 +49,7 @@ Release workflow загружает R8 mapping в Crashlytics; обычный CI
    | `ANDROID_KEY_ALIAS` | Alias ключа загрузки |
    | `ANDROID_KEY_PASSWORD` | Пароль ключа загрузки |
    | `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` | Полное содержимое JSON-ключа сервисного аккаунта, без Base64 |
+   | `GOOGLE_SERVICES_JSON` | Полное содержимое `app/google-services.json` для Firebase Android-приложения `org.exxlexxlee.svitlo`, без Base64 |
 
    Подготовить Base64 в PowerShell, скопировав в буфер обмена:
 
@@ -55,7 +57,7 @@ Release workflow загружает R8 mapping в Crashlytics; обычный CI
    [Convert]::ToBase64String([IO.File]::ReadAllBytes('D:\secure\svitlo-upload.jks')) | Set-Clipboard
    ```
 
-   Ключи и пароли не добавляйте в Git. Без всех пяти секретов workflow завершится
+   Ключи и пароли не добавляйте в Git. Без всех шести секретов workflow завершится
    с сообщением о недостающем секрете до сборки.
 5. Для автоматического появления обновления у пользователей отключите
    **Managed publishing** в Play Console. Workflow отправляет изменения на

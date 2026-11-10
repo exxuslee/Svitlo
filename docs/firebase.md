@@ -4,9 +4,19 @@
 Android package: `org.exxlexxlee.svitlo`.
 Firebase App ID: `1:452907115683:android:66550f8b82f97f180b8b16`.
 
-`app/google-services.json` — клиентская конфигурация, необходимая также для CI.
+`app/google-services.json` — клиентская конфигурация, исключённая из Git.
+Для локальной сборки скачайте её из настроек Android-приложения в Firebase Console.
 Она не является ключом сервисного аккаунта. Серверные ключи и JSON сервисных
 аккаунтов нельзя помещать в Android-приложение или Git.
+
+Для релизного workflow сохраните полное содержимое этого файла в GitHub Actions
+repository secret `GOOGLE_SERVICES_JSON`. Workflow проверяет наличие секрета
+и Android package, затем создаёт `app/google-services.json` до запуска Gradle.
+Обычный CI копирует `.github/firebase/google-services.ci.json`: это фиктивная
+конфигурация для тестов и проверки сборки без доступа к рабочему Firebase.
+Сборки обычного CI не предназначены для распространения и проверки доставки
+Analytics, Crashlytics или FCM. Релиз всегда использует настоящую конфигурацию
+из секрета, без подстановки тестовой.
 
 ## Crashlytics
 
