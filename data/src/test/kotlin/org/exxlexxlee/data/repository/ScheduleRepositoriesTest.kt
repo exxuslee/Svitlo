@@ -10,6 +10,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.CancellationException
@@ -212,6 +213,43 @@ class ScheduleRepositoriesTest {
         assertTrue(second.await().isSuccess)
         assertEquals(1, peak)
         assertEquals(2, requests.size)
+    }
+
+    @Test
+    fun emptyBatchDoesNotRequestOrWriteAnything() = runTest {
+        val fixture = fixture(
+            RegionSourceConfig("yasno", regionId = 25, dsoId = 902),
+            "yasno-kyiv-sample.json", "3.1",
+        )
+
+        assertTrue(fixture.schedules.refreshAll(emptyList()).isEmpty())
+        assertTrue(requests.isEmpty())
+        assertTrue(fixture.dao.writtenKeys.isEmpty())
+    }
+
+    @Test
+    fun cancelledRequestReleasesRegionForNextRefresh() = runTest {
+        val fixture = fixture(
+            RegionSourceConfig("yasno", regionId = 25, dsoId = 902),
+            "yasno-kyiv-sample.json", "3.1", StandardTestDispatcher(testScheduler),
+        )
+        val entered = CompletableDeferred<Unit>()
+        val release = CompletableDeferred<Unit>()
+        fixture.response.beforeResponse = {
+            entered.complete(Unit)
+            release.await()
+        }
+
+        val refresh = async { fixture.schedules.refresh(fixture.selection) }
+        entered.await()
+        refresh.cancelAndJoin()
+
+        assertTrue(refresh.isCancelled)
+        assertTrue(fixture.dao.writtenKeys.isEmpty())
+        fixture.response.beforeResponse = {}
+        assertTrue(fixture.schedules.refresh(fixture.selection).isSuccess)
+        assertEquals(2, requests.size)
+        assertEquals(listOf("region|3.1"), fixture.dao.writtenKeys)
     }
 
     @Test

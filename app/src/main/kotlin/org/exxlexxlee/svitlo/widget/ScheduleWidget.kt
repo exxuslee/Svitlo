@@ -46,6 +46,7 @@ import org.exxlexxlee.domain.usecase.ObserveSchedule
 import org.exxlexxlee.domain.usecase.ObserveSelection
 import org.exxlexxlee.svitlo.MainActivity
 import org.exxlexxlee.svitlo.R
+import org.exxlexxlee.svitlo.ui.common.localizedGroupLabel
 import org.exxlexxlee.svitlo.ui.schedule.DarkSchedulePalette
 import org.exxlexxlee.svitlo.ui.schedule.GlanceScheduleDaySwitch
 import org.exxlexxlee.svitlo.ui.schedule.GlanceScheduleGroupBadge
@@ -119,7 +120,9 @@ internal fun ScheduleWidgetContent(data: ScheduleWidgetUi, appWidgetId: Int) {
                 .padding(12.dp),
         ) {
             Header(
-                title = data.title,
+                title = if (data.today == null && data.groupLabel.isEmpty()) {
+                    LocalContext.current.getString(R.string.app_name)
+                } else data.title,
                 modifier = GlanceModifier.clickable(openApp),
             )
             Spacer(GlanceModifier.height(8.dp))
@@ -176,7 +179,7 @@ private fun DayPanel(
                 Spacer(GlanceModifier.defaultWeight())
                 if (data.groupLabel.isNotBlank()) {
                     GlanceScheduleGroupBadge(
-                        text = data.groupLabel,
+                        text = context.localizedGroupLabel(data.groupLabel),
                         currentState = data.currentState,
                     )
                 }

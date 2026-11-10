@@ -24,6 +24,7 @@ import org.exxlexxlee.domain.model.ServiceArea
 import org.exxlexxlee.svitlo.features.address.models.Event
 import org.exxlexxlee.svitlo.features.address.models.ViewState
 import org.exxlexxlee.svitlo.ui.theme.AppColors
+import org.exxlexxlee.svitlo.ui.common.localizedRegionName
 
 
 private val CardShape = RoundedCornerShape(20.dp)
@@ -65,7 +66,7 @@ private fun AreaCard(
             .padding(horizontal = 18.dp, vertical = 16.dp),
     ) {
         Text(
-            text = area.name,
+            text = localizedRegionName(area.name),
             color = AppColors.Title,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,

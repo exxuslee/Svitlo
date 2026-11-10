@@ -25,14 +25,18 @@ import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
+import org.exxlexxlee.svitlo.telemetry.ScreenTracker
+import org.exxlexxlee.svitlo.telemetry.TrackNavigation
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import org.exxlexxlee.svitlo.navigation.AppNavHost
 import org.exxlexxlee.svitlo.ui.common.LocalNavController
 import org.exxlexxlee.svitlo.ui.theme.SvitloTheme
 import org.exxlexxlee.svitlo.update.PlayAppUpdater
 import org.koin.androidx.compose.koinViewModel
+import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
+    private val screenTracker: ScreenTracker by inject()
     private val appUpdater by lazy {
         PlayAppUpdater(AppUpdateManagerFactory.create(this))
     }
@@ -54,6 +58,7 @@ class MainActivity : ComponentActivity() {
             val appViewModel: AppViewModel = koinViewModel()
             val isDarkTheme by appViewModel.isDarkTheme.collectAsStateWithLifecycle()
             val navController = rememberNavController()
+            TrackNavigation(navController, screenTracker)
             val updateSnackbarHostState = remember { SnackbarHostState() }
 
             LaunchedEffect(appUpdater.isUpdateDownloaded) {

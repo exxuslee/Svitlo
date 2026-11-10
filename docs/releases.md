@@ -22,6 +22,9 @@ Workflow `.github/workflows/release.yml` запускается после от�
 
 ## Однократная настройка
 
+Интеграция Firebase и проверка сбора данных описаны в [firebase.md](firebase.md).
+Release workflow загружает R8 mapping в Crashlytics; обычный CI этого не делает.
+
 1. В Google Play Console должно существовать приложение с этим package name,
    настроенной Play App Signing, заполненными обязательными разделами и доступом
    к production. Если приложение ещё не публиковалось, первую сборку загрузите

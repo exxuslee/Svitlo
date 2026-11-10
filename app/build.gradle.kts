@@ -1,6 +1,10 @@
+import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 val releaseVersionName = providers.gradleProperty("releaseVersionName")
@@ -54,7 +58,18 @@ android {
     }
 
     buildTypes {
+        debug {
+            manifestPlaceholders["crashlyticsCollectionEnabled"] = "false"
+            extensions.configure<CrashlyticsExtension> {
+                mappingFileUploadEnabled = false
+            }
+        }
         release {
+            manifestPlaceholders["crashlyticsCollectionEnabled"] = "true"
+            extensions.configure<CrashlyticsExtension> {
+                mappingFileUploadEnabled = providers.gradleProperty("uploadCrashlyticsMapping")
+                    .map(String::toBoolean).getOrElse(false)
+            }
             if (hasReleaseSigning) {
                 signingConfig = signingConfigs.getByName("release")
             }
@@ -83,6 +98,10 @@ kotlin {
 }
 
 dependencies {
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.messaging)
     implementation(project(":domain"))
     implementation(project(":data"))
 

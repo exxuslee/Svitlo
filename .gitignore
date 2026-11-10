@@ -21,3 +21,6 @@ key.properties
 keystore.properties
 google-play-service-account*.json
 svitlo-play-releases-exxuslee-*.json
+firebase-debug.log
+firebase-debug.*.log
+/app/google-services.json

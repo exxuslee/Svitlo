@@ -3,6 +3,7 @@ package org.exxlexxlee.svitlo
 import android.app.Application
 import androidx.work.Configuration
 import org.exxlexxlee.svitlo.di.appModule
+import org.exxlexxlee.svitlo.messaging.PushNotifications
 import org.exxlexxlee.svitlo.notification.NotificationCoordinator
 import org.exxlexxlee.svitlo.sync.ScheduleRefreshScheduler
 import org.exxlexxlee.svitlo.sync.ScheduleWorkerFactory
@@ -28,6 +29,7 @@ class App : Application(), Configuration.Provider {
             androidContext(this@App)
             modules(appModule)
         }.koin
+        koin.get<PushNotifications>().createChannel()
         koin.get<NotificationCoordinator>().start()
         koin.get<WidgetCoordinator>().start()
         koin.get<ScheduleRefreshScheduler>().start()

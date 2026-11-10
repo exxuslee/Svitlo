@@ -102,6 +102,7 @@ jobs:
           umask 077
           printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$ANDROID_KEYSTORE_PATH"
           ./gradlew :app:bundleRelease \
+            -PuploadCrashlyticsMapping=true \
             -PreleaseVersionName="$RELEASE_VERSION_NAME" \
             -PreleaseVersionCode="$RELEASE_VERSION_CODE" \
             --no-configuration-cache --no-build-cache --no-daemon --stacktrace

@@ -76,6 +76,10 @@ Debug APK з’явиться в `app/build/outputs/apk/debug/app-debug.apk`. П
 
 ## Перевірки
 
+До застосунку підключено Firebase Crashlytics, Analytics та Cloud Messaging.
+Налаштування, перевірка доставки й вимоги перед публікацією описані в
+[`docs/firebase.md`](docs/firebase.md).
+
 Модульні тести всіх трьох модулів:
 
 ```powershell

@@ -1,4 +1,6 @@
 <resources>
+    <string name="push_channel_name">Повідомлення сервісу</string>
+    <string name="push_channel_description">Новини та повідомлення про роботу Світло</string>
     <string name="app_name">Світло</string>
     <string name="address_title">Додавання адреси</string>
     <string name="edit_address_title">Редагування адреси</string>
@@ -75,4 +77,23 @@
     <string name="close">Закрити</string>
     <string name="update_downloaded">Оновлення завантажено. Перезапустіть додаток, щоб установити.</string>
     <string name="update_install">Установити</string>
+    <string name="group_label">Група %1$s</string>
+    <string name="duration_hours_minutes">%1$d год %2$d хв</string>
+    <string name="duration_hours">%1$d год</string>
+    <string name="duration_minutes">%1$d хв</string>
+    <string name="region_kyiv">Київ</string>
+    <string name="region_kyiv_region">Київська область</string>
+    <string name="region_vinnytsia">Вінницька область</string>
+    <string name="region_dnipro">Дніпропетровська область</string>
+    <string name="region_zhytomyr">Житомирська область</string>
+    <string name="region_zakarpattia">Закарпатська область</string>
+    <string name="region_zaporizhzhia">Запорізька область</string>
+    <string name="region_ivano_frankivsk">Івано-Франківська область</string>
+    <string name="region_lviv">Львівська область</string>
+    <string name="region_odesa">Одеська область</string>
+    <string name="region_poltava">Полтавська область</string>
+    <string name="region_rivne">Рівненська область</string>
+    <string name="region_ternopil">Тернопільська область</string>
+    <string name="region_khmelnytskyi">Хмельницька область</string>
+    <string name="region_chernihiv">Чернігівська область</string>
 </resources>

@@ -58,7 +58,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
-import org.exxlexxlee.domain.model.OutageWindows
+import org.exxlexxlee.svitlo.ui.common.localizedDuration
+import org.exxlexxlee.svitlo.ui.common.localizedGroupLabel
 import org.exxlexxlee.domain.model.PowerState
 import org.exxlexxlee.svitlo.R
 import org.exxlexxlee.svitlo.features.address.AddressIcon
@@ -373,7 +374,7 @@ private fun GroupBadgeWithStatus(card: PlaceCardUi, modifier: Modifier = Modifie
                 ),
         )
         Text(
-            text = card.groupLabel,
+            text = localizedGroupLabel(card.groupLabel),
             color = CardPalette.GroupBadgeText,
             fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold,
@@ -428,7 +429,7 @@ private fun CountdownColumn(card: PlaceCardUi, modifier: Modifier = Modifier) {
             val target = card.countdownTarget
             if (minutes != null && target != null) {
                 Text(
-                    text = OutageWindows.formatDuration(minutes),
+                    text = localizedDuration(minutes),
                     modifier = Modifier.padding(top = if (card.schedulesSuspended) 6.dp else 0.dp),
                     color = CardPalette.Title,
                     fontWeight = FontWeight.Bold,
