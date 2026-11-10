@@ -36,6 +36,7 @@ import org.exxlexxlee.domain.model.PowerState
 import org.exxlexxlee.svitlo.R
 import org.exxlexxlee.svitlo.features.home.models.Event
 import org.exxlexxlee.svitlo.features.home.models.ViewState
+import org.exxlexxlee.svitlo.ui.schedule.CardPalette
 import org.exxlexxlee.svitlo.ui.theme.SvitloTheme
 
 @OptIn(ExperimentalMaterial3Api::class)

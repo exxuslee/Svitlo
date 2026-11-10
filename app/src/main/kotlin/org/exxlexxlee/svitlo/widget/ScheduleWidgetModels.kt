@@ -7,14 +7,13 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Clock
-import org.exxlexxlee.domain.model.DaySchedule
 import org.exxlexxlee.domain.model.KyivTime
-import org.exxlexxlee.svitlo.ui.common.groupLabel
 import org.exxlexxlee.domain.model.OutageSchedule
 import org.exxlexxlee.domain.model.PowerState
 import org.exxlexxlee.domain.model.Selection
 import org.exxlexxlee.domain.usecase.ObserveSchedule
 import org.exxlexxlee.domain.usecase.ObserveSelection
+import org.exxlexxlee.svitlo.ui.schedule.ScheduleCardMapper
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal fun observeWidgetUi(
@@ -39,6 +38,7 @@ data class ScheduleWidgetUi(
     val today: WidgetDayUi?,
     val tomorrow: WidgetDayUi?,
     val nowHalfHourIndex: Int?,
+    val currentState: PowerState? = null,
 )
 
 object ScheduleWidgetMapper {
@@ -56,15 +56,14 @@ object ScheduleWidgetMapper {
                 nowHalfHourIndex = null,
             )
         }
+        val card = ScheduleCardMapper.map(selection, schedule, KyivTime.minuteOfDay(clock))
         return ScheduleWidgetUi(
-            title = selection.details?.name ?: selection.region.name,
-            groupLabel = groupLabel(selection.group.name),
-            today = schedule?.today?.toUi(),
-            tomorrow = schedule?.tomorrow?.toUi(),
-            nowHalfHourIndex = KyivTime.halfHourIndex(clock),
+            title = card.title,
+            groupLabel = card.groupLabel,
+            today = WidgetDayUi(card.todayStates),
+            tomorrow = card.tomorrowRanges?.let { WidgetDayUi(card.tomorrowStates) },
+            nowHalfHourIndex = card.nowIndex.takeIf { card.showNowMarker },
+            currentState = card.currentState,
         )
     }
-
-    private fun DaySchedule.toUi(): WidgetDayUi = WidgetDayUi(states = halfHours)
-
 }

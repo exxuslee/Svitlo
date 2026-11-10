@@ -36,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.exxlexxlee.svitlo.R
+import org.exxlexxlee.svitlo.ui.schedule.CardPalette
 import org.exxlexxlee.svitlo.ui.theme.SvitloTheme
 
 @Composable

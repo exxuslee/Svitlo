@@ -56,15 +56,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
 import org.exxlexxlee.domain.model.OutageWindows
 import org.exxlexxlee.domain.model.PowerState
 import org.exxlexxlee.svitlo.R
 import org.exxlexxlee.svitlo.features.address.AddressIcon
 import org.exxlexxlee.svitlo.features.home.models.Event
-import org.exxlexxlee.svitlo.ui.theme.LocalDarkTheme
+import org.exxlexxlee.svitlo.ui.schedule.CardPalette
+import org.exxlexxlee.svitlo.ui.schedule.ScheduleDaySwitch
+import org.exxlexxlee.svitlo.ui.schedule.ScheduleTimelineView
+import org.exxlexxlee.svitlo.ui.schedule.stateColor
 import org.exxlexxlee.svitlo.ui.theme.SvitloTheme
-import kotlin.math.roundToInt
 
 @Composable
 fun PlaceCard(
@@ -255,7 +258,7 @@ internal fun PlaceCardSwipeable(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    DaySwitch(
+                    ScheduleDaySwitch(
                         showTomorrow = showTomorrow,
                         onTabSelected = { showTomorrow = it },
                     )
@@ -291,7 +294,7 @@ internal fun PlaceCardSwipeable(
                 }
 
                 if (hasData) {
-                    WidgetTimeline(
+                    ScheduleTimelineView(
                         states = currentStates,
                         nowHalfHourIndex = if (!showTomorrow && card.showNowMarker) card.nowIndex else null,
                     )
@@ -380,56 +383,6 @@ private fun GroupBadgeWithStatus(card: PlaceCardUi, modifier: Modifier = Modifie
 }
 
 @Composable
-private fun DaySwitch(
-    showTomorrow: Boolean,
-    onTabSelected: (Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier
-            .clip(RoundedCornerShape(30))
-            .background(CardPalette.Banner)
-            .padding(2.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        DayChip(
-            text = stringResource(R.string.today),
-            selected = !showTomorrow,
-            onClick = { onTabSelected(false) },
-        )
-        DayChip(
-            text = stringResource(R.string.tomorrow),
-            selected = showTomorrow,
-            onClick = { onTabSelected(true) },
-        )
-    }
-}
-
-@Composable
-private fun DayChip(
-    text: String,
-    selected: Boolean,
-    onClick: () -> Unit,
-) {
-    Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(30))
-            .background(if (selected) CardPalette.Accent else Color.Transparent)
-            .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 4.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = text,
-            color = if (selected) Color.White else CardPalette.Muted,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.SemiBold,
-            maxLines = 1,
-        )
-    }
-}
-
-@Composable
 private fun DayLabel(prefix: String, ranges: String?, modifier: Modifier = Modifier) {
     val value = when (ranges) {
         null -> stringResource(R.string.day_missing)
@@ -506,116 +459,6 @@ private fun CountdownColumn(card: PlaceCardUi, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun WidgetTimeline(
-    states: List<PowerState>,
-    nowHalfHourIndex: Int?,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        HourRow(states = states, startHour = 0, nowHalfHourIndex = nowHalfHourIndex)
-        HourRow(states = states, startHour = 12, nowHalfHourIndex = nowHalfHourIndex)
-    }
-}
-
-@Composable
-private fun HourRow(
-    states: List<PowerState>,
-    startHour: Int,
-    nowHalfHourIndex: Int?,
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(2.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        for (hour in startHour until (startHour + 12)) {
-            val first = states.getOrElse(hour * 2) { PowerState.UNKNOWN }
-            val second = states.getOrElse((hour * 2) + 1) { PowerState.UNKNOWN }
-            val isCurrentHour = nowHalfHourIndex != null && (nowHalfHourIndex / 2 == hour)
-            HourCell(
-                hour = hour,
-                first = first,
-                second = second,
-                marked = isCurrentHour,
-                modifier = Modifier.weight(1f),
-            )
-        }
-    }
-}
-
-@Composable
-private fun HourCell(
-    hour: Int,
-    first: PowerState,
-    second: PowerState,
-    marked: Boolean,
-    modifier: Modifier = Modifier,
-) {
-    val outerShape = RoundedCornerShape(4.dp)
-    Box(
-        modifier = modifier
-            .height(26.dp)
-            .clip(outerShape)
-            .then(
-                if (marked) {
-                    Modifier
-                        .background(CardPalette.Marker)
-                        .padding(horizontal = 2.dp, vertical = 3.5.dp)
-                } else {
-                    Modifier
-                }
-            ),
-        contentAlignment = Alignment.Center,
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .clip(if (marked) RoundedCornerShape(2.5.dp) else outerShape),
-            contentAlignment = Alignment.Center,
-        ) {
-            if (first == second) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(stateColor(first)),
-                )
-            } else {
-                Row(modifier = Modifier.fillMaxSize()) {
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxSize()
-                            .background(stateColor(first)),
-                    )
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxSize()
-                            .background(stateColor(second)),
-                    )
-                }
-            }
-            Text(
-                text = hour.toString(),
-                color = hourLabelColor(first, second),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                maxLines = 1,
-            )
-        }
-    }
-}
-
-private fun hourLabelColor(first: PowerState, second: PowerState): Color {
-    val onDark = listOf(first, second).all { it == PowerState.OFF || it == PowerState.UNKNOWN }
-    return if (onDark) Color.White else Color(0xFF1B2437)
-}
-
-@Composable
 private fun EmergencyNotice() {
     val notice = stringResource(R.string.emergency_notice)
     val emphasis = stringResource(R.string.emergency_notice_emphasis)
@@ -645,50 +488,7 @@ private fun EmergencyNotice() {
 }
 
 @Composable
-private fun stateColor(state: PowerState?): Color = when (state) {
-    PowerState.ON -> CardPalette.On
-    PowerState.OFF -> CardPalette.Off
-    PowerState.MAYBE -> CardPalette.Maybe
-    PowerState.UNKNOWN, null -> CardPalette.Unknown
-}
-
-internal object CardPalette {
-    val Screen: Color
-        @Composable get() = if (LocalDarkTheme.current) Color(0xFF121418) else Color(0xFFF2F4F8)
-
-    val Card: Color
-        @Composable get() = if (LocalDarkTheme.current) Color(0xFF1E2128) else Color(0xFFFFFFFF)
-
-    val Title: Color
-        @Composable get() = if (LocalDarkTheme.current) Color(0xFFF0F2F5) else Color(0xFF1B2437)
-
-    val Muted = Color(0xFF8B95A7)
-
-    val Off = Color(0xFFE23B3B)
-    val On = Color(0xFFFFE826)
-    val Yes = Color(0xFF2EAE4E)
-    val Maybe = Color(0xFF4DAF98)
-
-    val Unknown: Color
-        @Composable get() = if (LocalDarkTheme.current) Color(0xFF353C4A) else Color(0xFF2C3444)
-
-    val Accent = Color(0xFF5B6CFF)
-    val Marker = Color(0xFF35ED2F)
-
-    val Banner: Color
-        @Composable get() = if (LocalDarkTheme.current) Color(0xFF252932) else Color(0xFFF0F1F4)
-
-    val BannerText: Color
-        @Composable get() = if (LocalDarkTheme.current) Color(0xFFB0B7C3) else Color(0xFF6D7686)
-
-    val GroupBadge: Color
-        @Composable get() = if (LocalDarkTheme.current) Color(0xFF252932) else Color(0xFFF0F1F4)
-
-    val GroupBadgeText: Color
-        @Composable get() = if (LocalDarkTheme.current) Color(0xFFF0F2F5) else Color(0xFF1B2437)
-
-    val Range = Color(0xFFE14D4D)
-}
+private fun stateColor(state: PowerState?): Color = CardPalette.stateColor(state)
 
 @Preview(showBackground = true, widthDp = 400, backgroundColor = 0xFF121418)
 @Composable

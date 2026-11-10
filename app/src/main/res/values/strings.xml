@@ -73,4 +73,6 @@
     <string name="widget_banner_button">Додати віджет</string>
     <string name="widget_pin_unsupported">Додайте віджет «Світло» через меню віджетів вашого робочого столу</string>
     <string name="close">Закрити</string>
+    <string name="update_downloaded">Оновлення завантажено. Перезапустіть додаток, щоб установити.</string>
+    <string name="update_install">Установити</string>
 </resources>
