@@ -33,7 +33,10 @@ class GpvMapper(
         clock: Clock = Clock.System,
     ): OutageSchedule {
         val fact = dto.fact ?: error("GPV file has no fact block")
-        val todayKey = fact.today?.toString()
+        val currentDate = KyivTime.today(clock)
+        val todayKey = fact.data.keys.firstOrNull { key ->
+            runCatching { dayDate(key) == currentDate }.getOrDefault(false)
+        } ?: fact.today?.toString()
             ?: fact.data.keys.minOrNull()
             ?: error("GPV file has no day keys")
         val todayDate = dayDate(todayKey)

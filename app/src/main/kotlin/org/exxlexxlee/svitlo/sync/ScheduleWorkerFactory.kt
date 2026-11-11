@@ -16,6 +16,7 @@ class ScheduleWorkerFactory(
     private val observePlaceSchedules: ObservePlaceSchedules,
     private val widgetCoordinator: WidgetCoordinator,
     private val notificationScheduler: NotificationScheduler,
+    private val refreshScheduler: ScheduleRefreshScheduler,
 ) : WorkerFactory() {
     override fun createWorker(
         appContext: Context,
@@ -25,7 +26,7 @@ class ScheduleWorkerFactory(
         ScheduleRefreshWorker::class.java.name,
         "org.exxlexxlee.svitlo.widget.WidgetRefreshWorker" -> ScheduleRefreshWorker(
             appContext, workerParameters, observePlaces, refreshSchedules,
-            observePlaceSchedules, widgetCoordinator, notificationScheduler,
+            observePlaceSchedules, widgetCoordinator, notificationScheduler, refreshScheduler,
         )
         else -> null // Let WorkManager construct other workers, including Glance workers.
     }

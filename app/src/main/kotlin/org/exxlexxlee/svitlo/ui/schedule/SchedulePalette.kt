@@ -17,10 +17,10 @@ internal class SchedulePalette(private val dark: Boolean) {
 
     val Muted = Color(0xFF8B95A7)
 
-    val Off = Color(0xFFE23B3B)
-    val On = Color(0xFFFFE826)
-    val Yes = Color(0xFF2EAE4E)
-    val Maybe = Color(0xFF4DAF98)
+    val Off = Color(0xBFE23B3B)
+    val On = Color(0xBFFFE826)
+    val Yes = Color(0xBF2EAE4E)
+    val Maybe = Color(0xBF4DAF98)
 
     val Unknown: Color
         get() = if (dark) Color(0xFF353C4A) else Color(0xFF2C3444)

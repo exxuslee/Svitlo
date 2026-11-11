@@ -11,6 +11,7 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.CancellationException
@@ -18,8 +19,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
@@ -37,11 +40,14 @@ import org.exxlexxlee.data.remote.ScheduleRemoteDataSource
 import org.exxlexxlee.data.remote.YasnoApi
 import org.exxlexxlee.domain.model.AddressDetails
 import org.exxlexxlee.domain.model.OutageGroup
+import org.exxlexxlee.domain.model.OutageSchedule
+import org.exxlexxlee.domain.model.PowerState
 import org.exxlexxlee.domain.model.Region
 import org.exxlexxlee.domain.model.Selection
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
@@ -52,8 +58,9 @@ class ScheduleRepositoriesTest {
     private val json = Json { ignoreUnknownKeys = true }
     private val requests = mutableListOf<String>()
     private val clients = mutableListOf<HttpClient>()
+    private var currentInstant = Instant.parse("2026-11-09T08:00:00Z")
     private val clock = object : Clock {
-        override fun now(): Instant = Instant.parse("2026-11-09T08:00:00Z")
+        override fun now(): Instant = currentInstant
     }
 
     @After
@@ -283,6 +290,57 @@ class ScheduleRepositoriesTest {
         assertEquals(listOf("region2|3.1"), fixture.dao.writtenKeys)
         release.complete(Unit)
         assertTrue(refresh.await().values.all { it.isSuccess })
+    }
+
+    @Test
+    fun midnightPromotesCachedTomorrowWithoutNetworkThenLoadsTheNewTomorrow() = runTest {
+        currentInstant = Instant.parse("2026-11-08T21:59:59Z")
+        val fixture = fixture(RegionSourceConfig("yasno", regionId = 25, dsoId = 902),
+            "yasno-kyiv-sample.json", "3.1", StandardTestDispatcher(testScheduler))
+        assertTrue(fixture.schedules.refresh(fixture.selection).isSuccess)
+        val received = mutableListOf<OutageSchedule?>()
+        backgroundScope.launch {
+            fixture.schedules.observe(fixture.selection).collect { received += it }
+        }
+        runCurrent()
+        val previousTomorrow = received.last()!!.tomorrow
+        currentInstant = Instant.parse("2026-11-08T22:00:00Z")
+        advanceTimeBy(1_000)
+        runCurrent()
+        assertEquals(previousTomorrow, received.last()!!.today)
+        assertNull(received.last()!!.tomorrow)
+        assertEquals(1, requests.size)
+
+        fixture.response.status = HttpStatusCode.ServiceUnavailable
+        assertTrue(fixture.schedules.refresh(fixture.selection).isFailure)
+        assertEquals(previousTomorrow, received.last()!!.today)
+
+        fixture.response.status = HttpStatusCode.OK
+        fixture.response.body = fixture.response.body
+            .replace("2026-11-09", "2026-11-10")
+            .replace("2026-11-08", "2026-11-09")
+        assertTrue(fixture.schedules.refresh(fixture.selection).isSuccess)
+        runCurrent()
+        assertEquals(LocalDate(2026, 11, 9), received.last()!!.today.date)
+        assertEquals(LocalDate(2026, 11, 10), received.last()!!.tomorrow!!.date)
+        assertEquals(PowerState.OFF, received.last()!!.today.halfHours.first())
+    }
+
+    @Test
+    fun staleSourceWithoutTomorrowDoesNotEraseGraphAlreadyCachedForToday() = runTest {
+        currentInstant = Instant.parse("2026-11-08T21:59:59Z")
+        val fixture = fixture(RegionSourceConfig("yasno", regionId = 25, dsoId = 902),
+            "yasno-kyiv-sample.json", "3.1")
+        fixture.schedules.refresh(fixture.selection)
+        val expected = fixture.schedules.observe(fixture.selection).first()!!.tomorrow
+        currentInstant = Instant.parse("2026-11-08T22:00:00Z")
+        val groups = json.parseToJsonElement(fixture.response.body).jsonObject
+        fixture.response.body = JsonObject(groups + ("3.1" to
+            JsonObject(groups.getValue("3.1").jsonObject - "tomorrow"))).toString()
+        assertTrue(fixture.schedules.refresh(fixture.selection).isSuccess)
+        val actual = fixture.schedules.observe(fixture.selection).first()!!
+        assertEquals(expected, actual.today)
+        assertNull(actual.tomorrow)
     }
 
     private fun fixture(source: RegionSourceConfig, resource: String, groupId: String, dispatcher: CoroutineDispatcher = Dispatchers.Default): Fixture {

@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.glance.ColorFilter
 import androidx.glance.GlanceModifier
 import androidx.glance.Image
 import androidx.glance.ImageProvider
@@ -65,7 +66,11 @@ private fun DayChip(onDaySelected: (Boolean) -> Action, text: String, selected: 
         onDaySelected(showTomorrow),
     )
     val background = if (selected) {
-        GlanceModifier.background(ImageProvider(R.drawable.widget_selected_day_background))
+        // Explicit tint also replaces a drawable retained by the launcher after an app update.
+        GlanceModifier.background(
+            ImageProvider(R.drawable.widget_selected_day_background),
+            colorFilter = ColorFilter.tint(WidgetColors.selectedDayBackground),
+        )
     } else {
         GlanceModifier
     }
@@ -92,9 +97,10 @@ private fun DayChip(onDaySelected: (Boolean) -> Action, text: String, selected: 
 internal fun GlanceScheduleGroupBadge(
     text: String,
     currentState: PowerState?,
+    modifier: GlanceModifier = GlanceModifier,
 ) {
     Row(
-        modifier = GlanceModifier
+        modifier = modifier
             .background(ImageProvider(R.drawable.widget_control_background))
             .padding(horizontal = 12.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -246,6 +252,7 @@ private fun labelColor(first: PowerState, second: PowerState): ColorProvider =
     glanceColor(ScheduleTimeline.labelColor(first, second))
 
 private object WidgetColors {
+    val selectedDayBackground = glanceColor(Color(0xFF3A3A3C))
     val transparent = glanceColor(Color.Transparent)
     val cellBackground = transparent
     val muted = glanceColor(LightSchedulePalette.BannerText)

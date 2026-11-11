@@ -1,6 +1,8 @@
 package org.exxlexxlee.data
 
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.Json
 import org.exxlexxlee.data.mapper.GpvMapper
 import org.exxlexxlee.data.mapper.YasnoMapper
@@ -12,6 +14,9 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class MapperTest {
+    private val clock = object : Clock {
+        override fun now() = Instant.parse("2026-11-08T10:00:00Z")
+    }
     private val json = Json { ignoreUnknownKeys = true; isLenient = true }
     private val gpvMapper = GpvMapper(json)
     private val yasnoMapper = YasnoMapper(json)
@@ -19,7 +24,7 @@ class MapperTest {
     @Test
     fun gpvKyivRegionMapsFortyEightHalfHours() {
         val dto = gpvMapper.decode(readResource("gpv-kyiv-region-sample.json"))
-        val schedule = gpvMapper.toSchedule(dto, OutageGroup("GPV3.1", "Черга 3.1"))
+        val schedule = gpvMapper.toSchedule(dto, OutageGroup("GPV3.1", "Черга 3.1"), clock)
 
         assertEquals(48, schedule.today.halfHours.size)
         assertEquals(PowerState.ON, schedule.today.halfHours[0])
@@ -78,6 +83,26 @@ class MapperTest {
         assertTrue(schedule.schedulesSuspended)
         assertEquals(false, schedule.today.published)
         assertEquals(false, schedule.tomorrow!!.published)
+    }
+
+    @Test
+    fun gpvUsesActualDatesWhenSourceTodayPointerStillPointsToYesterday() {
+        val dto = gpvMapper.decode(readResource("gpv-kyiv-region-sample.json"))
+        val fact = dto.fact!!
+        val dayKeys = fact.data.keys.sortedBy { it.toLong() }
+        val currentDay = dayKeys.last()
+        val nextDay = (currentDay.toLong() + 86_400).toString()
+        val withThreeDays = dto.copy(fact = fact.copy(
+            data = fact.data + (nextDay to fact.data.getValue(dayKeys.first())),
+        ))
+        val afterMidnight = object : Clock {
+            override fun now() = Instant.parse("2026-11-08T22:00:00Z")
+        }
+        val schedule = gpvMapper.toSchedule(withThreeDays, OutageGroup("GPV3.1", "3.1"), afterMidnight)
+        assertEquals(LocalDate(2026, 11, 9), schedule.today.date)
+        assertEquals(PowerState.OFF, schedule.today.halfHours.first())
+        assertEquals(LocalDate(2026, 11, 10), schedule.tomorrow!!.date)
+        assertEquals(PowerState.ON, schedule.tomorrow!!.halfHours.first())
     }
 
     private fun readResource(name: String): String =

@@ -57,12 +57,12 @@ class HomeViewModel(
                 refreshing,
                 errors,
                 minuteOfDay
-            ) { cards, isRefreshing, errorMap, minute ->
+            ) { cards, isRefreshing, errorMap, _ ->
                 val mappedCards = cards.map { source ->
                     PlaceCardMapper.map(
                         place = source.place,
                         schedule = source.schedule,
-                        minuteOfDay = minute,
+                        minuteOfDay = KyivTime.minuteOfDay(clock),
                         error = errorMap[source.place.id],
                     )
                 }

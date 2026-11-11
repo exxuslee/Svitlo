@@ -4,6 +4,7 @@ import java.util.logging.Logger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.transform
@@ -15,13 +16,15 @@ import org.exxlexxlee.data.local.toDomain
 import org.exxlexxlee.data.remote.ScheduleRemoteDataSource
 import org.exxlexxlee.domain.model.OutageSchedule
 import org.exxlexxlee.domain.model.Selection
+import org.exxlexxlee.domain.model.forDate
+import org.exxlexxlee.domain.model.observeKyivDate
 import org.exxlexxlee.domain.repository.ScheduleRepository
 
 class ScheduleRepositoryImpl(
     catalog: RegionCatalog,
     remoteDataSource: ScheduleRemoteDataSource,
     private val scheduleDao: ScheduleDao,
-    clock: Clock = Clock.System,
+    private val clock: Clock = Clock.System,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : ScheduleRepository {
     private val refresher = ScheduleRefresher(catalog, remoteDataSource, scheduleDao, clock, dispatcher)
@@ -40,6 +43,8 @@ class ScheduleRepositoryImpl(
                     refresh(selection)
                 }
             }
+        }.combine(observeKyivDate(clock)) { schedule, date ->
+            schedule?.forDate(date)
         }.distinctUntilChanged().flowOn(dispatcher)
 
     override suspend fun refresh(selection: Selection): Result<Unit> =

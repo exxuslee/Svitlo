@@ -19,6 +19,7 @@ import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.action.ActionCallback
+import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.action.actionSendBroadcast
 import androidx.glance.appwidget.appWidgetBackground
 import androidx.glance.appwidget.provideContent
@@ -32,18 +33,15 @@ import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.height
 import androidx.glance.layout.padding
 import androidx.glance.state.PreferencesGlanceStateDefinition
-import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
-import org.exxlexxlee.svitlo.ui.schedule.glanceColor
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.datetime.Clock
-import org.exxlexxlee.domain.usecase.ObserveSchedule
-import org.exxlexxlee.domain.usecase.ObserveSelection
+import org.exxlexxlee.domain.usecase.ObservePlaceSchedules
 import org.exxlexxlee.svitlo.MainActivity
 import org.exxlexxlee.svitlo.R
 import org.exxlexxlee.svitlo.ui.common.localizedGroupLabel
@@ -51,6 +49,7 @@ import org.exxlexxlee.svitlo.ui.schedule.DarkSchedulePalette
 import org.exxlexxlee.svitlo.ui.schedule.GlanceScheduleDaySwitch
 import org.exxlexxlee.svitlo.ui.schedule.GlanceScheduleGroupBadge
 import org.exxlexxlee.svitlo.ui.schedule.GlanceScheduleTimeline
+import org.exxlexxlee.svitlo.ui.schedule.glanceColor
 import org.koin.core.context.GlobalContext
 
 class ScheduleWidget : GlanceAppWidget() {
@@ -70,8 +69,8 @@ class ScheduleWidget : GlanceAppWidget() {
         } else {
             // Share the initial load and live observation instead of subscribing to Room twice.
             val ui = observeWidgetUi(
-                koin.get<ObserveSelection>(),
-                koin.get<ObserveSchedule>(),
+                koin.get<ObservePlaceSchedules>(),
+                WidgetPlaceSelection.observe(context, appWidgetId),
                 koin.getOrNull<Clock>() ?: Clock.System,
             ).shareIn(this, SharingStarted.Eagerly, replay = 1)
             val initial = ui.first()
@@ -83,7 +82,9 @@ class ScheduleWidget : GlanceAppWidget() {
     }
 
     override suspend fun onDelete(context: Context, glanceId: GlanceId) {
-        WidgetDaySelection.remove(context, GlanceAppWidgetManager(context).getAppWidgetId(glanceId))
+        val appWidgetId = GlanceAppWidgetManager(context).getAppWidgetId(glanceId)
+        WidgetDaySelection.remove(context, appWidgetId)
+        WidgetPlaceSelection.remove(context, appWidgetId)
     }
 }
 
@@ -119,13 +120,6 @@ internal fun ScheduleWidgetContent(data: ScheduleWidgetUi, appWidgetId: Int) {
                 .widgetFrostedBubble()
                 .padding(12.dp),
         ) {
-            Header(
-                title = if (data.today == null && data.groupLabel.isEmpty()) {
-                    LocalContext.current.getString(R.string.app_name)
-                } else data.title,
-                modifier = GlanceModifier.clickable(openApp),
-            )
-            Spacer(GlanceModifier.height(8.dp))
             val today = data.today
             if (today == null) {
                 Text(
@@ -181,6 +175,7 @@ private fun DayPanel(
                     GlanceScheduleGroupBadge(
                         text = context.localizedGroupLabel(data.groupLabel),
                         currentState = data.currentState,
+                        modifier = GlanceModifier.clickable(actionRunCallback<NextPlaceAction>()),
                     )
                 }
             }
@@ -210,18 +205,4 @@ private fun DayPanel(
             }
         }
     }
-}
-
-@Composable
-private fun Header(title: String, modifier: GlanceModifier) {
-    Text(
-        text = title,
-        style = TextStyle(
-            color = glanceColor(DarkSchedulePalette.Title),
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-        ),
-        maxLines = 1,
-        modifier = modifier.fillMaxWidth(),
-    )
 }

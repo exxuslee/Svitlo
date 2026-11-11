@@ -27,10 +27,10 @@ val platformModule = module {
         context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "1.0"
     }
     single<WidgetManager> { WidgetManagerImpl(androidContext()) }
-    single { WidgetCoordinator(androidContext(), get(applicationScope), get(), get(), get()) }
+    single { WidgetCoordinator(androidContext(), get(applicationScope), get(), get()) }
     single { NotificationScheduler(androidContext(), get()) }
     single { NotificationCoordinator(androidContext(), get(applicationScope), get(), get()) }
-    single { ScheduleWorkerFactory(get(), get(), get(), get(), get()) }
+    single { ScheduleWorkerFactory(get(), get(), get(), get(), get(), get()) }
     single { WorkManager.getInstance(androidContext()) }
-    single { ScheduleRefreshScheduler(get()) }
+    single { ScheduleRefreshScheduler(androidContext(), get()) }
 }

@@ -18,8 +18,12 @@ class ScheduleRefreshWorker(
     private val observePlaceSchedules: ObservePlaceSchedules,
     private val widgetCoordinator: WidgetCoordinator,
     private val notificationScheduler: NotificationScheduler,
+    private val refreshScheduler: ScheduleRefreshScheduler,
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
+        refreshScheduler.scheduleNextDay()
+        // Publish the date-adjusted cache before waiting for a network response.
+        widgetCoordinator.update()
         val places = observePlaces().first()
         val results = refreshSchedules(places.map { it.selection })
         val schedules = observePlaceSchedules().first()
