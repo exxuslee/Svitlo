@@ -13,10 +13,33 @@ require(releaseVersionName.isPresent == releaseVersionCode.isPresent) {
     "releaseVersionName and releaseVersionCode must be provided together"
 }
 
-val releaseKeystorePath = providers.environmentVariable("ANDROID_KEYSTORE_PATH")
-val releaseKeystorePassword = providers.environmentVariable("ANDROID_KEYSTORE_PASSWORD")
-val releaseKeyAlias = providers.environmentVariable("ANDROID_KEY_ALIAS")
-val releaseKeyPassword = providers.environmentVariable("ANDROID_KEY_PASSWORD")
+// A simple KEY=value format: optional matching quotes, no variable expansion.
+// Keep Windows path separators and password characters (including # and =) intact.
+val localSigningValues = providers.fileContents(rootProject.layout.projectDirectory.file(".env"))
+    .asText.orElse("").map { contents ->
+        contents.lineSequence()
+            .map { it.trim().removePrefix("\uFEFF") }
+            .filter { it.isNotEmpty() && !it.startsWith("#") }
+            .map { line ->
+                require('=' in line) { "Invalid .env entry: expected KEY=value" }
+                val key = line.substringBefore('=').trim()
+                val value = line.substringAfter('=').trim().let { raw ->
+                    if (raw.length >= 2 &&
+                        ((raw.first() == '"' && raw.last() == '"') ||
+                            (raw.first() == '\'' && raw.last() == '\''))
+                    ) raw.substring(1, raw.length - 1) else raw
+                }
+                key to value
+            }.toMap()
+    }
+
+fun releaseSigningValue(name: String) = providers.environmentVariable(name)
+    .orElse(localSigningValues.map { it[name] })
+
+val releaseKeystorePath = releaseSigningValue("ANDROID_KEYSTORE_PATH")
+val releaseKeystorePassword = releaseSigningValue("ANDROID_KEYSTORE_PASSWORD")
+val releaseKeyAlias = releaseSigningValue("ANDROID_KEY_ALIAS")
+val releaseKeyPassword = releaseSigningValue("ANDROID_KEY_PASSWORD")
 val releaseSigningValues = listOf(
     releaseKeystorePath,
     releaseKeystorePassword,
@@ -25,7 +48,7 @@ val releaseSigningValues = listOf(
 )
 val hasReleaseSigning = releaseSigningValues.any { it.isPresent }
 require(!hasReleaseSigning || releaseSigningValues.all { it.orNull?.isNotBlank() == true }) {
-    "Release signing requires ANDROID_KEYSTORE_PATH, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS and ANDROID_KEY_PASSWORD"
+    "Release signing requires ANDROID_KEYSTORE_PATH, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS and ANDROID_KEY_PASSWORD in environment variables or the root .env file"
 }
 
 android {
