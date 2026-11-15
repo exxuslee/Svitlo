@@ -166,10 +166,6 @@ private fun HourCell(
                 if (marked) {
                     Modifier
                         .background(CardPalette.Marker)
-                        .padding(
-                            horizontal = ScheduleTimeline.MarkerHorizontalInset.dp,
-                            vertical = ScheduleTimeline.MarkerVerticalInset.dp,
-                        )
                 } else {
                     Modifier
                 }
@@ -179,6 +175,16 @@ private fun HourCell(
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .then(
+                    if (marked) {
+                        Modifier.padding(
+                            horizontal = ScheduleTimeline.MarkerHorizontalInset.dp,
+                            vertical = ScheduleTimeline.MarkerVerticalInset.dp,
+                        )
+                    } else {
+                        Modifier
+                    }
+                )
                 .clip(innerShape)
                 .background(CardPalette.Card),
             contentAlignment = Alignment.Center,
@@ -205,15 +211,15 @@ private fun HourCell(
                     )
                 }
             }
-            Text(
-                text = hour.toString(),
-                color = ScheduleTimeline.labelColor(first, second),
-                fontSize = ScheduleTimeline.LabelSize.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                maxLines = 1,
-            )
         }
+        Text(
+            text = hour.toString(),
+            color = ScheduleTimeline.labelColor(first, second),
+            fontSize = ScheduleTimeline.LabelSize.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            maxLines = 1,
+        )
     }
 }
 
