@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.exxlexxlee.domain.model.PowerState
@@ -75,6 +76,23 @@ private fun DayChip(
     }
 }
 
+private data class CellCorners(
+    val topStart: Dp,
+    val topEnd: Dp,
+    val bottomEnd: Dp,
+    val bottomStart: Dp,
+) {
+    fun shape() = RoundedCornerShape(topStart, topEnd, bottomEnd, bottomStart)
+
+    /** Радиусы внутри рамки маркера: уменьшаем на толщину рамки, но не меньше [min]. */
+    fun inset(by: Dp, min: Dp) = CellCorners(
+        (topStart - by).coerceAtLeast(min),
+        (topEnd - by).coerceAtLeast(min),
+        (bottomEnd - by).coerceAtLeast(min),
+        (bottomStart - by).coerceAtLeast(min),
+    )
+}
+
 @Composable
 internal fun ScheduleTimelineView(
     states: List<PowerState>,
@@ -85,8 +103,8 @@ internal fun ScheduleTimelineView(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(ScheduleTimeline.RowSpacing.dp),
     ) {
-        HourRow(states = states, startHour = 0, nowHalfHourIndex = nowHalfHourIndex)
-        HourRow(states = states, startHour = 12, nowHalfHourIndex = nowHalfHourIndex)
+        HourRow(states, startHour = 0, nowHalfHourIndex = nowHalfHourIndex, isTopRow = true)
+        HourRow(states, startHour = 12, nowHalfHourIndex = nowHalfHourIndex, isTopRow = false)
     }
 }
 
@@ -95,18 +113,30 @@ private fun HourRow(
     states: List<PowerState>,
     startHour: Int,
     nowHalfHourIndex: Int?,
+    isTopRow: Boolean,
 ) {
+    val small = ScheduleTimeline.CornerRadius.dp
+    val big = ScheduleTimeline.OuterCornerRadius.dp
+    val cells = ScheduleTimeline.row(states, startHour, nowHalfHourIndex)
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(ScheduleTimeline.CellSpacing.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        for (cell in ScheduleTimeline.row(states, startHour, nowHalfHourIndex)) {
+        cells.forEachIndexed { index, cell ->
+            val first = index == 0
+            val last = index == cells.lastIndex
             HourCell(
                 hour = cell.hour,
                 first = cell.first,
                 second = cell.second,
                 marked = cell.marked,
+                corners = CellCorners(
+                    topStart = if (isTopRow && first) big else small,
+                    topEnd = if (isTopRow && last) big else small,
+                    bottomEnd = if (!isTopRow && last) big else small,
+                    bottomStart = if (!isTopRow && first) big else small,
+                ),
                 modifier = Modifier.weight(1f),
             )
         }
@@ -119,9 +149,15 @@ private fun HourCell(
     first: PowerState,
     second: PowerState,
     marked: Boolean,
+    corners: CellCorners,
     modifier: Modifier = Modifier,
 ) {
-    val outerShape = RoundedCornerShape(ScheduleTimeline.CornerRadius.dp)
+    val outerShape = corners.shape()
+    val innerShape = if (marked) {
+        corners.inset(ScheduleTimeline.MarkerHorizontalInset.dp, min = 2.5.dp).shape()
+    } else {
+        outerShape
+    }
     Box(
         modifier = modifier
             .height(ScheduleTimeline.CellHeight.dp)
@@ -143,7 +179,8 @@ private fun HourCell(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .clip(if (marked) RoundedCornerShape(2.5.dp) else outerShape),
+                .clip(innerShape)
+                .background(CardPalette.Card),
             contentAlignment = Alignment.Center,
         ) {
             if (first == second) {

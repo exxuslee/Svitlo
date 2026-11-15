@@ -99,6 +99,7 @@ kotlin {
 
 dependencies {
     implementation(platform(libs.firebase.bom))
+    implementation(libs.androidx.compose.ui.unit)
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.messaging)

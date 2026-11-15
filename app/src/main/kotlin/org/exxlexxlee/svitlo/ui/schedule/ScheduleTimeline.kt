@@ -13,6 +13,7 @@ internal object ScheduleTimeline {
     const val MarkerVerticalInset = 3.5f
     const val LabelSize = 14
 
+    const val OuterCornerRadius = 8
     data class Cell(val hour: Int, val first: PowerState, val second: PowerState, val marked: Boolean)
 
     fun row(states: List<PowerState>, startHour: Int, nowHalfHourIndex: Int?): List<Cell> =
