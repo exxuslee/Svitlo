@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
+import android.graphics.Typeface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
@@ -22,7 +23,6 @@ import androidx.glance.action.clickable
 import androidx.glance.background
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
-import androidx.glance.layout.Column
 import androidx.glance.layout.Row
 import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxWidth
@@ -31,9 +31,7 @@ import androidx.glance.layout.padding
 import androidx.glance.layout.size
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
-import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
-import androidx.glance.unit.ColorProvider
 import org.exxlexxlee.domain.model.PowerState
 import org.exxlexxlee.svitlo.R
 
@@ -150,107 +148,84 @@ internal fun GlanceScheduleTimeline(
     nowHalfHourIndex: Int?,
     modifier: GlanceModifier,
 ) {
-    Column(modifier = modifier.fillMaxWidth()) {
-        HourRow(states = states, startHour = 0, nowHalfHourIndex = nowHalfHourIndex)
-        Spacer(GlanceModifier.height(ScheduleTimeline.RowSpacing.dp))
-        HourRow(states = states, startHour = 12, nowHalfHourIndex = nowHalfHourIndex)
+    val context = LocalContext.current
+    val density = context.resources.displayMetrics.density
+    val fontScale = context.resources.configuration.fontScale
+    val width = (LocalSize.current.width.value - 24f).coerceAtLeast(1f)
+    val timeline = remember(states, nowHalfHourIndex, width, density, fontScale) {
+        scheduleTimelineBitmap(states, nowHalfHourIndex, width, density, fontScale)
     }
+    // One image per day keeps the Binder payload small instead of sending 24 nested cell views.
+    Image(
+        provider = ImageProvider(timeline),
+        contentDescription = states.chunked(2).mapIndexed { hour, halves ->
+            "$hour: ${halves.joinToString(" / ") { context.getString(it.labelRes()) }}"
+        }.joinToString(", "),
+        modifier = modifier.fillMaxWidth()
+            .height((ScheduleTimeline.CellHeight * 2 + ScheduleTimeline.RowSpacing).dp),
+    )
 }
 
-@Composable
-private fun HourRow(
+private fun PowerState.labelRes(): Int = when (this) {
+    PowerState.ON -> R.string.legend_on
+    PowerState.OFF -> R.string.legend_off
+    PowerState.MAYBE -> R.string.legend_maybe
+    PowerState.UNKNOWN -> R.string.legend_unknown
+}
+
+private fun scheduleTimelineBitmap(
     states: List<PowerState>,
-    startHour: Int,
     nowHalfHourIndex: Int?,
-) {
-    Row(
-        modifier = GlanceModifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        // RemoteViews supports at most ten children per row.
-        val groups = ScheduleTimeline.row(states, startHour, nowHalfHourIndex).chunked(6)
-        groups.forEach { cells -> HourGroup(cells, GlanceModifier.defaultWeight()) }
+    widthDp: Float,
+    density: Float,
+    fontScale: Float,
+): Bitmap {
+    val heightDp = ScheduleTimeline.CellHeight * 2 + ScheduleTimeline.RowSpacing
+    val bitmap = Bitmap.createBitmap(
+        (widthDp * density).toInt().coerceAtLeast(1),
+        (heightDp * density).toInt().coerceAtLeast(1),
+        Bitmap.Config.ARGB_8888,
+    )
+    val canvas = Canvas(bitmap)
+    val cellWidth = bitmap.width / 12f
+    val spacing = ScheduleTimeline.CellSpacing * density
+    val label = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        textAlign = Paint.Align.CENTER
+        typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        textSize = minOf(
+            ScheduleTimeline.LabelSize * density * fontScale,
+            cellWidth * 0.75f,
+            ScheduleTimeline.CellHeight * density * 0.8f,
+        )
     }
-}
-
-@Composable
-private fun HourGroup(
-    cells: List<ScheduleTimeline.Cell>,
-    modifier: GlanceModifier,
-) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        for (cell in cells) {
-            HourCell(
-                hour = cell.hour,
-                first = cell.first,
-                second = cell.second,
-                marked = cell.marked,
-                modifier = GlanceModifier.defaultWeight(),
+    for (row in 0..1) {
+        for ((column, cell) in ScheduleTimeline.row(states, row * 12, nowHalfHourIndex).withIndex()) {
+            val left = column * cellWidth + spacing / 2f
+            val top = row * (ScheduleTimeline.CellHeight + ScheduleTimeline.RowSpacing) * density
+            val save = canvas.save()
+            canvas.translate(left, top)
+            drawHourCell(canvas, cell, (cellWidth - spacing).coerceAtLeast(1f), density)
+            canvas.restoreToCount(save)
+            label.color = ScheduleTimeline.labelColor(cell.first, cell.second).toArgb()
+            val centerY = top + ScheduleTimeline.CellHeight * density / 2f
+            canvas.drawText(
+                cell.hour.toString(), (column + 0.5f) * cellWidth,
+                centerY - (label.ascent() + label.descent()) / 2f, label,
             )
         }
     }
-}
-
-@Composable
-private fun HourCell(
-    hour: Int,
-    first: PowerState,
-    second: PowerState,
-    marked: Boolean,
-    modifier: GlanceModifier,
-) {
-    val density = LocalContext.current.resources.displayMetrics.density
-    // The card has 12dp padding on each side; each row contains twelve hours.
-    val width = ((LocalSize.current.width.value - 24f) / 12f - ScheduleTimeline.CellSpacing)
-        .coerceAtLeast(1f)
-    val background = remember(hour, first, second, marked, width, density) {
-        hourCellBackground(hour, first, second, marked, width, density)
-    }
-    Box(
-        modifier = modifier
-            .height(ScheduleTimeline.CellHeight.dp)
-            .padding(horizontal = (ScheduleTimeline.CellSpacing / 2f).dp),
-    ) {
-        // Glance applies padding inside a view's background, regardless of modifier order.
-        // Keep the background on a child so the parent's padding stays transparent.
-        Box(
-            modifier = GlanceModifier
-                .fillMaxWidth()
-                .height(ScheduleTimeline.CellHeight.dp)
-                .background(ImageProvider(background)),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text = hour.toString(),
-                modifier = GlanceModifier.fillMaxWidth(),
-                style = TextStyle(
-                    color = labelColor(first, second),
-                    fontSize = ScheduleTimeline.LabelSize.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                ),
-                maxLines = 1,
-            )
-        }
-    }
+    return bitmap
 }
 
 /** Draw each corner explicitly: RemoteViews cannot clip individual corners. */
-private fun hourCellBackground(
-    hour: Int,
-    first: PowerState,
-    second: PowerState,
-    marked: Boolean,
-    widthDp: Float,
+private fun drawHourCell(
+    canvas: Canvas,
+    cell: ScheduleTimeline.Cell,
+    width: Float,
     density: Float,
-): Bitmap {
-    val width = (widthDp * density).toInt().coerceAtLeast(1)
-    val height = (ScheduleTimeline.CellHeight * density).toInt().coerceAtLeast(1)
-    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-    val canvas = Canvas(bitmap)
+) {
+    val (hour, first, second, marked) = cell
+    val height = ScheduleTimeline.CellHeight * density
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     val small = ScheduleTimeline.CornerRadius.toFloat()
     val big = ScheduleTimeline.OuterCornerRadius.toFloat()
@@ -269,7 +244,7 @@ private fun hourCellBackground(
         }.toFloatArray()
         return Path().apply { addRoundRect(bounds, radii, Path.Direction.CW) }
     }
-    val bounds = RectF(0f, 0f, width.toFloat(), height.toFloat())
+    val bounds = RectF(0f, 0f, width, height)
     val outer = shape(bounds, 0f)
     if (marked) {
         bounds.inset(
@@ -287,11 +262,7 @@ private fun hourCellBackground(
     canvas.drawRect(bounds.left, bounds.top, bounds.centerX(), bounds.bottom, paint)
     paint.color = DarkSchedulePalette.stateColor(second).toArgb()
     canvas.drawRect(bounds.centerX(), bounds.top, bounds.right, bounds.bottom, paint)
-    return bitmap
 }
-
-private fun labelColor(first: PowerState, second: PowerState): ColorProvider =
-    glanceColor(ScheduleTimeline.labelColor(first, second))
 
 private object WidgetColors {
     val selectedDayBackground = glanceColor(Color(0xFF3A3A3C))

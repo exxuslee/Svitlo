@@ -108,4 +108,5 @@
     <string name="region_ternopil">Ternopil Oblast</string>
     <string name="region_khmelnytskyi">Khmelnytskyi Oblast</string>
     <string name="region_chernihiv">Chernihiv Oblast</string>
+    <string name="legend_unknown">No data</string>
 </resources>

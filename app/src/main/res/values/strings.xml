@@ -108,4 +108,5 @@
     <string name="region_ternopil">Тернопільська область</string>
     <string name="region_khmelnytskyi">Хмельницька область</string>
     <string name="region_chernihiv">Чернігівська область</string>
+    <string name="legend_unknown">Немає даних</string>
 </resources>

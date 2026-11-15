@@ -45,6 +45,25 @@ class ScheduleWidgetInteractionTest {
     }
 
     @Test
+    fun widgetStaysWithinBinderBudgetAtDifferentWidths() = runBlocking {
+        for (width in listOf(180, 320, 600)) {
+            val views = GlanceRemoteViews().compose(context, DpSize(width.dp, 150.dp)) {
+                ScheduleWidgetContent(ui, widgetId)
+            }.remoteViews
+            val parcel = Parcel.obtain()
+            try {
+                views.writeToParcel(parcel, 0)
+                val bytes = parcel.dataSize()
+                android.util.Log.i("WidgetParcelSize", "width=$width bytes=$bytes")
+                // Leave room in the shared Binder buffer for concurrent launcher transactions.
+                assertTrue("Widget at ${width}dp uses $bytes bytes", bytes < 200_000)
+            } finally {
+                parcel.recycle()
+            }
+        }
+    }
+
+    @Test
     fun switchesBothWaysWithoutRecomposingOrRecreatingThePages() = runBlocking {
         WidgetDaySelection.save(context, widgetId, false)
         val views = GlanceRemoteViews().compose(context, DpSize(320.dp, 150.dp)) {
