@@ -7,6 +7,8 @@ import kotlinx.datetime.Clock
 import org.exxlexxlee.data.catalog.RegionSourceConfig
 import org.exxlexxlee.data.mapper.GpvMapper
 import org.exxlexxlee.data.mapper.YasnoMapper
+import org.exxlexxlee.data.remote.github.GithubJsonApi
+import org.exxlexxlee.data.remote.yasno.YasnoApi
 import org.exxlexxlee.domain.model.OutageGroup
 import org.exxlexxlee.domain.model.OutageSchedule
 

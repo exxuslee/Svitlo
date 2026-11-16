@@ -16,4 +16,5 @@ fun Country.flagRes(): Int = when (this) {
     Country.IRELAND -> R.drawable.flag_ie
     Country.KENYA -> R.drawable.flag_ke
     Country.MEXICO -> R.drawable.flag_mx
+    Country.UNITED_STATES -> R.drawable.flag_us
 }

@@ -1,4 +1,4 @@
-package org.exxlexxlee.data.remote
+package org.exxlexxlee.data.remote.github
 
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get

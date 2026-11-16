@@ -113,6 +113,7 @@
     <string name="settings_country_availability">Доступність графіків залежить від країни та оператора.</string>
     <string name="country_ukraine">Україна</string>
     <string name="country_south_africa">Південно-Африканська Республіка</string>
+    <string name="country_united_states">Соединенные Штаты</string>
     <string name="country_united_kingdom">Велика Британія</string>
     <string name="country_canada">Канада</string>
     <string name="country_poland">Польща</string>

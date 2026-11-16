@@ -14,9 +14,9 @@ import org.exxlexxlee.data.local.MIGRATION_1_2
 import org.exxlexxlee.data.local.AppDatabase
 import org.exxlexxlee.data.mapper.GpvMapper
 import org.exxlexxlee.data.mapper.YasnoMapper
-import org.exxlexxlee.data.remote.GithubJsonApi
+import org.exxlexxlee.data.remote.github.GithubJsonApi
 import org.exxlexxlee.data.remote.ScheduleRemoteDataSource
-import org.exxlexxlee.data.remote.YasnoApi
+import org.exxlexxlee.data.remote.yasno.YasnoApi
 import org.exxlexxlee.data.repository.LocationRepositoryImpl
 import org.exxlexxlee.data.repository.ScheduleRepositoryImpl
 import org.exxlexxlee.data.repository.SelectionRepositoryImpl

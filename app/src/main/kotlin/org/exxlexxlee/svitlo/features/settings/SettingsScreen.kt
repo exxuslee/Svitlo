@@ -257,6 +257,7 @@ fun SettingsContent(
 
 internal fun Country.countryNameRes(): Int = when (this) {
     Country.UKRAINE -> R.string.country_ukraine
+    Country.UNITED_STATES -> R.string.country_united_states
     Country.SOUTH_AFRICA -> R.string.country_south_africa
     Country.UNITED_KINGDOM -> R.string.country_united_kingdom
     Country.CANADA -> R.string.country_canada

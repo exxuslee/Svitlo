@@ -3,6 +3,7 @@ package org.exxlexxlee.domain.model
 import java.util.Locale
 
 enum class Country(val code: String) {
+    UNITED_STATES("US"),
     UKRAINE("UA"),
     SOUTH_AFRICA("ZA"),
     UNITED_KINGDOM("GB"),
@@ -29,6 +30,7 @@ enum class Country(val code: String) {
             "es", "qu" -> ECUADOR
             "ga" -> IRELAND
             "sw" -> KENYA
+            "us" -> UNITED_STATES
             else -> UKRAINE
         }
     }

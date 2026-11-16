@@ -113,6 +113,7 @@
     <string name="settings_country_availability">La disponibilité des horaires dépend du pays et de l’opérateur.</string>
     <string name="country_ukraine">Ukraine</string>
     <string name="country_south_africa">Afrique du Sud</string>
+    <string name="country_united_states">États-Unis</string>
     <string name="country_united_kingdom">Royaume-Uni</string>
     <string name="country_canada">Canada</string>
     <string name="country_poland">Pologne</string>

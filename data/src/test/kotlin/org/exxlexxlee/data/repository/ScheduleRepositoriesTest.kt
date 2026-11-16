@@ -35,9 +35,9 @@ import org.exxlexxlee.data.local.ScheduleCacheEntity
 import org.exxlexxlee.data.local.ScheduleDao
 import org.exxlexxlee.data.mapper.GpvMapper
 import org.exxlexxlee.data.mapper.YasnoMapper
-import org.exxlexxlee.data.remote.GithubJsonApi
+import org.exxlexxlee.data.remote.github.GithubJsonApi
 import org.exxlexxlee.data.remote.ScheduleRemoteDataSource
-import org.exxlexxlee.data.remote.YasnoApi
+import org.exxlexxlee.data.remote.yasno.YasnoApi
 import org.exxlexxlee.domain.model.AddressDetails
 import org.exxlexxlee.domain.model.OutageGroup
 import org.exxlexxlee.domain.model.OutageSchedule
