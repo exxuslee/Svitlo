@@ -1,7 +1,7 @@
 <resources>
     <string name="push_channel_name">Iinsaziso zesevisi</string>
     <string name="push_channel_description">Iindaba nezibuyekezo ngeLight</string>
-    <string name="app_name">Light</string>
+    <string name="app_name">Ukukhanya</string>
     <string name="address_title">Engeza ikheli</string>
     <string name="edit_address_title">Hlela ikheli</string>
     <string name="address_step">Isinyathelo %1$d ku-5 — %2$s</string>

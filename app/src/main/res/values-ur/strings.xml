@@ -1,7 +1,7 @@
 <resources>
     <string name="push_channel_name">سروس کی اطلاعات</string>
     <string name="push_channel_description">Svitlo کی خبریں اور سروس کے بارے میں اطلاعات</string>
-    <string name="app_name">Svitlo</string>
+    <string name="app_name">Roshni</string>
     <string name="address_title">پتہ شامل کریں</string>
     <string name="edit_address_title">پتہ میں ترمیم</string>
     <string name="address_step">مرحلہ %1$d از 5 — %2$s</string>

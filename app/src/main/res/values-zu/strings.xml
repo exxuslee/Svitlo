@@ -1,7 +1,7 @@
 <resources>
     <string name="push_channel_name">Izaziso zesevisi</string>
     <string name="push_channel_description">Izindaba nezaziso mayelana nokusebenza kwe-Svitlo</string>
-    <string name="app_name">Svitlo</string>
+    <string name="app_name">Ukukhanya</string>
     <string name="address_title">Engeza ikheli</string>
     <string name="edit_address_title">Hlela ikheli</string>
     <string name="address_step">Isinyathelo %1$d kwezi-5 — %2$s</string>

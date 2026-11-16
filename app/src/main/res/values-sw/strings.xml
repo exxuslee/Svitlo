@@ -1,7 +1,7 @@
 <resources>
     <string name="push_channel_name">Arifa za huduma</string>
     <string name="push_channel_description">Habari na masasisho kuhusu Light</string>
-    <string name="app_name">Light</string>
+    <string name="app_name">Mwanga</string>
     <string name="address_title">Ongeza anwani</string>
     <string name="edit_address_title">Hariri anwani</string>
     <string name="address_step">Hatua ya %1$d kati ya 5 — %2$s</string>

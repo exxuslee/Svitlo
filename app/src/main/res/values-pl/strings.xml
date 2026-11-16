@@ -1,7 +1,7 @@
 <resources>
     <string name="push_channel_name">Powiadomienia serwisowe</string>
     <string name="push_channel_description">Wiadomości i aktualizacje dotyczące aplikacji Light</string>
-    <string name="app_name">Light</string>
+    <string name="app_name">Swiatlo</string>
     <string name="address_title">Dodaj adres</string>
     <string name="edit_address_title">Edytuj adres</string>
     <string name="address_step">Krok %1$d z 5 — %2$s</string>

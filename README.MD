@@ -107,7 +107,7 @@ Debug APK з’явиться в `app/build/outputs/apk/debug/app-debug.apk`. П
 Для локального release AAB:
 
 ```powershell
-.\gradlew.bat :app:bundleRelease -PreleaseVersionName=1.3.1 -PreleaseVersionCode=1003001
+.\gradlew.bat :app:bundleRelease "-PreleaseVersionName=1.6.1" "-PreleaseVersionCode=1006001"
 ```
 
 Параметри `releaseVersionName` і `releaseVersionCode` передаються разом. Для підписування задайте всі чотири значення: `ANDROID_KEYSTORE_PATH` (бажано абсолютний шлях), `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS` та `ANDROID_KEY_PASSWORD` у змінних середовища або файлі `.env` у корені проєкту. Змінні середовища мають пріоритет. Скопіюйте [`.env.example`](.env.example) у `.env`, розкоментуйте й заповніть усі чотири параметри. Формат — `KEY=value`, із необов’язковими парними лапками; підстановка змінних та коментарі після значень не підтримуються. Для Windows використовуйте шлях на кшталт `D:/secure/svitlo-upload.jks`. Без цих налаштувань release-збірка залишається непідписаною. `.env` виключено з Git; ключі та паролі не додавайте до репозиторію.

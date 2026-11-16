@@ -1,7 +1,7 @@
 <resources>
     <string name="push_channel_name">Notifications du service</string>
     <string name="push_channel_description">Actualités et mises à jour de Light</string>
-    <string name="app_name">Light</string>
+    <string name="app_name">Lumiere</string>
     <string name="address_title">Ajouter une adresse</string>
     <string name="edit_address_title">Modifier l’adresse</string>
     <string name="address_step">Étape %1$d sur 5 — %2$s</string>

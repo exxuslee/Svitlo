@@ -1,7 +1,7 @@
 <resources>
     <string name="push_channel_name">Tatiso tesevisi</string>
     <string name="push_channel_description">Tindzaba nekubuyekeza nge-Light</string>
-    <string name="app_name">Light</string>
+    <string name="app_name">Kukhanya</string>
     <string name="address_title">Engeta likheli</string>
     <string name="edit_address_title">Hlela likheli</string>
     <string name="address_step">Sinyatselo %1$d kuma-5 — %2$s</string>

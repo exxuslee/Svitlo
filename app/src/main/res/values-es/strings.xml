@@ -1,7 +1,7 @@
 <resources>
     <string name="push_channel_name">Notificaciones del servicio</string>
     <string name="push_channel_description">Noticias y actualizaciones sobre Light</string>
-    <string name="app_name">Light</string>
+    <string name="app_name">Luz</string>
     <string name="address_title">Añadir dirección</string>
     <string name="edit_address_title">Editar dirección</string>
     <string name="address_step">Paso %1$d de 5 — %2$s</string>

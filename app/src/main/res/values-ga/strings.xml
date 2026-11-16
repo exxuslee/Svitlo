@@ -1,7 +1,7 @@
 <resources>
     <string name="push_channel_name">Servicio willaykuna</string>
     <string name="push_channel_description">Light nisqamanta musuq willaykuna</string>
-    <string name="app_name">Light</string>
+    <string name="app_name">Solas</string>
     <string name="address_title">Dirección yapay</string>
     <string name="edit_address_title">Dirección allinchay</string>
     <string name="address_step">%1$d ñiqi ñan 5 manta — %2$s</string>

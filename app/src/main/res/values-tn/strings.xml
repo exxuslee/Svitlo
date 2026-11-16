@@ -1,7 +1,7 @@
 <resources>
     <string name="push_channel_name">Ditsebiso tsa tirelo</string>
     <string name="push_channel_description">Dikgang le ditshenolo ka ga Light</string>
-    <string name="app_name">Light</string>
+    <string name="app_name">Lesedi</string>
     <string name="address_title">Oketsa aterese</string>
     <string name="edit_address_title">Fetola aterese</string>
     <string name="address_step">Kgato ya %1$d mo go ya 5 — %2$s</string>

@@ -1,7 +1,7 @@
 <resources>
     <string name="push_channel_name">Diensberigte</string>
     <string name="push_channel_description">Nuus en opdaterings oor Light</string>
-    <string name="app_name">Light</string>
+    <string name="app_name">Lig</string>
     <string name="address_title">Voeg adres by</string>
     <string name="edit_address_title">Wysig adres</string>
     <string name="address_step">Stap %1$d van 5 — %2$s</string>

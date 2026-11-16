@@ -1,7 +1,7 @@
 <resources>
     <string name="push_channel_name">Litsebiso tsa tšebeletso</string>
     <string name="push_channel_description">Litaba le lintlafatso mabapi le Light</string>
-    <string name="app_name">Light</string>
+    <string name="app_name">Lesedi</string>
     <string name="address_title">Eketsa aterese</string>
     <string name="edit_address_title">Fetola aterese</string>
     <string name="address_step">Mohato oa %1$d ho tse 5 — %2$s</string>

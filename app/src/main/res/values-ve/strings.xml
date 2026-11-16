@@ -1,7 +1,7 @@
 <resources>
     <string name="push_channel_name">Mulaedza wa tshumelo</string>
     <string name="push_channel_description">Mafhungo na milaedza ya mushumo wa Svitlo</string>
-    <string name="app_name">Svitlo</string>
+    <string name="app_name">Tshedza</string>
     <string name="address_title">Engedza adiresi</string>
     <string name="edit_address_title">Dandulula adiresi</string>
     <string name="address_step">Tshiga %1$d ya 5 — %2$s</string>

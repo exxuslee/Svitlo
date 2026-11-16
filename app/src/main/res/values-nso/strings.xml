@@ -1,7 +1,7 @@
 <resources>
     <string name="push_channel_name">Ditsebišo tša tirelo</string>
     <string name="push_channel_description">Dindaba le dipeeletšo ka Light</string>
-    <string name="app_name">Light</string>
+    <string name="app_name">Lesedi</string>
     <string name="address_title">Oketša aterese</string>
     <string name="edit_address_title">Fetola aterese</string>
     <string name="address_step">Mogato %1$d go ya go 5 — %2$s</string>

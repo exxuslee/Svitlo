@@ -1,7 +1,7 @@
 <resources>
     <string name="push_channel_name">Switiviso swa vukorhokeri</string>
     <string name="push_channel_description">Mahungu ni ku antswisiwa hi Light</string>
-    <string name="app_name">Light</string>
+    <string name="app_name">Ku Vonakala</string>
     <string name="address_title">Engetela adirese</string>
     <string name="edit_address_title">Cinca adirese</string>
     <string name="address_step">Goza ro %1$d eka 5 — %2$s</string>
