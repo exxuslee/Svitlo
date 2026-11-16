@@ -7,8 +7,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,8 +26,10 @@ import org.exxlexxlee.svitlo.ui.common.flagRes
 @Composable
 fun CountryStep(state: ViewState, eventHandler: (Event) -> Unit) {
     val countries = listOf(state.country) + Country.entries.filter { it != state.country }
-    LazyColumn(
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(countries, key = { it.code }) { country ->

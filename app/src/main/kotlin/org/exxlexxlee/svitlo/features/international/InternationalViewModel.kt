@@ -129,7 +129,7 @@ class InternationalViewModel(
                 country = previous.country,
                 sources = previous.sources,
                 source = source,
-                details = previous.details,
+                details = previous.details.copy(locationPoint = null),
                 nameEdited = previous.nameEdited,
                 isEditing = previous.isEditing,
             )
@@ -154,8 +154,12 @@ class InternationalViewModel(
         }
         mutable.value = snapshot.copy(
             step = next, failed = false, options = emptyList(),
-            details = if (next == InternationalStep.Details && !snapshot.nameEdited)
-                snapshot.details.copy(name = generatedName) else snapshot.details,
+            details = snapshot.details.copy(
+                name = if (next == InternationalStep.Details && !snapshot.nameEdited) generatedName else snapshot.details.name,
+                locationPoint = if (snapshot.step == InternationalStep.Location)
+                    snapshot.outages.firstOrNull { it.location == snapshot.query.trim() && it.point != null }?.point
+                    else snapshot.details.locationPoint,
+            ),
         )
     }
 

@@ -64,6 +64,7 @@ class HomeViewModel(
                         schedule = source.schedule,
                         minuteOfDay = KyivTime.minuteOfDay(clock),
                         error = errorMap[source.place.id],
+                        now = java.time.Instant.parse(clock.now().toString()),
                     )
                 }
                 ViewState(

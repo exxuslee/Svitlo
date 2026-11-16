@@ -20,6 +20,12 @@ data class InternationalOutage(
     val start: Instant?,
     val end: Instant?,
     val areaOnly: Boolean = true,
+    val kind: OutageKind = OutageKind.ACTUAL,
+    val endIsEstimate: Boolean = false,
+    val affectedCustomers: Int? = null,
+    val isAreaSummary: Boolean = false,
+    val percentWithoutPower: Double? = null,
+    val point: GeoPoint? = null,
 )
 
 data class AddressOption(val id: Long, val name: String)

@@ -14,6 +14,16 @@
             "regionId": 25,
             "dsoId": 902
           }
+        },
+        {
+          "id": "kyiv-monitor",
+          "name": "UA Power Outages Monitor",
+          "providerId": "ua_monitor",
+          "primary": false,
+          "source": {
+            "type": "ukraine_monitor",
+            "aggregateRegion": "kyiv"
+          }
         }
       ]
     },
@@ -29,6 +39,16 @@
           "source": {
             "type": "github_json",
             "url": "https://raw.githubusercontent.com/Baskerville42/outage-data-ua/main/data/kyiv-region.json"
+          }
+        },
+        {
+          "id": "kyiv-region-monitor",
+          "name": "UA Power Outages Monitor",
+          "providerId": "ua_monitor",
+          "primary": false,
+          "source": {
+            "type": "ukraine_monitor",
+            "aggregateRegion": "kiivska-oblast"
           }
         }
       ]
@@ -82,6 +102,16 @@
             "type": "github_json",
             "url": "https://raw.githubusercontent.com/Baskerville42/outage-data-ua/main/data/dnipro.json"
           }
+        },
+        {
+          "id": "dnipro-monitor",
+          "name": "UA Power Outages Monitor",
+          "providerId": "ua_monitor",
+          "primary": false,
+          "source": {
+            "type": "ukraine_monitor",
+            "aggregateRegion": "dnipropetrovska-oblast"
+          }
         }
       ]
     },
@@ -97,6 +127,16 @@
           "source": {
             "type": "github_json",
             "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Zhytomyroblenergo.json"
+          }
+        },
+        {
+          "id": "zhytomyr-monitor",
+          "name": "UA Power Outages Monitor",
+          "providerId": "ua_monitor",
+          "primary": false,
+          "source": {
+            "type": "ukraine_monitor",
+            "aggregateRegion": "zhytomyrska-oblast"
           }
         }
       ]
@@ -114,6 +154,16 @@
             "type": "github_json",
             "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Zakarpattiaoblenerho.json"
           }
+        },
+        {
+          "id": "zakarpattia-monitor",
+          "name": "UA Power Outages Monitor",
+          "providerId": "ua_monitor",
+          "primary": false,
+          "source": {
+            "type": "ukraine_monitor",
+            "aggregateRegion": "zakarpatska-oblast"
+          }
         }
       ]
     },
@@ -129,6 +179,16 @@
           "source": {
             "type": "github_json",
             "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Zaporizhzhiaoblenergo.json"
+          }
+        },
+        {
+          "id": "zaporizhzhia-monitor",
+          "name": "UA Power Outages Monitor",
+          "providerId": "ua_monitor",
+          "primary": false,
+          "source": {
+            "type": "ukraine_monitor",
+            "aggregateRegion": "zaporizka-oblast"
           }
         }
       ]
@@ -146,6 +206,16 @@
             "type": "github_json",
             "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Prykarpattiaoblenerho.json"
           }
+        },
+        {
+          "id": "ivano-frankivsk-monitor",
+          "name": "UA Power Outages Monitor",
+          "providerId": "ua_monitor",
+          "primary": false,
+          "source": {
+            "type": "ukraine_monitor",
+            "aggregateRegion": "ivano-frankivska-oblast"
+          }
         }
       ]
     },
@@ -161,6 +231,16 @@
           "source": {
             "type": "github_json",
             "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Lvivoblenerho.json"
+          }
+        },
+        {
+          "id": "lviv-monitor",
+          "name": "UA Power Outages Monitor",
+          "providerId": "ua_monitor",
+          "primary": false,
+          "source": {
+            "type": "ukraine_monitor",
+            "aggregateRegion": "lvivska-oblast"
           }
         }
       ]
@@ -178,6 +258,16 @@
             "type": "github_json",
             "url": "https://raw.githubusercontent.com/Baskerville42/outage-data-ua/main/data/odesa.json"
           }
+        },
+        {
+          "id": "odesa-monitor",
+          "name": "UA Power Outages Monitor",
+          "providerId": "ua_monitor",
+          "primary": false,
+          "source": {
+            "type": "ukraine_monitor",
+            "aggregateRegion": "odeska-oblast"
+          }
         }
       ]
     },
@@ -193,6 +283,16 @@
           "source": {
             "type": "github_json",
             "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Poltavaoblenergo.json"
+          }
+        },
+        {
+          "id": "poltava-monitor",
+          "name": "UA Power Outages Monitor",
+          "providerId": "ua_monitor",
+          "primary": false,
+          "source": {
+            "type": "ukraine_monitor",
+            "aggregateRegion": "poltavska-oblast"
           }
         }
       ]
@@ -210,6 +310,16 @@
             "type": "github_json",
             "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Rivneoblenergo.json"
           }
+        },
+        {
+          "id": "rivne-monitor",
+          "name": "UA Power Outages Monitor",
+          "providerId": "ua_monitor",
+          "primary": false,
+          "source": {
+            "type": "ukraine_monitor",
+            "aggregateRegion": "rivnenska-oblast"
+          }
         }
       ]
     },
@@ -225,6 +335,16 @@
           "source": {
             "type": "github_json",
             "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Ternopiloblenerho.json"
+          }
+        },
+        {
+          "id": "ternopil-monitor",
+          "name": "UA Power Outages Monitor",
+          "providerId": "ua_monitor",
+          "primary": false,
+          "source": {
+            "type": "ukraine_monitor",
+            "aggregateRegion": "ternopilska-oblast"
           }
         }
       ]
@@ -242,6 +362,16 @@
             "type": "github_json",
             "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Khmelnytskoblenerho.json"
           }
+        },
+        {
+          "id": "khmelnytskyi-monitor",
+          "name": "UA Power Outages Monitor",
+          "providerId": "ua_monitor",
+          "primary": false,
+          "source": {
+            "type": "ukraine_monitor",
+            "aggregateRegion": "khmelnytska-oblast"
+          }
         }
       ]
     },
@@ -257,6 +387,48 @@
           "source": {
             "type": "github_json",
             "url": "https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Chernihivoblenergo.json"
+          }
+        },
+        {
+          "id": "chernihiv-monitor",
+          "name": "UA Power Outages Monitor",
+          "providerId": "ua_monitor",
+          "primary": false,
+          "source": {
+            "type": "ukraine_monitor",
+            "aggregateRegion": "chernihivska-oblast"
+          }
+        }
+      ]
+    },
+    {
+      "id": "cherkasy",
+      "name": "Черкаська область",
+      "suppliers": [
+        {
+          "id": "cherkasy-monitor",
+          "name": "UA Power Outages Monitor",
+          "providerId": "ua_monitor",
+          "primary": true,
+          "source": {
+            "type": "ukraine_monitor",
+            "aggregateRegion": "cherkaska-oblast"
+          }
+        }
+      ]
+    },
+    {
+      "id": "kharkiv",
+      "name": "Харківська область",
+      "suppliers": [
+        {
+          "id": "kharkiv-monitor",
+          "name": "UA Power Outages Monitor",
+          "providerId": "ua_monitor",
+          "primary": true,
+          "source": {
+            "type": "ukraine_monitor",
+            "aggregateRegion": "kharkivska-oblast"
           }
         }
       ]

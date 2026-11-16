@@ -37,14 +37,14 @@ class InternationalScheduleCardTest {
                 Box(Modifier.padding(16.dp)) { ReadOnlyScheduleCard(card) }
             }
         }
-        composeRule.onNodeWithText("10:00–11:00", substring = true).assertIsDisplayed()
-        composeRule.onNodeWithText("UK Power Networks").assertIsDisplayed()
+        composeRule.onNodeWithText("15.11 10:00", substring = true).assertIsDisplayed()
+        composeRule.onNodeWithText("UK Power Networks", substring = true).assertIsDisplayed()
         composeRule.onNodeWithContentDescription(context.getString(R.string.edit)).assertDoesNotExist()
         val image = composeRule.onRoot().captureToImage().asAndroidBitmap()
         File(context.getExternalFilesDir(null), "international-card-${if (dark) "dark" else "light"}.png").outputStream().use {
             image.compress(Bitmap.CompressFormat.PNG, 100, it)
         }
         composeRule.onNodeWithText(context.getString(R.string.tomorrow)).performClick()
-        composeRule.onNodeWithText("17:00–18:00", substring = true).assertIsDisplayed()
+        composeRule.onNodeWithText("16.11 17:00", substring = true).assertIsDisplayed()
     }
 }

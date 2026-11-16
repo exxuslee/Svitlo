@@ -3,22 +3,21 @@ package org.exxlexxlee.data
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
-import kotlinx.coroutines.test.runTest
-import kotlinx.serialization.json.Json
-import org.exxlexxlee.data.catalog.InternationalSources
-import org.exxlexxlee.data.remote.blackoutmap.BlackoutMapMapper
-import org.exxlexxlee.data.remote.manitoba.ManitobaMapper
-import org.exxlexxlee.data.remote.massoutage.MassOutageMapper
-import org.exxlexxlee.data.remote.obsyd.ObsydMapper
-import org.exxlexxlee.data.remote.tauron.TauronMapper
-import org.exxlexxlee.data.remote.ukpn.UkpnMapper
-import org.exxlexxlee.data.repository.InternationalOutageRepositoryImpl
-import org.exxlexxlee.domain.model.*
-import org.junit.Assert.*
-import org.junit.Test
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneOffset
+import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.Json
+import org.exxlexxlee.data.catalog.InternationalSources
+import org.exxlexxlee.data.mapper.blackoutmap.BlackoutMapMapper
+import org.exxlexxlee.data.mapper.manitoba.ManitobaMapper
+import org.exxlexxlee.data.mapper.massoutage.MassOutageMapper
+import org.exxlexxlee.data.mapper.obsyd.ObsydMapper
+import org.exxlexxlee.data.mapper.tauron.TauronMapper
+import org.exxlexxlee.data.mapper.ukpn.UkpnMapper
+import org.exxlexxlee.domain.model.*
+import org.junit.Assert.*
+import org.junit.Test
 
 class InternationalOutageRepositoryTest {
     private val json = Json { ignoreUnknownKeys = true }
@@ -33,7 +32,7 @@ class InternationalOutageRepositoryTest {
             else """{"total_count":2,"results":[{"incidentreference":"active","operatingzone":"London","estimatedrestorationdate":"2026-11-15T15:00:00"}]}""")
         })
         try {
-            val repository = InternationalOutageRepositoryImpl(client, json, clock)
+            val repository = internationalOutageRepository(client, json, clock)
             val events = repository.outages(InternationalSources.all.first { it.id == "ukpn" })
             assertEquals(listOf("0", "1"), offsets)
             assertEquals(listOf("active"), events.map { it.id })
@@ -46,7 +45,7 @@ class InternationalOutageRepositoryTest {
             respond("""{"features":[{"attributes":{"ORDER_ID":"old","SCHEDULED_END_TIME":1}},{"attributes":{"ORDER_ID":"future","CSC":"WINNIPEG","DEVICE_ADDRESS":"Street","SCHEDULED_START_TIME":1794747600000,"SCHEDULED_END_TIME":1794920400000}}]}""")
         })
         try {
-            val events = InternationalOutageRepositoryImpl(client, json, clock).outages(InternationalSources.all.first { it.id == "manitoba" })
+            val events = internationalOutageRepository(client, json, clock).outages(InternationalSources.all.first { it.id == "manitoba" })
             assertEquals("future", events.single().id)
             assertEquals(Instant.ofEpochMilli(1794920400000), events.single().end)
         } finally { client.close() }
@@ -82,7 +81,7 @@ class InternationalOutageRepositoryTest {
         assertTrue(events.single().areaOnly)
     }
 
-    @Test fun massoutageSummaryKeepsOnlyStatesWithOutages() {
+    @Test fun massoutageSummaryKeepsStatesWithZeroAndNonzeroCounts() {
         val raw = """
             {"data":{"national":{"customers_out":100,"as_of":"2026-11-16T12:00:00.000Z"},
               "states":[
@@ -91,10 +90,12 @@ class InternationalOutageRepositoryTest {
               ]}}
         """.trimIndent()
         val events = MassOutageMapper(json).summary(raw)
-        assertEquals(1, events.size)
-        assertEquals("us-state-06", events.single().id)
-        assertTrue(events.single().location.contains("California"))
-        assertTrue(events.single().description.startsWith("90"))
+        assertEquals(2, events.size)
+        assertEquals("us-state-06", events.first().id)
+        assertTrue(events.first().location.contains("California"))
+        assertEquals(90, events.first().affectedCustomers)
+        assertEquals(0, events.last().affectedCustomers)
+        assertTrue(events.all { it.isAreaSummary })
     }
 
     @Test fun obsydKeepsLatestForcedMegawattsAndRejectsEmptySeries() {
@@ -117,7 +118,7 @@ class InternationalOutageRepositoryTest {
     }
 
     @Test fun countryCatalogDoesNotMixProviders() {
-        assertTrue(InternationalSources.all.filter { it.country == Country.POLAND }.all { it.id in listOf("tauron", "enea", "pge", "obsyd") })
+        assertTrue(InternationalSources.all.filter { it.country == Country.POLAND }.all { it.id in listOf("tauron", "enea", "pge", "obsyd", "energa") })
         assertTrue(InternationalSources.all.filter { it.country == Country.UKRAINE }.all { it.id == "blackoutmap" })
         assertTrue(InternationalSources.all.any { it.id == "massoutage" && it.country == Country.UNITED_STATES })
         assertEquals(

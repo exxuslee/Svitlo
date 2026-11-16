@@ -16,10 +16,10 @@ import org.exxlexxlee.data.local.ScheduleDao
 import org.exxlexxlee.data.local.cacheKey
 import org.exxlexxlee.data.local.toDomain
 import org.exxlexxlee.data.local.toEntity
-import org.exxlexxlee.data.remote.SchedulePayload
-import org.exxlexxlee.data.remote.ScheduleRemoteDataSource
-import org.exxlexxlee.domain.model.Selection
+import org.exxlexxlee.data.remote.schedule.SchedulePayload
+import org.exxlexxlee.data.remote.schedule.ScheduleRemoteDataSource
 import org.exxlexxlee.domain.model.KyivTime
+import org.exxlexxlee.domain.model.Selection
 import org.exxlexxlee.domain.model.forDate
 
 /** Owns request limits and cache writes for all refreshes of one repository instance. */
@@ -35,9 +35,10 @@ internal class ScheduleRefresher(
 
     suspend fun refreshAll(selections: List<Selection>): Map<Selection, Result<Unit>> =
         withContext(dispatcher) {
-            val regionalResults = selections.groupBy { it.region.id }.map { (regionId, regionalSelections) ->
-                async { refreshRegion(regionId, regionalSelections) }
-            }.awaitAll()
+            val regionalResults =
+                selections.groupBy { it.region.id }.map { (regionId, regionalSelections) ->
+                    async { refreshRegion(regionId, regionalSelections) }
+                }.awaitAll()
             buildMap { regionalResults.forEach { putAll(it) } }
         }
 

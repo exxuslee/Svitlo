@@ -28,6 +28,8 @@ data class ScheduleCardUi(
     val schedulesSuspended: Boolean,
     val error: String?,
     val localizeGroupLabel: Boolean = true,
+    val outageState: org.exxlexxlee.domain.model.OutageCardState? = null,
+    val now: java.time.Instant? = null,
 )
 
 object ScheduleCardMapper {
@@ -37,6 +39,7 @@ object ScheduleCardMapper {
         minuteOfDay: Int,
         error: String? = null,
         id: Long = 0,
+        now: java.time.Instant = java.time.Instant.now(),
     ): ScheduleCardUi {
         val today = schedule?.today?.takeIf { it.published }
         val tomorrow = schedule?.tomorrow?.takeIf { it.published }
@@ -60,6 +63,13 @@ object ScheduleCardMapper {
             countdownTarget = countdownTarget,
             schedulesSuspended = schedule?.schedulesSuspended == true,
             error = error,
+            outageState = schedule?.let {
+                val model = org.exxlexxlee.domain.mapper.OutageSnapshotMapper.schedule(it, selection.region.name)
+                if (error != null) org.exxlexxlee.domain.model.OutageCardState.Stale(
+                    model, java.time.Duration.between(model.fetchedAt, now).coerceAtLeast(java.time.Duration.ZERO),
+                ) else org.exxlexxlee.domain.model.OutageCardState.Content(model)
+            } ?: if (error != null) org.exxlexxlee.domain.model.OutageCardState.Error else org.exxlexxlee.domain.model.OutageCardState.Loading,
+            now = now,
         )
     }
 

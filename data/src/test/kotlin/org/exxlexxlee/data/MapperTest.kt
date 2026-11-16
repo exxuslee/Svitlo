@@ -4,12 +4,13 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.Json
-import org.exxlexxlee.data.mapper.GpvMapper
-import org.exxlexxlee.data.mapper.YasnoMapper
+import org.exxlexxlee.data.mapper.gpv.GpvMapper
+import org.exxlexxlee.data.mapper.yasno.YasnoMapper
 import org.exxlexxlee.domain.model.OutageGroup
 import org.exxlexxlee.domain.model.PowerState
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -83,6 +84,16 @@ class MapperTest {
         assertTrue(schedule.schedulesSuspended)
         assertEquals(false, schedule.today.published)
         assertEquals(false, schedule.tomorrow!!.published)
+    }
+
+    @Test
+    fun yasnoRejectsMissingSchedulesAndDoesNotConfirmUnknownSlotTypes() {
+        assertThrows(IllegalArgumentException::class.java) { yasnoMapper.decode("""{"error":{}}""") }
+        assertThrows(Exception::class.java) { yasnoMapper.decode("""{"1.1":{"today":{"date":"2026-11-08"}}}""") }
+        val payload = yasnoMapper.decode("""{"1.1":{"today":{"date":"2026-11-08","slots":[{"start":0,"end":30,"type":"UnknownNewType"}]}}}""")
+        val schedule = yasnoMapper.toSchedule(payload, OutageGroup("1.1", "1.1"), clock)
+        assertEquals(PowerState.UNKNOWN, schedule.today.halfHours.first())
+        assertEquals(PowerState.ON, schedule.today.halfHours[1])
     }
 
     @Test

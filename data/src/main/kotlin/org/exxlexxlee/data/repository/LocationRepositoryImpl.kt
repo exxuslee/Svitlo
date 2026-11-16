@@ -1,7 +1,7 @@
 package org.exxlexxlee.data.repository
 
 import org.exxlexxlee.data.catalog.RegionCatalog
-import org.exxlexxlee.data.remote.ScheduleRemoteDataSource
+import org.exxlexxlee.data.remote.schedule.ScheduleRemoteDataSource
 import org.exxlexxlee.domain.model.City
 import org.exxlexxlee.domain.model.House
 import org.exxlexxlee.domain.model.OutageGroup

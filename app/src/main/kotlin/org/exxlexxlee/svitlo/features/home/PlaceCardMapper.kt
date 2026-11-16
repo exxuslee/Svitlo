@@ -12,7 +12,8 @@ object PlaceCardMapper {
         place: Place,
         schedule: OutageSchedule?,
         minuteOfDay: Int,
-        error: String?
+        error: String?,
+        now: java.time.Instant = java.time.Instant.now(),
     ): PlaceCardUi =
-        ScheduleCardMapper.map(place.selection, schedule, minuteOfDay, error, place.id)
+        ScheduleCardMapper.map(place.selection, schedule, minuteOfDay, error, place.id, now)
 }

@@ -11,6 +11,7 @@ data class AddressDetails(
     val cityId: Long? = null,
     val streetId: Long? = null,
     val house: String = "",
+    val locationPoint: GeoPoint? = null,
 )
 
 data class Place(

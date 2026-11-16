@@ -68,6 +68,7 @@ data class RegionSourceConfig(
     val url: String? = null,
     val regionId: Int? = null,
     val dsoId: Int? = null,
+    val aggregateRegion: String? = null,
 )
 
 private fun SupplierConfig.toSupplier() = Supplier(

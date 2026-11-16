@@ -25,4 +25,6 @@ private val regionNames = mapOf(
     "Тернопільська область" to R.string.region_ternopil,
     "Хмельницька область" to R.string.region_khmelnytskyi,
     "Чернігівська область" to R.string.region_chernihiv,
+    "Черкаська область" to R.string.region_cherkasy,
+    "Харківська область" to R.string.region_kharkiv,
 )

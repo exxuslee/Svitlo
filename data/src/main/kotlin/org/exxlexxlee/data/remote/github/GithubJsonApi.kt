@@ -1,11 +1,12 @@
 package org.exxlexxlee.data.remote.github
 
 import io.ktor.client.HttpClient
-import io.ktor.client.request.get
-import io.ktor.client.statement.bodyAsText
+import org.exxlexxlee.data.remote.http.ConditionalHttpClient
 
 class GithubJsonApi(
-    private val client: HttpClient,
+    client: HttpClient,
+    private val http: ConditionalHttpClient = ConditionalHttpClient(client),
 ) {
-    suspend fun fetch(url: String): String = client.get(url).bodyAsText()
+    suspend fun <T> fetch(url: String, decode: (String) -> T): T =
+        http.get(url, source = "github_json", decode = decode)
 }

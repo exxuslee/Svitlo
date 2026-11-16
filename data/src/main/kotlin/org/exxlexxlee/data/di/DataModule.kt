@@ -10,12 +10,16 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.exxlexxlee.data.catalog.RegionCatalog
-import org.exxlexxlee.data.local.MIGRATION_1_2
 import org.exxlexxlee.data.local.AppDatabase
-import org.exxlexxlee.data.mapper.GpvMapper
-import org.exxlexxlee.data.mapper.YasnoMapper
+import org.exxlexxlee.data.local.MIGRATION_1_2
+import org.exxlexxlee.data.mapper.gpv.GpvMapper
+import org.exxlexxlee.data.mapper.yasno.YasnoMapper
 import org.exxlexxlee.data.remote.github.GithubJsonApi
-import org.exxlexxlee.data.remote.ScheduleRemoteDataSource
+import org.exxlexxlee.data.remote.http.ConditionalHttpClient
+import org.exxlexxlee.data.remote.http.FeedFailureReporter
+import org.exxlexxlee.data.remote.http.feedFailureCategory
+import org.exxlexxlee.data.remote.opendata.CkanApi
+import org.exxlexxlee.data.remote.schedule.ScheduleRemoteDataSource
 import org.exxlexxlee.data.remote.yasno.YasnoApi
 import org.exxlexxlee.data.repository.LocationRepositoryImpl
 import org.exxlexxlee.data.repository.ScheduleRepositoryImpl
@@ -27,11 +31,17 @@ import org.exxlexxlee.domain.repository.SelectionRepository
 import org.exxlexxlee.domain.repository.SettingsRepository
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
-import org.exxlexxlee.domain.repository.InternationalOutageRepository
-import org.exxlexxlee.data.repository.InternationalOutageRepositoryImpl
 
 val dataModule = module {
-    single<InternationalOutageRepository> { InternationalOutageRepositoryImpl(get(), get()) }
+    includes(internationalOutageModule())
+    single<FeedFailureReporter> {
+        FeedFailureReporter { source, failure ->
+            // No response bodies, keys, addresses or query strings in diagnostics.
+            android.util.Log.w("OutageFeed", "$source: ${failure.feedFailureCategory()} ${failure.javaClass.simpleName}")
+        }
+    }
+    single { ConditionalHttpClient(get(), get()) }
+    single { CkanApi(get(), get()) }
     single {
         Json {
             ignoreUnknownKeys = true
@@ -68,8 +78,8 @@ val dataModule = module {
     single { get<AppDatabase>().placeDao() }
     single { get<AppDatabase>().scheduleDao() }
     single { RegionCatalog(androidContext(), get()) }
-    single { YasnoApi(get()) }
-    single { GithubJsonApi(get()) }
+    single { YasnoApi(get(), get()) }
+    single { GithubJsonApi(get(), get()) }
     single { YasnoMapper(get()) }
     single { GpvMapper(get()) }
     single<ScheduleRemoteDataSource> { ScheduleRemoteDataSource(get(), get(), get(), get()) }

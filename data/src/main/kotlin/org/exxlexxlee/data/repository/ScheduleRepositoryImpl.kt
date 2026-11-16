@@ -13,7 +13,7 @@ import org.exxlexxlee.data.catalog.RegionCatalog
 import org.exxlexxlee.data.local.ScheduleDao
 import org.exxlexxlee.data.local.cacheKey
 import org.exxlexxlee.data.local.toDomain
-import org.exxlexxlee.data.remote.ScheduleRemoteDataSource
+import org.exxlexxlee.data.remote.schedule.ScheduleRemoteDataSource
 import org.exxlexxlee.domain.model.OutageSchedule
 import org.exxlexxlee.domain.model.Selection
 import org.exxlexxlee.domain.model.forDate
@@ -27,7 +27,8 @@ class ScheduleRepositoryImpl(
     private val clock: Clock = Clock.System,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : ScheduleRepository {
-    private val refresher = ScheduleRefresher(catalog, remoteDataSource, scheduleDao, clock, dispatcher)
+    private val refresher =
+        ScheduleRefresher(catalog, remoteDataSource, scheduleDao, clock, dispatcher)
 
     override fun observe(selection: Selection): Flow<OutageSchedule?> =
         scheduleDao.observe(cacheKey(selection)).distinctUntilChanged().transform { entity ->

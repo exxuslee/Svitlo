@@ -152,4 +152,37 @@
     <string name="international_search_empty">Akukho okutholakele. Cacisa igama bese uphinda usesha.</string>
     <string name="international_save_error">Ayikwazanga ukulondoloza ikhadi. Zama futhi.</string>
     <string name="international_reminders_note">Izilungiselelo zezaziso zizolondolozwa. Kulo mhlinzeki izaziso ezizenzakalelayo azikatholakali okwamanje.</string>
+    <string name="country_france">i-France</string>
+    <string name="country_finland">i-Finland</string>
+    <string name="country_australia">i-Australia</string>
+    <string name="country_new_zealand">i-New Zealand</string>
+    <string name="country_india">i-India</string>
+    <string name="country_philippines">i-Philippines</string>
+    <string name="country_chile">i-Chile</string>
+    <string name="country_brazil">i-Brazil</string>
+    <string name="country_israel">kwa-Israel</string>
+    <string name="region_cherkasy">Cherkasy Oblast</string>
+    <string name="region_kharkiv">Kharkiv Oblast</string>
+    <!-- English fallback for new outage messages; localized review pending. -->
+    <string name="outage_load_error">Unable to load outage data</string>
+    <string name="outage_stale">Stale data · updated %1$d min ago</string>
+    <string name="outage_area_no_data">No area data</string>
+    <string name="outage_area_normal">No outages reported in this area</string>
+    <string name="outage_customers">Customers without power: %1$d</string>
+    <string name="outage_percent">Without power: %1$s%%</string>
+    <string name="outage_area_only">Area information · unconfirmed for this address</string>
+    <string name="outage_source">%1$s · updated %2$s</string>
+    <string name="outage_next">Next outage: %1$s</string>
+    <string name="outage_power_on">Power is on</string>
+    <string name="outage_power_off_until">Power is off until %1$s</string>
+    <string name="outage_unknown_end">Power is off · restoration time unspecified</string>
+    <string name="outage_restoration_unspecified">restoration time unspecified</string>
+    <string name="outage_status_unknown">Current status unknown</string>
+    <string name="outage_interval">%1$s: %2$s — %3$s</string>
+    <string name="outage_collapse">Collapse</string>
+    <string name="outage_more">%1$d more</string>
+    <string name="outage_planned">Planned</string>
+    <string name="outage_possible">Possible</string>
+    <string name="outage_actual">Actual</string>
+    <string name="outage_emergency">Emergency !</string>
 </resources>

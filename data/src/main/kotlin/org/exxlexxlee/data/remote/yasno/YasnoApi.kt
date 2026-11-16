@@ -1,15 +1,18 @@
 package org.exxlexxlee.data.remote.yasno
 
 import io.ktor.client.HttpClient
-import io.ktor.client.request.get
-import io.ktor.client.statement.bodyAsText
+import org.exxlexxlee.data.remote.http.ConditionalHttpClient
 
 class YasnoApi(
-    private val client: HttpClient,
+    client: HttpClient,
+    private val http: ConditionalHttpClient = ConditionalHttpClient(client),
 ) {
-    suspend fun fetchPlannedOutages(regionId: Int, dsoId: Int): String {
-        return client.get(
+    suspend fun <T> fetchPlannedOutages(regionId: Int, dsoId: Int, decode: (String) -> T): T {
+        require(regionId > 0 && dsoId > 0)
+        return http.get(
             "https://app.yasno.ua/api/blackout-service/public/shutdowns/regions/$regionId/dsos/$dsoId/planned-outages",
-        ).bodyAsText()
+            source = "yasno:$regionId:$dsoId",
+            decode = decode,
+        )
     }
 }

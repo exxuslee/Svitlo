@@ -266,6 +266,13 @@ fun ReadOnlyScheduleCard(
 
 @Composable
 private fun ScheduleCardBody(card: PlaceCardUi, showDragHandle: Boolean = true) {
+    card.outageState?.takeIf { !card.localizeGroupLabel }?.let { state ->
+        Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            CardHeader(card, showDragHandle)
+            org.exxlexxlee.svitlo.ui.schedule.OutageSnapshotContent(state, card.now ?: java.time.Instant.now(), card.id)
+        }
+        return
+    }
     var showTomorrow by remember(card.id) { mutableStateOf(false) }
 
     Column(

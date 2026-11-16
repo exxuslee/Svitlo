@@ -267,6 +267,15 @@ internal fun Country.countryNameRes(): Int = when (this) {
     Country.IRELAND -> R.string.country_ireland
     Country.KENYA -> R.string.country_kenya
     Country.MEXICO -> R.string.country_mexico
+    Country.FRANCE -> R.string.country_france
+    Country.FINLAND -> R.string.country_finland
+    Country.AUSTRALIA -> R.string.country_australia
+    Country.NEW_ZEALAND -> R.string.country_new_zealand
+    Country.INDIA -> R.string.country_india
+    Country.PHILIPPINES -> R.string.country_philippines
+    Country.CHILE -> R.string.country_chile
+    Country.BRAZIL -> R.string.country_brazil
+    Country.ISRAEL -> R.string.country_israel
 }
 
 @Preview(showBackground = true)

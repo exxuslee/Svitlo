@@ -13,7 +13,16 @@ enum class Country(val code: String) {
     ECUADOR("EC"),
     IRELAND("IE"),
     KENYA("KE"),
-    MEXICO("MX");
+    MEXICO("MX"),
+    FRANCE("FR"),
+    FINLAND("FI"),
+    AUSTRALIA("AU"),
+    NEW_ZEALAND("NZ"),
+    INDIA("IN"),
+    PHILIPPINES("PH"),
+    CHILE("CL"),
+    BRAZIL("BR"),
+    ISRAEL("IL");
 
     companion object {
         fun fromCode(code: String?): Country? = entries.firstOrNull {

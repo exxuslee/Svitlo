@@ -17,7 +17,7 @@ class CountryTest {
     @Test fun languageIsUsedWhenCountryIsMissingOrUnsupported() {
         assertEquals(Country.POLAND, Country.forLocale(Locale.forLanguageTag("pl")))
         assertEquals(Country.PAKISTAN, Country.forLocale(Locale.forLanguageTag("ur")))
-        assertEquals(Country.UNITED_KINGDOM, Country.forLocale(Locale.forLanguageTag("en-US")))
+        assertEquals(Country.UNITED_STATES, Country.forLocale(Locale.forLanguageTag("en-US")))
         assertEquals(Country.CANADA, Country.forLocale(Locale.FRENCH))
         assertEquals(Country.ECUADOR, Country.forLocale(Locale.forLanguageTag("es")))
         assertEquals(Country.KENYA, Country.forLocale(Locale.forLanguageTag("sw")))

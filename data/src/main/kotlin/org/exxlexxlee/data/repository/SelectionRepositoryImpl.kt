@@ -75,11 +75,15 @@ class SelectionRepositoryImpl(
         cityId = details?.cityId,
         streetId = details?.streetId,
         house = details?.house.orEmpty(),
+        latitude = details?.locationPoint?.latitude,
+        longitude = details?.locationPoint?.longitude,
     )
 }
 
 @Serializable
 private data class StoredSelection(
+    val latitude: Double? = null,
+    val longitude: Double? = null,
     val countryCode: String = "UA",
     val sourceId: String? = null,
     val filter: String = "",
@@ -102,8 +106,16 @@ private data class StoredSelection(
         details = addressName?.let { name ->
             AddressDetails(
                 name = name,
-                country = org.exxlexxlee.domain.model.Country.fromCode(countryCode) ?: org.exxlexxlee.domain.model.Country.UKRAINE,
-                sourceId = sourceId, filter = filter, cityId = cityId, streetId = streetId, house = house,
+                country = org.exxlexxlee.domain.model.Country.fromCode(countryCode)
+                    ?: org.exxlexxlee.domain.model.Country.UKRAINE,
+                sourceId = sourceId,
+                filter = filter,
+                cityId = cityId,
+                streetId = streetId,
+                house = house,
+                locationPoint = latitude?.let { lat -> longitude?.let { lon ->
+                    runCatching { org.exxlexxlee.domain.model.GeoPoint(lat, lon) }.getOrNull()
+                } },
                 reminderMinutes = reminderMinutes,
                 quietNight = quietNight,
                 iconId = iconId,

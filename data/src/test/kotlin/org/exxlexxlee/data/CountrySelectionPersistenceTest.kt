@@ -29,7 +29,7 @@ class CountrySelectionPersistenceTest {
         val dao = MemoryDao()
         val repository = SelectionRepositoryImpl(dao, Json)
         val ua = Selection.ByGroup(Region("kyiv", "Kyiv", "yasno"), OutageGroup("1", "1"), AddressDetails("Home"))
-        val pl = Selection.ByGroup(Region("international:tauron", "Tauron", "tauron"), OutageGroup("a", "Tauron"), AddressDetails("Kraków", country = Country.POLAND, sourceId = "tauron", cityId = 106173, streetId = 903765, house = "1"))
+        val pl = Selection.ByGroup(Region("international:tauron", "Tauron", "tauron"), OutageGroup("a", "Tauron"), AddressDetails("Kraków", country = Country.POLAND, sourceId = "tauron", cityId = 106173, streetId = 903765, house = "1", locationPoint = GeoPoint(50.0614, 19.9366)))
         repository.save(ua, null)
         repository.save(pl, null)
         val restored = SelectionRepositoryImpl(dao, Json).observePlaces().first()

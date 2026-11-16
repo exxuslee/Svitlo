@@ -6,12 +6,10 @@ import org.exxlexxlee.domain.model.OutageSource
 import org.exxlexxlee.domain.model.PowerState
 import org.exxlexxlee.svitlo.ui.schedule.ScheduleCardUi
 import java.time.Instant
-import java.time.ZoneId
 
 object InternationalCardMapper {
-    fun map(events: List<InternationalOutage>, source: OutageSource, now: Instant): ScheduleCardUi {
-        require(events.isNotEmpty())
-        val zone = ZoneId.of(source.zoneId)
+    fun map(events: List<InternationalOutage>, source: OutageSource, now: Instant, location: String = events.firstOrNull()?.location.orEmpty(), locationPoint: org.exxlexxlee.domain.model.GeoPoint? = null): ScheduleCardUi {
+        val zone = org.exxlexxlee.domain.model.locationZone(source.zoneId)
         val localNow = now.atZone(zone)
         val today = InternationalScheduleMapper.day(events, localNow.toLocalDate(), zone)
         val tomorrow =
@@ -20,8 +18,8 @@ object InternationalCardMapper {
         // An incident's estimated end does not confirm that power will be restored.
         // Consequently there is no availability countdown for incident-only feeds.
         return ScheduleCardUi(
-            id = (source.id + ":" + events.first().location).hashCode().toLong(),
-            title = events.first().location,
+            id = (source.id + ":" + location).hashCode().toLong(),
+            title = location,
             groupLabel = source.name.substringBefore(" · "),
             iconId = "home",
             todayRanges = today.ranges,
@@ -40,6 +38,10 @@ object InternationalCardMapper {
             schedulesSuspended = false,
             error = null,
             localizeGroupLabel = false,
+            outageState = org.exxlexxlee.domain.model.OutageCardState.Content(
+                org.exxlexxlee.domain.mapper.OutageSnapshotMapper.international(events, source, now, location, locationPoint),
+            ),
+            now = now,
         )
     }
 }
