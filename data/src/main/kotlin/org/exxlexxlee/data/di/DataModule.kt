@@ -72,7 +72,7 @@ val dataModule = module {
     single { GithubJsonApi(get()) }
     single { YasnoMapper(get()) }
     single { GpvMapper(get()) }
-    single { ScheduleRemoteDataSource(get(), get(), get(), get()) }
+    single<ScheduleRemoteDataSource> { ScheduleRemoteDataSource(get(), get(), get(), get()) }
     single<LocationRepository> {
         LocationRepositoryImpl(get(), get())
     }

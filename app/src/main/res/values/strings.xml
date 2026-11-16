@@ -1,7 +1,7 @@
 <resources>
     <string name="push_channel_name">Повідомлення сервісу</string>
-    <string name="push_channel_description">Новини та повідомлення про роботу Світло</string>
-    <string name="app_name">Світло</string>
+    <string name="push_channel_description">Новини та повідомлення про роботу Svitlo</string>
+    <string name="app_name">Svitlo</string>
     <string name="address_title">Додавання адреси</string>
     <string name="edit_address_title">Редагування адреси</string>
     <string name="address_step">Крок %1$d з 5 — %2$s</string>
@@ -39,7 +39,7 @@
     <string name="settings_about">Про додаток</string>
     <string name="settings_version">Версія %1$s</string>
     <string name="about_application_title">Застосунок</string>
-    <string name="about_description">Світло — застосунок для перегляду графіків відключень електроенергії в Україні. Зберігайте дім, роботу та інші важливі місця, щоб бачити розклад на сьогодні й завтра та планувати свій день.</string>
+    <string name="about_description">Svitlo — застосунок для перегляду графіків відключень електроенергії в Україні. Зберігайте дім, роботу та інші важливі місця, щоб бачити розклад на сьогодні й завтра та планувати свій день.</string>
     <string name="about_how_it_works_title">Як це працює</string>
     <string name="about_how_it_works_body">Додайте місце: виберіть регіон, постачальника електроенергії та групу відключень. Задайте власну назву й піктограму. На головному екрані з’явиться графік із півгодинними інтервалами, позначкою поточного часу та часом оновлення даних. Усі графіки відображаються за київським часом.</string>
     <string name="about_reminders_title">Нагадування</string>
@@ -85,7 +85,7 @@
     <string name="widget_banner_title">Віджет на робочий стіл</string>
     <string name="widget_banner_subtitle">Графік відключень завжди перед очима без відкриття додатка</string>
     <string name="widget_banner_button">Додати віджет</string>
-    <string name="widget_pin_unsupported">Додайте віджет «Світло» через меню віджетів вашого робочого столу</string>
+    <string name="widget_pin_unsupported">Додайте віджет «Svitlo» через меню віджетів вашого робочого столу</string>
     <string name="close">Закрити</string>
     <string name="update_downloaded">Оновлення завантажено. Перезапустіть додаток, щоб установити.</string>
     <string name="update_install">Установити</string>

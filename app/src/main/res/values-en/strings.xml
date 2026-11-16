@@ -1,7 +1,7 @@
 <resources>
     <string name="push_channel_name">Service notifications</string>
-    <string name="push_channel_description">News and updates about Svitlo</string>
-    <string name="app_name">Svitlo</string>
+    <string name="push_channel_description">News and updates about Light</string>
+    <string name="app_name">Light</string>
     <string name="address_title">Add address</string>
     <string name="edit_address_title">Edit address</string>
     <string name="address_step">Step %1$d of 5 — %2$s</string>
@@ -39,7 +39,7 @@
     <string name="settings_about">About the app</string>
     <string name="settings_version">Version %1$s</string>
     <string name="about_application_title">Application</string>
-    <string name="about_description">Svitlo is an app for viewing power outage schedules in Ukraine. Save your home, work, and other important locations to see today’s and tomorrow’s schedules and plan your day.</string>
+    <string name="about_description">Light is an app for viewing power outage schedules in Ukraine. Save your home, work, and other important locations to see today’s and tomorrow’s schedules and plan your day.</string>
     <string name="about_how_it_works_title">How it works</string>
     <string name="about_how_it_works_body">Add a location: select your region, electricity provider, and outage group. Choose a name and icon. The home screen shows a schedule with half-hour intervals, a current time marker, and the last update time. All schedules use Kyiv time.</string>
     <string name="about_reminders_title">Reminders</string>
@@ -85,7 +85,7 @@
     <string name="widget_banner_title">Home screen widget</string>
     <string name="widget_banner_subtitle">Keep the outage schedule in view without opening the app</string>
     <string name="widget_banner_button">Add widget</string>
-    <string name="widget_pin_unsupported">Add the “Svitlo” widget from your home screen’s widget menu</string>
+    <string name="widget_pin_unsupported">Add the “Light” widget from your home screen’s widget menu</string>
     <string name="close">Close</string>
     <string name="update_downloaded">Update downloaded. Restart the app to install it.</string>
     <string name="update_install">Install</string>

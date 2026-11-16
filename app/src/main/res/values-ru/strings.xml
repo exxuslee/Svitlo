@@ -1,7 +1,7 @@
 <resources>
     <string name="push_channel_name">Уведомления сервиса</string>
-    <string name="push_channel_description">Новости и сообщения о работе Світло</string>
-    <string name="app_name">Світло</string>
+    <string name="push_channel_description">Новости и сообщения о работе Svet</string>
+    <string name="app_name">Svet</string>
     <string name="address_title">Добавление адреса</string>
     <string name="edit_address_title">Редактирование адреса</string>
     <string name="address_step">Шаг %1$d из 5 — %2$s</string>
@@ -39,7 +39,7 @@
     <string name="settings_about">О приложении</string>
     <string name="settings_version">Версия %1$s</string>
     <string name="about_application_title">Приложение</string>
-    <string name="about_description">Світло — приложение для просмотра графиков отключений электроэнергии в Украине. Сохраняйте дом, работу и другие важные места, чтобы видеть расписание на сегодня и завтра и планировать свой день.</string>
+    <string name="about_description">Svet — приложение для просмотра графиков отключений электроэнергии в Украине. Сохраняйте дом, работу и другие важные места, чтобы видеть расписание на сегодня и завтра и планировать свой день.</string>
     <string name="about_how_it_works_title">Как это работает</string>
     <string name="about_how_it_works_body">Добавьте место: выберите регион, поставщика электроэнергии и группу отключений. Задайте своё название и значок. На главном экране появится график с получасовыми интервалами, отметкой текущего времени и временем обновления данных. Все графики отображаются по киевскому времени.</string>
     <string name="about_reminders_title">Напоминания</string>
@@ -85,7 +85,7 @@
     <string name="widget_banner_title">Виджет на рабочий стол</string>
     <string name="widget_banner_subtitle">График отключений всегда перед глазами без открытия приложения</string>
     <string name="widget_banner_button">Добавить виджет</string>
-    <string name="widget_pin_unsupported">Добавьте виджет «Світло» через меню виджетов вашего рабочего стола</string>
+    <string name="widget_pin_unsupported">Добавьте виджет «Svet» через меню виджетов вашего рабочего стола</string>
     <string name="close">Закрыть</string>
     <string name="update_downloaded">Обновление загружено. Перезапустите приложение для установки.</string>
     <string name="update_install">Установить</string>
