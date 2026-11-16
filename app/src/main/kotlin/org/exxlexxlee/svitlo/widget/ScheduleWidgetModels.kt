@@ -15,10 +15,11 @@ internal fun observeWidgetUi(
     observePlaceSchedules: ObservePlaceSchedules,
     selectedPlaceId: Flow<Long?>,
     clock: Clock,
-): Flow<ScheduleWidgetUi> = combine(observePlaceSchedules(), selectedPlaceId) { places, selectedId ->
-    val selected = places.firstOrNull { it.place.id == selectedId } ?: places.firstOrNull()
-    ScheduleWidgetMapper.map(selected?.place?.selection, selected?.schedule, clock)
-}.distinctUntilChanged()
+): Flow<ScheduleWidgetUi> =
+    combine(observePlaceSchedules(), selectedPlaceId) { places, selectedId ->
+        val selected = places.firstOrNull { it.place.id == selectedId } ?: places.firstOrNull()
+        ScheduleWidgetMapper.map(selected?.place?.selection, selected?.schedule, clock)
+    }.distinctUntilChanged()
 
 data class WidgetDayUi(
     val states: List<PowerState>,

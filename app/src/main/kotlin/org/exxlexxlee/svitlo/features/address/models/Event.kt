@@ -6,6 +6,7 @@ import org.exxlexxlee.domain.model.Supplier
 import org.exxlexxlee.svitlo.features.address.AddressIcon
 
 sealed interface Event {
+    data class CountrySelected(val country: org.exxlexxlee.domain.model.Country) : Event
     data object Back : Event
     data object Close : Event
     data class AreaSelected(val area: ServiceArea) : Event

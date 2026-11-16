@@ -27,6 +27,16 @@ import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AddressViewModelTest {
+    @Test fun countryIsFirstStepAndBackFromRegionReturnsToIt() = runTest(dispatcher) {
+        val vm = create()
+        runCurrent()
+        assertEquals(org.exxlexxlee.svitlo.features.address.models.AddressStep.Country, vm.viewStates().value.step)
+        vm.obtainEvent(Event.CountrySelected(Country.POLAND))
+        assertEquals(Country.POLAND, vm.viewStates().value.country)
+        assertEquals(org.exxlexxlee.svitlo.features.address.models.AddressStep.Region, vm.viewStates().value.step)
+        vm.obtainEvent(Event.Back)
+        assertEquals(org.exxlexxlee.svitlo.features.address.models.AddressStep.Country, vm.viewStates().value.step)
+    }
     private val dispatcher = StandardTestDispatcher()
     private val store = ViewModelStore()
     private val supplierA = Supplier(Region("a", "A", "provider"), true)

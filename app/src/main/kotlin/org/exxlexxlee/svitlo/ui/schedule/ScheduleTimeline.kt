@@ -14,7 +14,13 @@ internal object ScheduleTimeline {
     const val LabelSize = 14
 
     const val OuterCornerRadius = 8
-    data class Cell(val hour: Int, val first: PowerState, val second: PowerState, val marked: Boolean)
+
+    data class Cell(
+        val hour: Int,
+        val first: PowerState,
+        val second: PowerState,
+        val marked: Boolean
+    )
 
     fun row(states: List<PowerState>, startHour: Int, nowHalfHourIndex: Int?): List<Cell> =
         (startHour until startHour + 12).map { hour ->

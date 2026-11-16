@@ -28,6 +28,7 @@ class ScheduleWorkerFactory(
             appContext, workerParameters, observePlaces, refreshSchedules,
             observePlaceSchedules, widgetCoordinator, notificationScheduler, refreshScheduler,
         )
+
         else -> null // Let WorkManager construct other workers, including Glance workers.
     }
 }

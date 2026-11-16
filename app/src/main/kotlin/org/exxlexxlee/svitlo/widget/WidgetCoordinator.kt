@@ -22,7 +22,13 @@ class WidgetCoordinator(
         if (job != null) return
         job = scope.launch {
             observePlaceSchedules().map { places ->
-                places.map { it.place.id to ScheduleWidgetMapper.map(it.place.selection, it.schedule, clock) }
+                places.map {
+                    it.place.id to ScheduleWidgetMapper.map(
+                        it.place.selection,
+                        it.schedule,
+                        clock
+                    )
+                }
             }.distinctUntilChanged().collect { update() }
         }
     }

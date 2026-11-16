@@ -7,7 +7,8 @@ import androidx.compose.ui.res.stringResource
 import org.exxlexxlee.svitlo.R
 
 internal fun Context.localizedGroupLabel(label: String): String {
-    val number = label.trim().replace(Regex("^(Група|Черга|Группа|Group)\\s+", RegexOption.IGNORE_CASE), "")
+    val number =
+        label.trim().replace(Regex("^(Група|Черга|Группа|Group)\\s+", RegexOption.IGNORE_CASE), "")
     return getString(R.string.group_label, number)
 }
 

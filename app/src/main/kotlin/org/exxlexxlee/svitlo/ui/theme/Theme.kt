@@ -16,11 +16,12 @@ import androidx.compose.ui.platform.LocalContext
 val LocalDarkTheme = staticCompositionLocalOf { false }
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Amber80,
-    secondary = AmberGrey80,
+    primary = Color(0xFFBAC3FF),
+    onPrimary = Color(0xFF192775),
+    secondary = Color(0xFFC1C5DD),
     tertiary = Teal80,
-    primaryContainer = Color(0xFF5D4A00),
-    onPrimaryContainer = Color(0xFFFFE082),
+    primaryContainer = Color(0xFF303D8E),
+    onPrimaryContainer = Color(0xFFDFE3FF),
     background = Color(0xFF121418),
     surface = Color(0xFF1E2128),
     onBackground = Color(0xFFF0F2F5),
@@ -28,11 +29,12 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Amber40,
-    secondary = AmberGrey40,
+    primary = AppColors.Accent,
+    onPrimary = Color.White,
+    secondary = Color(0xFF59607A),
     tertiary = Teal40,
-    primaryContainer = Color(0xFFFFF3C4),
-    onPrimaryContainer = Color(0xFF3E2F00),
+    primaryContainer = Color(0xFFE8EBFF),
+    onPrimaryContainer = Color(0xFF202B60),
     background = Color(0xFFF2F4F8),
     surface = Color(0xFFFFFFFF),
     onBackground = Color(0xFF1B2437),

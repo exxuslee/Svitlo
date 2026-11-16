@@ -23,8 +23,8 @@ import androidx.compose.ui.unit.sp
 import org.exxlexxlee.domain.model.ServiceArea
 import org.exxlexxlee.svitlo.features.address.models.Event
 import org.exxlexxlee.svitlo.features.address.models.ViewState
-import org.exxlexxlee.svitlo.ui.theme.AppColors
 import org.exxlexxlee.svitlo.ui.common.localizedRegionName
+import org.exxlexxlee.svitlo.ui.theme.AppColors
 
 
 private val CardShape = RoundedCornerShape(20.dp)

@@ -52,7 +52,7 @@ fun AddressContent(
     viewState: ViewState,
     eventHandler: (Event) -> Unit,
 ) {
-    BackHandler(enabled = viewState.step != AddressStep.Region) {
+    BackHandler(enabled = viewState.step != AddressStep.Country) {
         eventHandler(Event.Back)
     }
 
@@ -64,7 +64,9 @@ fun AddressContent(
             .windowInsetsPadding(WindowInsets.navigationBars),
     ) {
         AddressHeader(
-            step = viewState.step,
+            stepIndex = viewState.step.index,
+            stepCount = AddressStep.entries.size,
+            stepTitle = stepTitle(viewState.step),
             isEditing = viewState.isEditing,
             onBack = { eventHandler(Event.Back) },
             onClose = { eventHandler(Event.Close) },
@@ -81,6 +83,7 @@ fun AddressContent(
                 )
             } else {
                 when (viewState.step) {
+                    AddressStep.Country -> CountryStep(viewState, eventHandler)
                     AddressStep.Region -> RegionStep(viewState, eventHandler)
                     AddressStep.Supplier -> SupplierStep(viewState, eventHandler)
                     AddressStep.Group -> GroupStep(viewState, eventHandler)
@@ -103,36 +106,15 @@ fun AddressContent(
     }
 
     if (viewState.showReminderPicker) {
-        AlertDialog(
-            onDismissRequest = { eventHandler(Event.DismissReminder) },
-            title = { Text(stringResource(R.string.reminder_label)) },
-            text = {
-                Column {
-                    listOf(0, 15, 30, 60).forEach { minutes ->
-                        Text(
-                            text = reminderText(minutes),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { eventHandler(Event.ReminderSelected(minutes)) }
-                                .padding(vertical = 12.dp),
-                            color = AppColors.Title,
-                            fontSize = 16.sp,
-                        )
-                    }
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = { eventHandler(Event.DismissReminder) }) {
-                    Text(stringResource(R.string.got_it))
-                }
-            },
-        )
+        ReminderPicker(eventHandler)
     }
 }
 
 @Composable
-private fun AddressHeader(
-    step: AddressStep,
+internal fun AddressHeader(
+    stepIndex: Int,
+    stepCount: Int,
+    stepTitle: String,
     isEditing: Boolean,
     onBack: () -> Unit,
     onClose: () -> Unit,
@@ -174,7 +156,7 @@ private fun AddressHeader(
             }
         }
         Text(
-            text = stringResource(R.string.address_step, step.index, stepTitle(step)),
+            text = stringResource(R.string.address_wizard_step, stepIndex, stepCount, stepTitle),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 4.dp, bottom = 14.dp),
@@ -192,7 +174,7 @@ private fun AddressHeader(
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth(step.fraction)
+                    .fillMaxWidth(stepIndex.toFloat() / stepCount)
                     .fillMaxHeight()
                     .clip(RoundedCornerShape(3.dp))
                     .background(AppColors.Accent),
@@ -203,6 +185,7 @@ private fun AddressHeader(
 
 @Composable
 private fun stepTitle(step: AddressStep): String = when (step) {
+    AddressStep.Country -> stringResource(R.string.settings_country)
     AddressStep.Region -> stringResource(R.string.step_region)
     AddressStep.Supplier -> stringResource(R.string.step_supplier)
     AddressStep.Group -> stringResource(R.string.step_group)
@@ -272,4 +255,32 @@ private fun AddressContent_Dark_Preview() {
             eventHandler = {},
         )
     }
+}
+
+@Composable
+internal fun ReminderPicker(eventHandler: (Event) -> Unit) {
+    AlertDialog(
+        onDismissRequest = { eventHandler(Event.DismissReminder) },
+        title = { Text(stringResource(R.string.reminder_label)) },
+        text = {
+            Column {
+                listOf(0, 15, 30, 60).forEach { minutes ->
+                    Text(
+                        text = reminderText(minutes),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { eventHandler(Event.ReminderSelected(minutes)) }
+                            .padding(vertical = 12.dp),
+                        color = AppColors.Title,
+                        fontSize = 16.sp,
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { eventHandler(Event.DismissReminder) }) {
+                Text(stringResource(R.string.got_it))
+            }
+        },
+    )
 }

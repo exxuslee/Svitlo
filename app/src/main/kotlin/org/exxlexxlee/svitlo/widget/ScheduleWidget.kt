@@ -17,8 +17,8 @@ import androidx.glance.action.clickable
 import androidx.glance.appwidget.AndroidRemoteViews
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetManager
-import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
+import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.action.actionSendBroadcast
@@ -126,7 +126,10 @@ internal fun ScheduleWidgetContent(data: ScheduleWidgetUi, appWidgetId: Int) {
             if (today == null) {
                 Text(
                     text = LocalContext.current.getString(R.string.widget_empty),
-                    style = TextStyle(color = glanceColor(DarkSchedulePalette.Muted), fontSize = 14.sp),
+                    style = TextStyle(
+                        color = glanceColor(DarkSchedulePalette.Muted),
+                        fontSize = 14.sp
+                    ),
                     modifier = GlanceModifier.clickable(openApp),
                 )
             } else {

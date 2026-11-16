@@ -19,24 +19,34 @@ import org.koin.compose.koinInject
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = koinViewModel(),
+    viewModel: HomeViewModel? = null,
     navController: NavController = LocalNavController.current,
 ) {
-    val viewState by viewModel.viewStates().collectAsStateWithLifecycle()
+    val internationalCards: org.exxlexxlee.svitlo.features.international.SavedInternationalViewModel =
+        koinViewModel()
+    val savedCards by internationalCards.cards.collectAsStateWithLifecycle()
+    val ukrainianViewModel = viewModel ?: koinViewModel<HomeViewModel>()
+    val viewState by ukrainianViewModel.viewStates().collectAsStateWithLifecycle()
     val widgetManager: WidgetManager = koinInject()
     val context = LocalContext.current
 
     LifecycleResumeEffect(Unit) {
-        viewModel.obtainEvent(Event.CheckWidget)
+        ukrainianViewModel.obtainEvent(Event.CheckWidget)
         onPauseOrDispose { }
     }
 
     HomeContent(
         viewState = viewState,
-        eventHandler = viewModel::obtainEvent,
+        eventHandler = { event ->
+            if (event == Event.Refresh) internationalCards.refresh()
+            ukrainianViewModel.obtainEvent(event)
+        },
+        cardContent = { card ->
+            PlaceCard(savedCards[card.id] ?: card, ukrainianViewModel::obtainEvent)
+        },
     )
 
-    ObserveActions(viewModel.viewActions()) { action ->
+    ObserveActions(ukrainianViewModel.viewActions()) { action ->
         when (action) {
             is Action.OpenAddress -> {
                 val placeId = action.placeId
@@ -50,7 +60,8 @@ fun HomeScreen(
             Action.RequestPinWidget -> {
                 val success = widgetManager.requestPinWidget()
                 if (!success) {
-                    Toast.makeText(context, R.string.widget_pin_unsupported, Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, R.string.widget_pin_unsupported, Toast.LENGTH_LONG)
+                        .show()
                 }
             }
         }

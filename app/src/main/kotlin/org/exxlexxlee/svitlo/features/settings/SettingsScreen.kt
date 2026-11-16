@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import org.exxlexxlee.domain.model.Country
 import org.exxlexxlee.svitlo.R
 import org.exxlexxlee.svitlo.features.settings.models.Action
 import org.exxlexxlee.svitlo.features.settings.models.Event
@@ -252,6 +253,19 @@ fun SettingsContent(
             textAlign = TextAlign.Center,
         )
     }
+}
+
+internal fun Country.countryNameRes(): Int = when (this) {
+    Country.UKRAINE -> R.string.country_ukraine
+    Country.SOUTH_AFRICA -> R.string.country_south_africa
+    Country.UNITED_KINGDOM -> R.string.country_united_kingdom
+    Country.CANADA -> R.string.country_canada
+    Country.POLAND -> R.string.country_poland
+    Country.PAKISTAN -> R.string.country_pakistan
+    Country.ECUADOR -> R.string.country_ecuador
+    Country.IRELAND -> R.string.country_ireland
+    Country.KENYA -> R.string.country_kenya
+    Country.MEXICO -> R.string.country_mexico
 }
 
 @Preview(showBackground = true)

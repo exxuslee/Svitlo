@@ -27,6 +27,7 @@ data class ScheduleCardUi(
     val countdownTarget: CountdownTarget?,
     val schedulesSuspended: Boolean,
     val error: String?,
+    val localizeGroupLabel: Boolean = true,
 )
 
 object ScheduleCardMapper {

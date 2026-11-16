@@ -5,8 +5,8 @@ import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
-import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import kotlinx.datetime.Clock
 import org.exxlexxlee.domain.model.nextKyivMidnight
@@ -34,7 +34,10 @@ class ScheduleRefreshScheduler(private val context: Context, private val clock: 
         val midnight = nextKyivMidnight(clock)
         val request = OneTimeWorkRequestBuilder<ScheduleRefreshWorker>()
             // No network constraint: cached tomorrow must become today even while offline.
-            .setInitialDelay((midnight - clock.now()).inWholeMilliseconds.coerceAtLeast(0), TimeUnit.MILLISECONDS)
+            .setInitialDelay(
+                (midnight - clock.now()).inWholeMilliseconds.coerceAtLeast(0),
+                TimeUnit.MILLISECONDS
+            )
             .build()
         workManager.enqueueUniqueWork(
             "svitlo-day-refresh-${midnight.toEpochMilliseconds()}",

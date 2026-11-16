@@ -30,8 +30,11 @@ class AddressViewModel(
     private val saveSelection: SaveSelection,
     private val observePlace: ObservePlace,
     savedStateHandle: SavedStateHandle,
+    defaultCountry: org.exxlexxlee.domain.model.Country = org.exxlexxlee.domain.model.Country.forLocale(
+        java.util.Locale.getDefault()
+    ),
 ) : BaseViewModel<ViewState, Action, Event>(
-    initialState = ViewState()
+    initialState = ViewState(country = defaultCountry)
 ) {
     private val editingPlaceId: Long? = savedStateHandle.get<Long>("placeId")?.takeIf { it > 0 }
 
@@ -44,7 +47,8 @@ class AddressViewModel(
                 val areas = getAreas()
                 val selection = editingPlaceId?.let { observePlace(it).firstOrNull()?.selection }
                 if (selection == null) {
-                    viewState = viewState.copy(areas = areas, isLoadingAreas = false, isEditing = false)
+                    viewState =
+                        viewState.copy(areas = areas, isLoadingAreas = false, isEditing = false)
                 } else {
                     restoreSelection(areas, selection)
                 }
@@ -62,7 +66,7 @@ class AddressViewModel(
             ?: ServiceArea(region.id, region.name, listOf(Supplier(region, primary = true)))
         val supplier = area.suppliers.find { it.region.id == region.id }
             ?: Supplier(region, primary = true)
-        val groups = try {
+        val groups = if (selection.details?.sourceId != null) emptyList() else try {
             getGroups(region.id)
         } catch (cancelled: CancellationException) {
             throw cancelled
@@ -72,6 +76,7 @@ class AddressViewModel(
         val details = selection.details
         viewState = viewState.copy(
             areas = areas,
+            country = details?.country ?: org.exxlexxlee.domain.model.Country.UKRAINE,
             selectedArea = area,
             selectedSupplier = supplier,
             groups = groups,
@@ -90,6 +95,19 @@ class AddressViewModel(
 
     override fun obtainEvent(viewEvent: Event) {
         when (viewEvent) {
+            is Event.CountrySelected -> {
+                groupsJob?.cancel()
+                viewState = viewState.copy(
+                    country = viewEvent.country,
+                    step = AddressStep.Region,
+                    selectedArea = null,
+                    selectedSupplier = null,
+                    selectedGroup = null,
+                    groups = emptyList(),
+                    error = null
+                )
+            }
+
             Event.Close -> sendAction(Action.Close)
             Event.Back -> onBack()
             is Event.AreaSelected -> onAreaSelected(viewEvent.area)
@@ -117,9 +135,13 @@ class AddressViewModel(
 
     private fun onBack() {
         viewState = when (viewState.step) {
-            AddressStep.Region -> {
+            AddressStep.Country -> {
                 sendAction(Action.Close)
                 viewState
+            }
+
+            AddressStep.Region -> {
+                viewState.copy(step = AddressStep.Country)
             }
 
             AddressStep.Supplier -> viewState.copy(step = AddressStep.Region, error = null)

@@ -44,6 +44,7 @@ import org.exxlexxlee.svitlo.ui.theme.SvitloTheme
 fun HomeContent(
     viewState: ViewState,
     eventHandler: (Event) -> Unit,
+    cardContent: (@Composable (PlaceCardUi) -> Unit)? = null,
 ) {
     val pending = viewState.cards.firstOrNull { it.id == viewState.pendingDeleteId }
     if (pending != null) {
@@ -85,6 +86,7 @@ fun HomeContent(
                 .padding(padding),
             viewState = viewState,
             eventHandler = eventHandler,
+            cardContent = cardContent,
         )
     }
 }
@@ -94,6 +96,7 @@ fun HomeContent(
 private fun ColumnHeader(
     viewState: ViewState,
     eventHandler: (Event) -> Unit,
+    cardContent: (@Composable (PlaceCardUi) -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     androidx.compose.foundation.layout.Column(modifier = modifier) {
@@ -163,7 +166,10 @@ private fun ColumnHeader(
                             }
                         }
                         items(viewState.cards, key = { it.id }) { card ->
-                            PlaceCard(card = card, eventHandler = eventHandler)
+                            if (cardContent != null) cardContent(card) else PlaceCard(
+                                card = card,
+                                eventHandler = eventHandler
+                            )
                         }
                     }
                 }

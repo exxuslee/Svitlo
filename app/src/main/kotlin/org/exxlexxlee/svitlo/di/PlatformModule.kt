@@ -5,8 +5,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.datetime.Clock
-import org.exxlexxlee.svitlo.notification.NotificationScheduler
 import org.exxlexxlee.svitlo.notification.NotificationCoordinator
+import org.exxlexxlee.svitlo.notification.NotificationScheduler
 import org.exxlexxlee.svitlo.sync.ScheduleRefreshScheduler
 import org.exxlexxlee.svitlo.sync.ScheduleWorkerFactory
 import org.exxlexxlee.svitlo.widget.WidgetCoordinator

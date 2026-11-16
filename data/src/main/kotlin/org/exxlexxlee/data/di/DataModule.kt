@@ -27,8 +27,11 @@ import org.exxlexxlee.domain.repository.SelectionRepository
 import org.exxlexxlee.domain.repository.SettingsRepository
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
+import org.exxlexxlee.domain.repository.InternationalOutageRepository
+import org.exxlexxlee.data.repository.InternationalOutageRepositoryImpl
 
 val dataModule = module {
+    single<InternationalOutageRepository> { InternationalOutageRepositoryImpl(get(), get()) }
     single {
         Json {
             ignoreUnknownKeys = true

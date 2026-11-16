@@ -12,17 +12,19 @@ import org.exxlexxlee.domain.repository.ScheduleRepository
 
 class ObserveSchedule(private val scheduleRepository: ScheduleRepository) {
     operator fun invoke(selection: Selection): Flow<OutageSchedule?> =
-        scheduleRepository.observe(selection)
+        if (selection.details?.sourceId != null) kotlinx.coroutines.flow.flowOf(null)
+        else scheduleRepository.observe(selection)
 }
 
 class RefreshSchedule(private val scheduleRepository: ScheduleRepository) {
     suspend operator fun invoke(selection: Selection): Result<Unit> =
-        scheduleRepository.refresh(selection)
+        if (selection.details?.sourceId != null) Result.success(Unit)
+        else scheduleRepository.refresh(selection)
 }
 
 class RefreshSchedules(private val scheduleRepository: ScheduleRepository) {
     suspend operator fun invoke(selections: List<Selection>): Map<Selection, Result<Unit>> =
-        scheduleRepository.refreshAll(selections)
+        scheduleRepository.refreshAll(selections.filter { it.details?.sourceId == null })
 }
 
 class ObserveDials(private val observeSchedule: ObserveSchedule) {

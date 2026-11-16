@@ -69,11 +69,23 @@ class SelectionRepositoryImpl(
         reminderMinutes = details?.reminderMinutes ?: 15,
         quietNight = details?.quietNight ?: false,
         iconId = details?.iconId ?: "home",
+        countryCode = details?.country?.code ?: "UA",
+        sourceId = details?.sourceId,
+        filter = details?.filter.orEmpty(),
+        cityId = details?.cityId,
+        streetId = details?.streetId,
+        house = details?.house.orEmpty(),
     )
 }
 
 @Serializable
 private data class StoredSelection(
+    val countryCode: String = "UA",
+    val sourceId: String? = null,
+    val filter: String = "",
+    val cityId: Long? = null,
+    val streetId: Long? = null,
+    val house: String = "",
     val regionId: String,
     val regionName: String,
     val providerId: String,
@@ -90,6 +102,8 @@ private data class StoredSelection(
         details = addressName?.let { name ->
             AddressDetails(
                 name = name,
+                country = org.exxlexxlee.domain.model.Country.fromCode(countryCode) ?: org.exxlexxlee.domain.model.Country.UKRAINE,
+                sourceId = sourceId, filter = filter, cityId = cityId, streetId = streetId, house = house,
                 reminderMinutes = reminderMinutes,
                 quietNight = quietNight,
                 iconId = iconId,

@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -56,19 +57,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
-import org.exxlexxlee.svitlo.ui.common.localizedDuration
-import org.exxlexxlee.svitlo.ui.common.localizedGroupLabel
 import org.exxlexxlee.domain.model.PowerState
 import org.exxlexxlee.svitlo.R
 import org.exxlexxlee.svitlo.features.address.AddressIcon
 import org.exxlexxlee.svitlo.features.home.models.Event
+import org.exxlexxlee.svitlo.ui.common.localizedDuration
+import org.exxlexxlee.svitlo.ui.common.localizedGroupLabel
 import org.exxlexxlee.svitlo.ui.schedule.CardPalette
 import org.exxlexxlee.svitlo.ui.schedule.ScheduleDaySwitch
 import org.exxlexxlee.svitlo.ui.schedule.ScheduleTimelineView
 import org.exxlexxlee.svitlo.ui.schedule.stateColor
 import org.exxlexxlee.svitlo.ui.theme.SvitloTheme
+import kotlin.math.roundToInt
 
 @Composable
 fun PlaceCard(
@@ -240,93 +241,116 @@ internal fun PlaceCardSwipeable(
             colors = CardDefaults.cardColors(containerColor = CardPalette.Card),
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         ) {
-            var showTomorrow by remember(card.id) { mutableStateOf(false) }
+            ScheduleCardBody(card)
+        }
+    }
+}
 
-            Column(
-                modifier = Modifier.padding(12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+
+@Composable
+fun ReadOnlyScheduleCard(
+    card: PlaceCardUi,
+    modifier: Modifier = Modifier,
+    footer: @Composable () -> Unit = {},
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = CardPalette.Card),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+    ) {
+        ScheduleCardBody(card, showDragHandle = false)
+        footer()
+    }
+}
+
+@Composable
+private fun ScheduleCardBody(card: PlaceCardUi, showDragHandle: Boolean = true) {
+    var showTomorrow by remember(card.id) { mutableStateOf(false) }
+
+    Column(
+        modifier = Modifier.padding(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        // Ряд 1: иконка + название
+        CardHeader(card, showDragHandle)
+
+        card.error?.let { error ->
+            Text(text = error, color = CardPalette.Off, fontSize = 13.sp)
+        }
+
+        // Ряд 2: переключатель дня + бейдж очереди с кружочком
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            ScheduleDaySwitch(
+                showTomorrow = showTomorrow,
+                onTabSelected = { showTomorrow = it },
+            )
+            GroupBadgeWithStatus(card = card, modifier = Modifier.widthIn(max = 160.dp))
+        }
+
+        // Ряд 3: периоды отключений + время до включения с молнией
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Top,
+        ) {
+            DayLabel(
+                prefix = if (showTomorrow) {
+                    stringResource(R.string.tomorrow)
+                } else {
+                    stringResource(R.string.today)
+                },
+                ranges = if (showTomorrow) card.tomorrowRanges else card.todayRanges,
+                modifier = Modifier.weight(1f),
+            )
+            CountdownColumn(
+                card = card,
+                modifier = Modifier.padding(start = 8.dp),
+            )
+        }
+
+        // Ряд 4: почасовой график (без изменений)
+        val currentStates = if (showTomorrow) card.tomorrowStates else card.todayStates
+        val hasData = if (showTomorrow) {
+            card.tomorrowRanges != null || currentStates.any { it != PowerState.UNKNOWN }
+        } else {
+            true
+        }
+
+        if (hasData) {
+            ScheduleTimelineView(
+                states = currentStates,
+                nowHalfHourIndex = if (!showTomorrow && card.showNowMarker) card.nowIndex else null,
+            )
+        } else {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(54.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(CardPalette.Banner),
+                contentAlignment = Alignment.Center,
             ) {
-                // Ряд 1: иконка + название
-                CardHeader(card)
-
-                card.error?.let { error ->
-                    Text(text = error, color = CardPalette.Off, fontSize = 13.sp)
-                }
-
-                // Ряд 2: переключатель дня + бейдж очереди с кружочком
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    ScheduleDaySwitch(
-                        showTomorrow = showTomorrow,
-                        onTabSelected = { showTomorrow = it },
-                    )
-                    GroupBadgeWithStatus(card = card)
-                }
-
-                // Ряд 3: периоды отключений + время до включения с молнией
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.Top,
-                ) {
-                    DayLabel(
-                        prefix = if (showTomorrow) {
-                            stringResource(R.string.tomorrow)
-                        } else {
-                            stringResource(R.string.today)
-                        },
-                        ranges = if (showTomorrow) card.tomorrowRanges else card.todayRanges,
-                        modifier = Modifier.weight(1f),
-                    )
-                    CountdownColumn(
-                        card = card,
-                        modifier = Modifier.padding(start = 8.dp),
-                    )
-                }
-
-                // Ряд 4: почасовой график (без изменений)
-                val currentStates = if (showTomorrow) card.tomorrowStates else card.todayStates
-                val hasData = if (showTomorrow) {
-                    card.tomorrowRanges != null || currentStates.any { it != PowerState.UNKNOWN }
-                } else {
-                    true
-                }
-
-                if (hasData) {
-                    ScheduleTimelineView(
-                        states = currentStates,
-                        nowHalfHourIndex = if (!showTomorrow && card.showNowMarker) card.nowIndex else null,
-                    )
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(54.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(CardPalette.Banner),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            text = stringResource(R.string.tomorrow_unavailable),
-                            color = CardPalette.Muted,
-                            fontSize = 13.sp,
-                            textAlign = TextAlign.Center,
-                        )
-                    }
-                }
-
-                if (card.schedulesSuspended) {
-                    EmergencyNotice()
-                }
+                Text(
+                    text = stringResource(R.string.tomorrow_unavailable),
+                    color = CardPalette.Muted,
+                    fontSize = 13.sp,
+                    textAlign = TextAlign.Center,
+                )
             }
+        }
+
+        if (card.schedulesSuspended) {
+            EmergencyNotice()
         }
     }
 }
 
 @Composable
-private fun CardHeader(card: PlaceCardUi) {
+private fun CardHeader(card: PlaceCardUi, showDragHandle: Boolean) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
             imageVector = AddressIcon.fromId(card.iconId).image,
@@ -345,12 +369,14 @@ private fun CardHeader(card: PlaceCardUi) {
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
-        Icon(
-            imageVector = Icons.Outlined.DragIndicator,
-            contentDescription = null,
-            tint = CardPalette.BannerText,
-            modifier = Modifier.size(28.dp),
-        )
+        if (showDragHandle) {
+            Icon(
+                imageVector = Icons.Outlined.DragIndicator,
+                contentDescription = null,
+                tint = CardPalette.BannerText,
+                modifier = Modifier.size(28.dp),
+            )
+        }
     }
 }
 
@@ -374,11 +400,12 @@ private fun GroupBadgeWithStatus(card: PlaceCardUi, modifier: Modifier = Modifie
                 ),
         )
         Text(
-            text = localizedGroupLabel(card.groupLabel),
+            text = if (card.localizeGroupLabel) localizedGroupLabel(card.groupLabel) else card.groupLabel,
             color = CardPalette.GroupBadgeText,
             fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }

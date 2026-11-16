@@ -44,7 +44,12 @@ private val FieldShape = RoundedCornerShape(16.dp)
 
 
 @Composable
-fun DetailsStep(viewState: ViewState, eventHandler: (Event) -> Unit) {
+fun DetailsStep(
+    viewState: ViewState,
+    eventHandler: (Event) -> Unit,
+    canSave: Boolean = viewState.canSave,
+    notice: String? = null,
+) {
     Column(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -52,6 +57,10 @@ fun DetailsStep(viewState: ViewState, eventHandler: (Event) -> Unit) {
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp, vertical = 16.dp),
         ) {
+            notice?.let {
+                Text(it, color = AppColors.Body, fontSize = 15.sp)
+                Spacer(Modifier.height(16.dp))
+            }
             viewState.selectedGroup?.let { group ->
                 Text(
                     text = stringResource(R.string.address_group, group.detailLabel()),
@@ -118,7 +127,7 @@ fun DetailsStep(viewState: ViewState, eventHandler: (Event) -> Unit) {
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 12.dp)
                 .height(52.dp),
-            enabled = viewState.canSave,
+            enabled = canSave,
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = AppColors.Accent,

@@ -6,18 +6,22 @@ import org.exxlexxlee.domain.model.Supplier
 import org.exxlexxlee.svitlo.features.address.AddressIcon
 
 enum class AddressStep(val index: Int) {
-    Region(1),
-    Supplier(2),
-    Group(3),
-    Details(4),
+    Country(1),
+    Region(2),
+    Supplier(3),
+    Group(4),
+    Details(5),
     ;
 
-    val fraction: Float get() = index / 4f
+    val fraction: Float get() = index / 5f
 }
 
 data class ViewState(
     val areas: List<ServiceArea> = emptyList(),
-    val step: AddressStep = AddressStep.Region,
+    val step: AddressStep = AddressStep.Country,
+    val country: org.exxlexxlee.domain.model.Country = org.exxlexxlee.domain.model.Country.forLocale(
+        java.util.Locale.getDefault()
+    ),
     val selectedArea: ServiceArea? = null,
     val selectedSupplier: Supplier? = null,
     val groups: List<OutageGroup> = emptyList(),
@@ -25,7 +29,7 @@ data class ViewState(
     val addressName: String = "",
     val nameEdited: Boolean = false,
     val reminderMinutes: Int = 15,
-    val quietNight: Boolean = false,
+    val quietNight: Boolean = true,
     val icon: AddressIcon = AddressIcon.Home,
     val isLoadingAreas: Boolean = true,
     val isLoadingGroups: Boolean = false,

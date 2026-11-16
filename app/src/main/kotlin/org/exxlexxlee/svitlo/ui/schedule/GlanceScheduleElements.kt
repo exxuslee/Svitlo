@@ -199,7 +199,8 @@ private fun scheduleTimelineBitmap(
         )
     }
     for (row in 0..1) {
-        for ((column, cell) in ScheduleTimeline.row(states, row * 12, nowHalfHourIndex).withIndex()) {
+        for ((column, cell) in ScheduleTimeline.row(states, row * 12, nowHalfHourIndex)
+            .withIndex()) {
             val left = column * cellWidth + spacing / 2f
             val top = row * (ScheduleTimeline.CellHeight + ScheduleTimeline.RowSpacing) * density
             val save = canvas.save()
@@ -236,14 +237,16 @@ private fun drawHourCell(
         if (hour == 23) big else small,
         if (hour == 12) big else small,
     )
+
     fun shape(bounds: RectF, inset: Float): Path {
         val radii = corners.flatMap { corner ->
             val radius = (if (marked && inset > 0f) (corner - inset).coerceAtLeast(2.5f)
-                else corner) * density
+            else corner) * density
             listOf(radius, radius)
         }.toFloatArray()
         return Path().apply { addRoundRect(bounds, radii, Path.Direction.CW) }
     }
+
     val bounds = RectF(0f, 0f, width, height)
     val outer = shape(bounds, 0f)
     if (marked) {
@@ -257,7 +260,12 @@ private fun drawHourCell(
         canvas.drawPath(frame, paint)
     }
     canvas.clipPath(outer)
-    canvas.clipPath(shape(bounds, if (marked) ScheduleTimeline.MarkerHorizontalInset.toFloat() else 0f))
+    canvas.clipPath(
+        shape(
+            bounds,
+            if (marked) ScheduleTimeline.MarkerHorizontalInset.toFloat() else 0f
+        )
+    )
     paint.color = DarkSchedulePalette.stateColor(first).toArgb()
     canvas.drawRect(bounds.left, bounds.top, bounds.centerX(), bounds.bottom, paint)
     paint.color = DarkSchedulePalette.stateColor(second).toArgb()

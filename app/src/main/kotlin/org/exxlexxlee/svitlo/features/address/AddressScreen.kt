@@ -4,7 +4,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import org.exxlexxlee.domain.model.Country
 import org.exxlexxlee.svitlo.features.address.models.Action
+import org.exxlexxlee.svitlo.features.address.models.AddressStep
+import org.exxlexxlee.svitlo.features.address.models.Event
+import org.exxlexxlee.svitlo.features.international.InternationalScreen
+import org.exxlexxlee.svitlo.features.international.InternationalViewModel
 import org.exxlexxlee.svitlo.navigation.Routes
 import org.exxlexxlee.svitlo.ui.common.LocalNavController
 import org.exxlexxlee.svitlo.ui.common.ObserveActions
@@ -16,11 +21,26 @@ fun AddressScreen(
     navController: NavController = LocalNavController.current,
 ) {
     val viewState by viewModel.viewStates().collectAsStateWithLifecycle()
+    val international: InternationalViewModel = koinViewModel()
+    val internationalState by international.state.collectAsStateWithLifecycle()
 
-    AddressContent(
-        viewState = viewState,
-        eventHandler = viewModel::obtainEvent,
-    )
+    if (viewState.step != AddressStep.Country && viewState.country != Country.UKRAINE) {
+        InternationalScreen(
+            state = internationalState,
+            viewModel = international,
+            onCountry = { viewModel.obtainEvent(Event.Back) },
+            onClose = { viewModel.obtainEvent(Event.Close) },
+            onSave = { international.save { navController.popBackStack() } },
+        )
+    } else {
+        AddressContent(
+            viewState = viewState,
+            eventHandler = { event ->
+                if (event is Event.CountrySelected) international.selectCountry(event.country)
+                viewModel.obtainEvent(event)
+            },
+        )
+    }
 
     ObserveActions(viewModel.viewActions()) { action ->
         when (action) {

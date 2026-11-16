@@ -5,6 +5,12 @@ data class AddressDetails(
     val reminderMinutes: Int = 15,
     val quietNight: Boolean = false,
     val iconId: String = "home",
+    val country: Country = Country.UKRAINE,
+    val sourceId: String? = null,
+    val filter: String = "",
+    val cityId: Long? = null,
+    val streetId: Long? = null,
+    val house: String = "",
 )
 
 data class Place(

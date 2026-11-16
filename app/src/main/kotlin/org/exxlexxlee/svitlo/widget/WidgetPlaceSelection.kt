@@ -16,11 +16,16 @@ import org.exxlexxlee.domain.usecase.ObservePlaces
 import org.koin.core.context.GlobalContext
 
 class NextPlaceAction : ActionCallback {
-    override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
+    override suspend fun onAction(
+        context: Context,
+        glanceId: GlanceId,
+        parameters: ActionParameters
+    ) {
         val koin = GlobalContext.getOrNull() ?: return
         val appWidgetId = GlanceAppWidgetManager(context).getAppWidgetId(glanceId)
         val places = koin.get<ObservePlaces>()().first()
-        val nextId = nextWidgetPlaceId(places, WidgetPlaceSelection.read(context, appWidgetId)) ?: return
+        val nextId =
+            nextWidgetPlaceId(places, WidgetPlaceSelection.read(context, appWidgetId)) ?: return
         WidgetPlaceSelection.save(context, appWidgetId, nextId)
         ScheduleWidget().update(context, glanceId)
     }
@@ -35,7 +40,8 @@ internal fun nextWidgetPlaceId(places: List<Place>, selectedId: Long?): Long? {
 internal object WidgetPlaceSelection {
     private const val PREFS = "widget_selected_place"
     private fun key(id: Int) = "place_$id"
-    private fun preferences(context: Context) = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+    private fun preferences(context: Context) =
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 
     fun read(context: Context, id: Int): Long? {
         val prefs = preferences(context)
