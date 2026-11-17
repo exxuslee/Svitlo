@@ -1,9 +1,14 @@
 package org.exxlexxlee.svitlo.features.home
 
-import android.widget.Toast
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -28,7 +33,20 @@ fun HomeScreen(
     val ukrainianViewModel = viewModel ?: koinViewModel<HomeViewModel>()
     val viewState by ukrainianViewModel.viewStates().collectAsStateWithLifecycle()
     val widgetManager: WidgetManager = koinInject()
-    val context = LocalContext.current
+    var showWidgetHelp by rememberSaveable { mutableStateOf(false) }
+
+    if (showWidgetHelp) {
+        AlertDialog(
+            onDismissRequest = { showWidgetHelp = false },
+            title = { Text(stringResource(R.string.widget_banner_button)) },
+            text = { Text(stringResource(R.string.widget_pin_unsupported)) },
+            confirmButton = {
+                TextButton(onClick = { showWidgetHelp = false }) {
+                    Text(stringResource(R.string.close))
+                }
+            },
+        )
+    }
 
     LifecycleResumeEffect(Unit) {
         ukrainianViewModel.obtainEvent(Event.CheckWidget)
@@ -58,11 +76,7 @@ fun HomeScreen(
             }
 
             Action.RequestPinWidget -> {
-                val success = widgetManager.requestPinWidget()
-                if (!success) {
-                    Toast.makeText(context, R.string.widget_pin_unsupported, Toast.LENGTH_LONG)
-                        .show()
-                }
+                showWidgetHelp = !widgetManager.requestPinWidget()
             }
         }
     }

@@ -1,4 +1,4 @@
-package org.exxlexxlee.svitlo.widget
+package org.exxlexxlee.svitlo.widget.ui
 
 import androidx.glance.GlanceModifier
 import androidx.glance.ImageProvider

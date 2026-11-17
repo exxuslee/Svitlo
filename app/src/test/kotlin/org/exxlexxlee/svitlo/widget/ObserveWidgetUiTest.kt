@@ -5,6 +5,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -19,9 +21,12 @@ import org.exxlexxlee.domain.model.Region
 import org.exxlexxlee.domain.model.Selection
 import org.exxlexxlee.domain.repository.ScheduleRepository
 import org.exxlexxlee.domain.repository.SelectionRepository
-import org.exxlexxlee.domain.usecase.ObserveSchedule
-import org.exxlexxlee.domain.usecase.ObservePlaces
 import org.exxlexxlee.domain.usecase.ObservePlaceSchedules
+import org.exxlexxlee.domain.usecase.ObservePlaces
+import org.exxlexxlee.domain.usecase.ObserveSchedule
+import org.exxlexxlee.svitlo.widget.state.nextWidgetPlaceId
+import org.exxlexxlee.svitlo.widget.state.observeWidgetUi
+import org.exxlexxlee.svitlo.widget.ui.ScheduleWidgetUi
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -114,6 +119,40 @@ class ObserveWidgetUiTest {
         assertEquals("Дім", received.last().title)
         selectedPlaceId.value = 999
         assertEquals("Дім", received.last().title)
+    }
+
+    @Test
+    fun markerAndPowerStateAdvanceWithoutScheduleChanges() = runTest {
+        val start = Instant.parse("2026-11-09T06:59:59Z") // 08:59:59 in Kyiv
+        val runningClock = object : Clock {
+            override fun now() = Instant.fromEpochMilliseconds(
+                start.toEpochMilliseconds() + testScheduler.currentTime,
+            )
+        }
+        schedule.value = schedule.value!!.copy(
+            today = schedule.value!!.today.copy(
+                halfHours = List(48) { if (it == 18) PowerState.OFF else PowerState.ON },
+            ),
+        )
+        val received = mutableListOf<ScheduleWidgetUi>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            observeWidgetUi(
+                ObservePlaceSchedules(ObservePlaces(selections), ObserveSchedule(schedules)),
+                selectedPlaceId,
+                runningClock,
+            ).collect { received += it }
+        }
+        assertEquals(17, received.last().nowHalfHourIndex)
+        assertEquals(PowerState.ON, received.last().currentState)
+        advanceTimeBy(1_000)
+        runCurrent()
+        assertEquals(18, received.last().nowHalfHourIndex)
+        assertEquals(PowerState.OFF, received.last().currentState)
+        advanceTimeBy(30 * 60 * 1_000L)
+        runCurrent()
+        assertEquals(19, received.last().nowHalfHourIndex)
+        assertEquals(PowerState.ON, received.last().currentState)
+        assertEquals(3, received.size)
     }
 
     @Test

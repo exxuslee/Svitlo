@@ -7,6 +7,7 @@ import android.content.ComponentName
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Parcel
+import android.os.ParcelFileDescriptor
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.RemoteViews
@@ -15,16 +16,23 @@ import androidx.compose.ui.unit.dp
 import androidx.glance.appwidget.ExperimentalGlanceRemoteViewsApi
 import androidx.glance.appwidget.GlanceRemoteViews
 import androidx.test.platform.app.InstrumentationRegistry
+import java.io.File
 import kotlinx.coroutines.runBlocking
 import org.exxlexxlee.domain.model.PowerState
 import org.exxlexxlee.svitlo.R
+import org.exxlexxlee.svitlo.widget.state.WidgetDaySelection
+import org.exxlexxlee.svitlo.widget.ui.ScheduleWidgetContent
+import org.exxlexxlee.svitlo.widget.ui.ScheduleWidgetUi
+import org.exxlexxlee.svitlo.widget.ui.WidgetDayUi
+import org.exxlexxlee.svitlo.widget.update.ACTION_WIDGET_TIME
+import org.exxlexxlee.svitlo.widget.update.WidgetTimeUpdates
+import org.exxlexxlee.svitlo.widget.update.nextWidgetTimeUpdate
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.io.File
 
 @OptIn(ExperimentalGlanceRemoteViewsApi::class)
 class ScheduleWidgetInteractionTest {
@@ -128,6 +136,44 @@ class ScheduleWidgetInteractionTest {
             assertEquals(View.VISIBLE, root.findViewById<View>(R.id.widget_today_panel).visibility)
         }
     }
+
+    @Test
+    fun timeAlarmIsAlignedAndRemovedWithTheLastWidget() {
+        val manager = AppWidgetManager.getInstance(context)
+        val host = AppWidgetHost(context, 91236)
+        val id = host.allocateAppWidgetId()
+        try {
+            instrumentation.uiAutomation.adoptShellPermissionIdentity(Manifest.permission.BIND_APPWIDGET)
+            try {
+                assertTrue(manager.bindAppWidgetIdIfAllowed(
+                    id, ComponentName(context, ScheduleWidgetReceiver::class.java),
+                ))
+            } finally {
+                instrumentation.uiAutomation.dropShellPermissionIdentity()
+            }
+            val before = nextWidgetTimeUpdate(System.currentTimeMillis())
+            WidgetTimeUpdates.schedule(context)
+            val after = nextWidgetTimeUpdate(System.currentTimeMillis())
+            val alarms = alarmDump()
+            assertTrue("Missing boundary alarm", listOf(before, after).any { trigger ->
+                Regex("Alarm\\{[^\\n]*origWhen $trigger[^\\n]*${Regex.escape(context.packageName)}")
+                    .containsMatchIn(alarms)
+            })
+            assertTrue(alarms.contains(ACTION_WIDGET_TIME))
+        } finally {
+            host.deleteHost()
+            WidgetTimeUpdates.schedule(context)
+        }
+        val ids = manager.getAppWidgetIds(ComponentName(context, ScheduleWidgetReceiver::class.java))
+        if (ids.isEmpty()) {
+            assertFalse(Regex("Alarm\\{[^\\n]*${Regex.escape(context.packageName)}")
+                .containsMatchIn(alarmDump()))
+        }
+    }
+
+    private fun alarmDump(): String = ParcelFileDescriptor.AutoCloseInputStream(
+        instrumentation.uiAutomation.executeShellCommand("dumpsys alarm"),
+    ).bufferedReader().use { it.readText() }
 
     @Test
     fun dayBroadcastUpdatesSystemCacheForANewHostWithoutGlanceRendering() = runBlocking {

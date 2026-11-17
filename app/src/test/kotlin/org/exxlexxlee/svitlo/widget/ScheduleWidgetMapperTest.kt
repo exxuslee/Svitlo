@@ -6,11 +6,12 @@ import kotlinx.datetime.LocalDate
 import org.exxlexxlee.domain.model.DaySchedule
 import org.exxlexxlee.domain.model.OutageGroup
 import org.exxlexxlee.domain.model.OutageSchedule
+import org.exxlexxlee.domain.model.Place
 import org.exxlexxlee.domain.model.PowerState
 import org.exxlexxlee.domain.model.Region
 import org.exxlexxlee.domain.model.Selection
-import org.exxlexxlee.domain.model.Place
 import org.exxlexxlee.svitlo.features.home.PlaceCardMapper
+import org.exxlexxlee.svitlo.widget.ui.ScheduleWidgetMapper
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test

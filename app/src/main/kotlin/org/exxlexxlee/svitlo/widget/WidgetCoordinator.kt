@@ -4,11 +4,14 @@ import android.content.Context
 import androidx.glance.appwidget.updateAll
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import org.exxlexxlee.domain.usecase.ObservePlaceSchedules
+import org.exxlexxlee.svitlo.widget.ui.ScheduleWidgetMapper
+import org.exxlexxlee.svitlo.widget.update.WidgetTimeUpdates
+import org.exxlexxlee.svitlo.widget.update.observeWidgetTime
 
 class WidgetCoordinator(
     private val context: Context,
@@ -20,8 +23,9 @@ class WidgetCoordinator(
 
     fun start() {
         if (job != null) return
+        WidgetTimeUpdates.schedule(context)
         job = scope.launch {
-            observePlaceSchedules().map { places ->
+            combine(observePlaceSchedules(), observeWidgetTime(clock)) { places, _ ->
                 places.map {
                     it.place.id to ScheduleWidgetMapper.map(
                         it.place.selection,
