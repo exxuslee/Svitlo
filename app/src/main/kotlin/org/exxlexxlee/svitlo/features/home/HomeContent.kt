@@ -36,15 +36,14 @@ import org.exxlexxlee.domain.model.PowerState
 import org.exxlexxlee.svitlo.R
 import org.exxlexxlee.svitlo.features.home.models.Event
 import org.exxlexxlee.svitlo.features.home.models.ViewState
-import org.exxlexxlee.svitlo.ui.schedule.CardPalette
-import org.exxlexxlee.svitlo.ui.theme.SvitloTheme
+import org.exxlexxlee.svitlo.schedule.CardPalette
+import org.exxlexxlee.svitlo.theme.SvitloTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeContent(
     viewState: ViewState,
     eventHandler: (Event) -> Unit,
-    cardContent: (@Composable (PlaceCardUi) -> Unit)? = null,
 ) {
     val pending = viewState.cards.firstOrNull { it.id == viewState.pendingDeleteId }
     if (pending != null) {
@@ -86,7 +85,6 @@ fun HomeContent(
                 .padding(padding),
             viewState = viewState,
             eventHandler = eventHandler,
-            cardContent = cardContent,
         )
     }
 }
@@ -96,7 +94,6 @@ fun HomeContent(
 private fun ColumnHeader(
     viewState: ViewState,
     eventHandler: (Event) -> Unit,
-    cardContent: (@Composable (PlaceCardUi) -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     androidx.compose.foundation.layout.Column(modifier = modifier) {
@@ -166,7 +163,7 @@ private fun ColumnHeader(
                             }
                         }
                         items(viewState.cards, key = { it.id }) { card ->
-                            if (cardContent != null) cardContent(card) else PlaceCard(
+                            PlaceCard(
                                 card = card,
                                 eventHandler = eventHandler
                             )

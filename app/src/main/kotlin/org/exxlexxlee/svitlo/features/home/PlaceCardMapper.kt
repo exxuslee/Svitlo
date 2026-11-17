@@ -2,10 +2,12 @@ package org.exxlexxlee.svitlo.features.home
 
 import org.exxlexxlee.domain.model.OutageSchedule
 import org.exxlexxlee.domain.model.Place
-import org.exxlexxlee.svitlo.ui.schedule.ScheduleCardMapper
+import org.exxlexxlee.svitlo.schedule.CountdownTarget
+import org.exxlexxlee.svitlo.schedule.ScheduleCardMapper
+import org.exxlexxlee.svitlo.schedule.ScheduleCardUi
 
-typealias CountdownTarget = org.exxlexxlee.svitlo.ui.schedule.CountdownTarget
-typealias PlaceCardUi = org.exxlexxlee.svitlo.ui.schedule.ScheduleCardUi
+typealias CountdownTarget = CountdownTarget
+typealias PlaceCardUi = ScheduleCardUi
 
 object PlaceCardMapper {
     fun map(

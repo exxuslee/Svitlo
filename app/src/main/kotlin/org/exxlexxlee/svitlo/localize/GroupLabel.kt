@@ -1,0 +1,13 @@
+package org.exxlexxlee.svitlo.localize
+
+internal fun groupLabel(name: String): String {
+    val normalized = name.trim()
+    return if (
+        normalized.startsWith("Група", ignoreCase = true) ||
+        normalized.startsWith("Черга", ignoreCase = true)
+    ) {
+        normalized
+    } else {
+        "Група $normalized"
+    }
+}

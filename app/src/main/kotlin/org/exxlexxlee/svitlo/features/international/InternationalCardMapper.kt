@@ -1,15 +1,25 @@
 package org.exxlexxlee.svitlo.features.international
 
 import org.exxlexxlee.domain.mapper.InternationalScheduleMapper
+import org.exxlexxlee.domain.mapper.OutageSnapshotMapper
+import org.exxlexxlee.domain.model.GeoPoint
+import org.exxlexxlee.domain.model.OutageCardState
+import org.exxlexxlee.domain.model.locationZone
 import org.exxlexxlee.domain.model.InternationalOutage
 import org.exxlexxlee.domain.model.OutageSource
 import org.exxlexxlee.domain.model.PowerState
-import org.exxlexxlee.svitlo.ui.schedule.ScheduleCardUi
+import org.exxlexxlee.svitlo.schedule.ScheduleCardUi
 import java.time.Instant
 
 object InternationalCardMapper {
-    fun map(events: List<InternationalOutage>, source: OutageSource, now: Instant, location: String = events.firstOrNull()?.location.orEmpty(), locationPoint: org.exxlexxlee.domain.model.GeoPoint? = null): ScheduleCardUi {
-        val zone = org.exxlexxlee.domain.model.locationZone(source.zoneId)
+    fun map(
+        events: List<InternationalOutage>,
+        source: OutageSource,
+        now: Instant,
+        location: String = events.firstOrNull()?.location.orEmpty(),
+        locationPoint: GeoPoint? = null,
+    ): ScheduleCardUi {
+        val zone = locationZone(source.zoneId)
         val localNow = now.atZone(zone)
         val today = InternationalScheduleMapper.day(events, localNow.toLocalDate(), zone)
         val tomorrow =
@@ -38,8 +48,8 @@ object InternationalCardMapper {
             schedulesSuspended = false,
             error = null,
             localizeGroupLabel = false,
-            outageState = org.exxlexxlee.domain.model.OutageCardState.Content(
-                org.exxlexxlee.domain.mapper.OutageSnapshotMapper.international(events, source, now, location, locationPoint),
+            outageState = OutageCardState.Content(
+                OutageSnapshotMapper.international(events, source, now, location, locationPoint),
             ),
             now = now,
         )

@@ -4,7 +4,7 @@ import kotlinx.datetime.Clock
 import org.exxlexxlee.domain.model.KyivTime
 import org.exxlexxlee.domain.model.OutageSchedule
 import org.exxlexxlee.domain.model.Selection
-import org.exxlexxlee.svitlo.ui.schedule.ScheduleCardMapper
+import org.exxlexxlee.svitlo.schedule.ScheduleCardMapper
 
 object ScheduleWidgetMapper {
     fun map(

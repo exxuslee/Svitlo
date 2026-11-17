@@ -1,0 +1,9 @@
+package org.exxlexxlee.svitlo.schedule
+
+import androidx.compose.ui.graphics.Color
+import androidx.glance.unit.ColorProvider
+import androidx.glance.color.ColorProvider as dayNightColorProvider
+
+/** Explicit public factory; keep the widget's chosen palette in either system theme. */
+internal fun glanceColor(color: Color): ColorProvider =
+    dayNightColorProvider(day = color, night = color)

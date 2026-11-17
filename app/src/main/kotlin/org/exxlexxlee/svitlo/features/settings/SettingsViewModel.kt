@@ -8,7 +8,7 @@ import org.exxlexxlee.domain.usecase.SetDarkTheme
 import org.exxlexxlee.svitlo.features.settings.models.Action
 import org.exxlexxlee.svitlo.features.settings.models.Event
 import org.exxlexxlee.svitlo.features.settings.models.ViewState
-import org.exxlexxlee.svitlo.ui.common.BaseViewModel
+import org.exxlexxlee.svitlo.common.BaseViewModel
 
 class SettingsViewModel(
     private val observeDarkTheme: ObserveDarkTheme,

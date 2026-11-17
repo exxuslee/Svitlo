@@ -25,6 +25,12 @@ import org.exxlexxlee.domain.model.Place
 import org.exxlexxlee.domain.model.PowerState
 import org.exxlexxlee.domain.model.Region
 import org.exxlexxlee.domain.model.Selection
+import org.exxlexxlee.domain.model.AddressOption
+import org.exxlexxlee.domain.model.Country
+import org.exxlexxlee.domain.model.InternationalOutage
+import org.exxlexxlee.domain.model.OutageAddress
+import org.exxlexxlee.domain.model.OutageSource
+import org.exxlexxlee.domain.repository.InternationalOutageRepository
 import org.exxlexxlee.domain.repository.ScheduleRepository
 import org.exxlexxlee.domain.repository.SelectionRepository
 import org.exxlexxlee.domain.usecase.DeletePlace
@@ -123,6 +129,13 @@ class HomeViewModelTest {
             deletePlace = DeletePlace(fakeSelectionRepository),
             clock = fixedClock,
             widgetManager = widgetManager,
+            internationalRepository = object : InternationalOutageRepository {
+                override fun sources(country: Country) = emptyList<OutageSource>()
+                override suspend fun outages(source: OutageSource, address: OutageAddress?) =
+                    emptyList<InternationalOutage>()
+                override suspend fun cities(query: String) = emptyList<AddressOption>()
+                override suspend fun streets(cityId: Long, query: String) = emptyList<AddressOption>()
+            },
         )
         viewModelStore.put("home", viewModel)
         return viewModel

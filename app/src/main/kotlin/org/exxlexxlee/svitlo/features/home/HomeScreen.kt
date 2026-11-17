@@ -16,22 +16,18 @@ import org.exxlexxlee.svitlo.R
 import org.exxlexxlee.svitlo.features.home.models.Action
 import org.exxlexxlee.svitlo.features.home.models.Event
 import org.exxlexxlee.svitlo.navigation.Routes
-import org.exxlexxlee.svitlo.ui.common.LocalNavController
-import org.exxlexxlee.svitlo.ui.common.ObserveActions
+import org.exxlexxlee.svitlo.localize.LocalNavController
+import org.exxlexxlee.svitlo.common.ObserveActions
 import org.exxlexxlee.svitlo.widget.WidgetManager
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel? = null,
+    viewModel: HomeViewModel = koinViewModel(),
     navController: NavController = LocalNavController.current,
 ) {
-    val internationalCards: org.exxlexxlee.svitlo.features.international.SavedInternationalViewModel =
-        koinViewModel()
-    val savedCards by internationalCards.cards.collectAsStateWithLifecycle()
-    val ukrainianViewModel = viewModel ?: koinViewModel<HomeViewModel>()
-    val viewState by ukrainianViewModel.viewStates().collectAsStateWithLifecycle()
+    val viewState by viewModel.viewStates().collectAsStateWithLifecycle()
     val widgetManager: WidgetManager = koinInject()
     var showWidgetHelp by rememberSaveable { mutableStateOf(false) }
 
@@ -49,22 +45,16 @@ fun HomeScreen(
     }
 
     LifecycleResumeEffect(Unit) {
-        ukrainianViewModel.obtainEvent(Event.CheckWidget)
+        viewModel.obtainEvent(Event.CheckWidget)
         onPauseOrDispose { }
     }
 
     HomeContent(
         viewState = viewState,
-        eventHandler = { event ->
-            if (event == Event.Refresh) internationalCards.refresh()
-            ukrainianViewModel.obtainEvent(event)
-        },
-        cardContent = { card ->
-            PlaceCard(savedCards[card.id] ?: card, ukrainianViewModel::obtainEvent)
-        },
+        eventHandler = viewModel::obtainEvent,
     )
 
-    ObserveActions(ukrainianViewModel.viewActions()) { action ->
+    ObserveActions(viewModel.viewActions()) { action ->
         when (action) {
             is Action.OpenAddress -> {
                 val placeId = action.placeId

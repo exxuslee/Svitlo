@@ -22,7 +22,7 @@ import org.exxlexxlee.svitlo.features.address.models.AddressStep
 import org.exxlexxlee.svitlo.features.address.models.Event
 import org.exxlexxlee.svitlo.features.address.models.ViewState
 import org.exxlexxlee.svitlo.features.address.models.detailLabel
-import org.exxlexxlee.svitlo.ui.common.BaseViewModel
+import org.exxlexxlee.svitlo.common.BaseViewModel
 
 class AddressViewModel(
     private val getAreas: GetAreas,

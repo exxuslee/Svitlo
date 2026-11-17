@@ -10,15 +10,9 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val presentationModule = module {
-    viewModel {
-        org.exxlexxlee.svitlo.features.international.SavedInternationalViewModel(
-            get(),
-            get()
-        )
-    }
     viewModel { InternationalViewModel(get(), get(), get()) }
     viewModel { AppViewModel(get(), get()) }
-    viewModel { HomeViewModel(get(), get(), get(), get(), get()) }
+    viewModel { HomeViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel {
         AddressViewModel(
             get<GetAreas>(),

@@ -30,9 +30,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import org.exxlexxlee.svitlo.R
 import org.exxlexxlee.svitlo.di.appVersion
-import org.exxlexxlee.svitlo.ui.common.LocalNavController
-import org.exxlexxlee.svitlo.ui.theme.AppColors
-import org.exxlexxlee.svitlo.ui.theme.SvitloTheme
+import org.exxlexxlee.svitlo.localize.LocalNavController
+import org.exxlexxlee.svitlo.theme.AppColors
+import org.exxlexxlee.svitlo.theme.SvitloTheme
 import org.koin.compose.koinInject
 
 @Composable

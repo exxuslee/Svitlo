@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -23,7 +22,7 @@ import org.exxlexxlee.domain.model.Country
 import org.exxlexxlee.svitlo.features.address.models.Event
 import org.exxlexxlee.svitlo.features.address.models.ViewState
 import org.exxlexxlee.svitlo.features.settings.countryNameRes
-import org.exxlexxlee.svitlo.ui.common.flagRes
+import org.exxlexxlee.svitlo.localize.flagRes
 import java.text.Collator
 
 @Composable

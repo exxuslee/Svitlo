@@ -31,7 +31,7 @@ import org.exxlexxlee.domain.model.OutageGroup
 import org.exxlexxlee.svitlo.R
 import org.exxlexxlee.svitlo.features.address.models.Event
 import org.exxlexxlee.svitlo.features.address.models.ViewState
-import org.exxlexxlee.svitlo.ui.theme.AppColors
+import org.exxlexxlee.svitlo.theme.AppColors
 
 @Composable
 fun GroupStep(viewState: ViewState, eventHandler: (Event) -> Unit) {

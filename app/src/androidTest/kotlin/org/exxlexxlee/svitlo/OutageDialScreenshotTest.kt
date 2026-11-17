@@ -4,8 +4,8 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import org.exxlexxlee.domain.model.PowerState
-import org.exxlexxlee.svitlo.ui.schedule.ScheduleTimelineView
-import org.exxlexxlee.svitlo.ui.theme.SvitloTheme
+import org.exxlexxlee.svitlo.schedule.ScheduleTimelineView
+import org.exxlexxlee.svitlo.theme.SvitloTheme
 import org.junit.Rule
 import org.junit.Test
 

@@ -2,7 +2,7 @@ package org.exxlexxlee.svitlo.di
 
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import org.exxlexxlee.svitlo.messaging.PushNotifications
+import org.exxlexxlee.svitlo.push.PushNotifications
 import org.exxlexxlee.svitlo.telemetry.CrashContext
 import org.exxlexxlee.svitlo.telemetry.FirebaseCrashContext
 import org.exxlexxlee.svitlo.telemetry.FirebaseScreenAnalytics

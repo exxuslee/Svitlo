@@ -27,7 +27,7 @@ import org.exxlexxlee.domain.model.Supplier
 import org.exxlexxlee.svitlo.R
 import org.exxlexxlee.svitlo.features.address.models.Event
 import org.exxlexxlee.svitlo.features.address.models.ViewState
-import org.exxlexxlee.svitlo.ui.theme.AppColors
+import org.exxlexxlee.svitlo.theme.AppColors
 
 
 private val CardShape = RoundedCornerShape(20.dp)

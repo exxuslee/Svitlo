@@ -62,13 +62,15 @@ import org.exxlexxlee.domain.model.PowerState
 import org.exxlexxlee.svitlo.R
 import org.exxlexxlee.svitlo.features.address.AddressIcon
 import org.exxlexxlee.svitlo.features.home.models.Event
-import org.exxlexxlee.svitlo.ui.common.localizedDuration
-import org.exxlexxlee.svitlo.ui.common.localizedGroupLabel
-import org.exxlexxlee.svitlo.ui.schedule.CardPalette
-import org.exxlexxlee.svitlo.ui.schedule.ScheduleDaySwitch
-import org.exxlexxlee.svitlo.ui.schedule.ScheduleTimelineView
-import org.exxlexxlee.svitlo.ui.schedule.stateColor
-import org.exxlexxlee.svitlo.ui.theme.SvitloTheme
+import org.exxlexxlee.svitlo.localize.localizedDuration
+import org.exxlexxlee.svitlo.localize.localizedGroupLabel
+import org.exxlexxlee.svitlo.schedule.OutageSnapshotContent
+import org.exxlexxlee.svitlo.schedule.CardPalette
+import org.exxlexxlee.svitlo.schedule.ScheduleDaySwitch
+import org.exxlexxlee.svitlo.schedule.ScheduleTimelineView
+import org.exxlexxlee.svitlo.schedule.stateColor
+import org.exxlexxlee.svitlo.theme.SvitloTheme
+import java.time.Instant
 import kotlin.math.roundToInt
 
 @Composable
@@ -269,7 +271,7 @@ private fun ScheduleCardBody(card: PlaceCardUi, showDragHandle: Boolean = true) 
     card.outageState?.takeIf { !card.localizeGroupLabel }?.let { state ->
         Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             CardHeader(card, showDragHandle)
-            org.exxlexxlee.svitlo.ui.schedule.OutageSnapshotContent(state, card.now ?: java.time.Instant.now(), card.id)
+            OutageSnapshotContent(state, card.now ?: Instant.now(), card.id)
         }
         return
     }

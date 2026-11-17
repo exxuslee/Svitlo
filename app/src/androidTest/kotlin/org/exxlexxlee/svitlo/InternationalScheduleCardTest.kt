@@ -11,7 +11,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import org.exxlexxlee.domain.model.*
 import org.exxlexxlee.svitlo.features.home.ReadOnlyScheduleCard
 import org.exxlexxlee.svitlo.features.international.InternationalCardMapper
-import org.exxlexxlee.svitlo.ui.theme.SvitloTheme
+import org.exxlexxlee.svitlo.theme.SvitloTheme
 import org.junit.Rule
 import org.junit.Test
 import java.io.File
