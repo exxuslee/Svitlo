@@ -1,5 +1,7 @@
 package org.exxlexxlee.svitlo.telemetry
 
+import org.exxlexxlee.svitlo.navigation.AppScreen
+
 fun interface ScreenAnalytics {
     fun trackScreen(screen: AppScreen)
 }

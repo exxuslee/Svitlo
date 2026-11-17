@@ -1,4 +1,4 @@
-package org.exxlexxlee.svitlo.theme
+package org.exxlexxlee.svitlo.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

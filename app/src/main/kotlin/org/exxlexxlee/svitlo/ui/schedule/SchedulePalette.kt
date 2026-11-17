@@ -1,9 +1,9 @@
-package org.exxlexxlee.svitlo.schedule
+package org.exxlexxlee.svitlo.ui.schedule
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import org.exxlexxlee.domain.model.PowerState
-import org.exxlexxlee.svitlo.theme.LocalDarkTheme
+import org.exxlexxlee.svitlo.ui.theme.LocalDarkTheme
 
 internal class SchedulePalette(private val dark: Boolean) {
     val Screen: Color

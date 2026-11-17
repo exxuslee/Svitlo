@@ -3,6 +3,7 @@ package org.exxlexxlee.svitlo.telemetry
 import android.os.Bundle
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import org.exxlexxlee.svitlo.navigation.AppScreen
 
 internal class FirebaseScreenAnalytics(private val analytics: FirebaseAnalytics) : ScreenAnalytics {
     override fun trackScreen(screen: AppScreen) {

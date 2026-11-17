@@ -1,6 +1,4 @@
-package org.exxlexxlee.svitlo.telemetry
-
-import org.exxlexxlee.svitlo.navigation.Routes
+package org.exxlexxlee.svitlo.navigation
 
 /** Only these fixed names may be sent to telemetry, never route arguments. */
 enum class AppScreen(val analyticsName: String) {

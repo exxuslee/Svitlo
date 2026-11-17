@@ -18,8 +18,8 @@ import org.exxlexxlee.domain.usecase.ObservePlaceSchedules
 import org.exxlexxlee.svitlo.widget.state.WidgetDaySelection
 import org.exxlexxlee.svitlo.widget.state.WidgetPlaceSelection
 import org.exxlexxlee.svitlo.widget.state.observeWidgetUi
-import org.exxlexxlee.svitlo.widget.ui.ScheduleWidgetContent
-import org.exxlexxlee.svitlo.widget.ui.ScheduleWidgetMapper
+import org.exxlexxlee.svitlo.ui.widget.ScheduleWidgetContent
+import org.exxlexxlee.svitlo.ui.widget.ScheduleWidgetMapper
 import org.exxlexxlee.svitlo.widget.update.WidgetTimeUpdates
 import org.koin.core.context.GlobalContext
 

@@ -1,4 +1,4 @@
-package org.exxlexxlee.svitlo.schedule
+package org.exxlexxlee.svitlo.ui.schedule
 
 import org.exxlexxlee.domain.mapper.OutageSnapshotMapper
 import org.exxlexxlee.domain.model.OutageCardState

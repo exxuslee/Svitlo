@@ -5,8 +5,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.datetime.Clock
 import org.exxlexxlee.domain.usecase.ObservePlaceSchedules
-import org.exxlexxlee.svitlo.widget.ui.ScheduleWidgetMapper
-import org.exxlexxlee.svitlo.widget.ui.ScheduleWidgetUi
+import org.exxlexxlee.svitlo.ui.widget.ScheduleWidgetMapper
+import org.exxlexxlee.svitlo.ui.widget.ScheduleWidgetUi
 import org.exxlexxlee.svitlo.widget.update.observeWidgetTime
 
 internal fun observeWidgetUi(

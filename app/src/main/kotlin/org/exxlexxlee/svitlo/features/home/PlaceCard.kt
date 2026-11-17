@@ -64,12 +64,12 @@ import org.exxlexxlee.svitlo.features.address.AddressIcon
 import org.exxlexxlee.svitlo.features.home.models.Event
 import org.exxlexxlee.svitlo.localize.localizedDuration
 import org.exxlexxlee.svitlo.localize.localizedGroupLabel
-import org.exxlexxlee.svitlo.schedule.OutageSnapshotContent
-import org.exxlexxlee.svitlo.schedule.CardPalette
-import org.exxlexxlee.svitlo.schedule.ScheduleDaySwitch
-import org.exxlexxlee.svitlo.schedule.ScheduleTimelineView
-import org.exxlexxlee.svitlo.schedule.stateColor
-import org.exxlexxlee.svitlo.theme.SvitloTheme
+import org.exxlexxlee.svitlo.ui.schedule.OutageSnapshotContent
+import org.exxlexxlee.svitlo.ui.schedule.CardPalette
+import org.exxlexxlee.svitlo.ui.schedule.ScheduleDaySwitch
+import org.exxlexxlee.svitlo.ui.schedule.ScheduleTimelineView
+import org.exxlexxlee.svitlo.ui.schedule.stateColor
+import org.exxlexxlee.svitlo.ui.theme.SvitloTheme
 import java.time.Instant
 import kotlin.math.roundToInt
 

@@ -1,5 +1,6 @@
 package org.exxlexxlee.svitlo.telemetry
 
+import org.exxlexxlee.svitlo.navigation.AppScreen
 import org.exxlexxlee.svitlo.navigation.Routes
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue

@@ -18,10 +18,10 @@ import org.exxlexxlee.domain.model.*
 import java.time.ZoneId
 import androidx.compose.ui.unit.dp
 import androidx.test.platform.app.InstrumentationRegistry
-import org.exxlexxlee.svitlo.schedule.OutageSnapshotContent
-import org.exxlexxlee.svitlo.schedule.OutageStatePreviewProvider
-import org.exxlexxlee.svitlo.schedule.previewNow
-import org.exxlexxlee.svitlo.theme.SvitloTheme
+import org.exxlexxlee.svitlo.ui.schedule.OutageSnapshotContent
+import org.exxlexxlee.svitlo.ui.schedule.OutageStatePreviewProvider
+import org.exxlexxlee.svitlo.ui.schedule.previewNow
+import org.exxlexxlee.svitlo.ui.theme.SvitloTheme
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test

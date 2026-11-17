@@ -1,10 +1,10 @@
-package org.exxlexxlee.svitlo.widget.ui
+package org.exxlexxlee.svitlo.ui.widget
 
 import kotlinx.datetime.Clock
 import org.exxlexxlee.domain.model.KyivTime
 import org.exxlexxlee.domain.model.OutageSchedule
 import org.exxlexxlee.domain.model.Selection
-import org.exxlexxlee.svitlo.schedule.ScheduleCardMapper
+import org.exxlexxlee.svitlo.ui.schedule.ScheduleCardMapper
 
 object ScheduleWidgetMapper {
     fun map(

@@ -45,7 +45,7 @@ import org.exxlexxlee.svitlo.features.international.models.Event
 import org.exxlexxlee.svitlo.features.international.models.InternationalStep
 import org.exxlexxlee.svitlo.features.international.models.ViewState
 import org.exxlexxlee.svitlo.features.settings.countryNameRes
-import org.exxlexxlee.svitlo.theme.AppColors
+import org.exxlexxlee.svitlo.ui.theme.AppColors
 
 @Composable
 fun InternationalContent(

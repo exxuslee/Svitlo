@@ -1,4 +1,4 @@
-package org.exxlexxlee.svitlo.schedule
+package org.exxlexxlee.svitlo.ui.schedule
 
 import android.graphics.Bitmap
 import android.graphics.Canvas

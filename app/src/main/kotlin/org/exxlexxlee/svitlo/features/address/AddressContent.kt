@@ -44,8 +44,8 @@ import org.exxlexxlee.svitlo.R
 import org.exxlexxlee.svitlo.features.address.models.AddressStep
 import org.exxlexxlee.svitlo.features.address.models.Event
 import org.exxlexxlee.svitlo.features.address.models.ViewState
-import org.exxlexxlee.svitlo.theme.AppColors
-import org.exxlexxlee.svitlo.theme.SvitloTheme
+import org.exxlexxlee.svitlo.ui.theme.AppColors
+import org.exxlexxlee.svitlo.ui.theme.SvitloTheme
 
 @Composable
 fun AddressContent(

@@ -21,9 +21,9 @@ import kotlinx.coroutines.runBlocking
 import org.exxlexxlee.domain.model.PowerState
 import org.exxlexxlee.svitlo.R
 import org.exxlexxlee.svitlo.widget.state.WidgetDaySelection
-import org.exxlexxlee.svitlo.widget.ui.ScheduleWidgetContent
-import org.exxlexxlee.svitlo.widget.ui.ScheduleWidgetUi
-import org.exxlexxlee.svitlo.widget.ui.WidgetDayUi
+import org.exxlexxlee.svitlo.ui.widget.ScheduleWidgetContent
+import org.exxlexxlee.svitlo.ui.widget.ScheduleWidgetUi
+import org.exxlexxlee.svitlo.ui.widget.WidgetDayUi
 import org.exxlexxlee.svitlo.widget.update.ACTION_WIDGET_TIME
 import org.exxlexxlee.svitlo.widget.update.WidgetTimeUpdates
 import org.exxlexxlee.svitlo.widget.update.nextWidgetTimeUpdate

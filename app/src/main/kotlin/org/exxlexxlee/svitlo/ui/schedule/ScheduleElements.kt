@@ -1,4 +1,4 @@
-package org.exxlexxlee.svitlo.schedule
+package org.exxlexxlee.svitlo.ui.schedule
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

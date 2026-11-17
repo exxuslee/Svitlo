@@ -1,4 +1,4 @@
-package org.exxlexxlee.svitlo.theme
+package org.exxlexxlee.svitlo.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

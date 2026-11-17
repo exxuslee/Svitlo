@@ -30,7 +30,7 @@ import org.exxlexxlee.svitlo.navigation.AppNavHost
 import org.exxlexxlee.svitlo.telemetry.ScreenTracker
 import org.exxlexxlee.svitlo.telemetry.TrackNavigation
 import org.exxlexxlee.svitlo.localize.LocalNavController
-import org.exxlexxlee.svitlo.theme.SvitloTheme
+import org.exxlexxlee.svitlo.ui.theme.SvitloTheme
 import org.exxlexxlee.svitlo.update.PlayAppUpdater
 import org.koin.android.ext.android.inject
 import org.koin.androidx.compose.koinViewModel

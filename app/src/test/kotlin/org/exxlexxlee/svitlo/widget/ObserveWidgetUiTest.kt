@@ -26,7 +26,7 @@ import org.exxlexxlee.domain.usecase.ObservePlaces
 import org.exxlexxlee.domain.usecase.ObserveSchedule
 import org.exxlexxlee.svitlo.widget.state.nextWidgetPlaceId
 import org.exxlexxlee.svitlo.widget.state.observeWidgetUi
-import org.exxlexxlee.svitlo.widget.ui.ScheduleWidgetUi
+import org.exxlexxlee.svitlo.ui.widget.ScheduleWidgetUi
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test

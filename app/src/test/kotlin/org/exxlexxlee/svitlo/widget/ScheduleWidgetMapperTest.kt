@@ -11,7 +11,7 @@ import org.exxlexxlee.domain.model.PowerState
 import org.exxlexxlee.domain.model.Region
 import org.exxlexxlee.domain.model.Selection
 import org.exxlexxlee.svitlo.features.home.PlaceCardMapper
-import org.exxlexxlee.svitlo.widget.ui.ScheduleWidgetMapper
+import org.exxlexxlee.svitlo.ui.widget.ScheduleWidgetMapper
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test

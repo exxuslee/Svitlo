@@ -1,4 +1,4 @@
-package org.exxlexxlee.svitlo.widget.ui
+package org.exxlexxlee.svitlo.ui.widget
 
 import org.exxlexxlee.domain.model.PowerState
 

@@ -8,7 +8,7 @@ import org.exxlexxlee.domain.model.locationZone
 import org.exxlexxlee.domain.model.InternationalOutage
 import org.exxlexxlee.domain.model.OutageSource
 import org.exxlexxlee.domain.model.PowerState
-import org.exxlexxlee.svitlo.schedule.ScheduleCardUi
+import org.exxlexxlee.svitlo.ui.schedule.ScheduleCardUi
 import java.time.Instant
 
 object InternationalCardMapper {

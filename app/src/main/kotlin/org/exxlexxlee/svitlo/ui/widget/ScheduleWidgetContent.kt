@@ -1,4 +1,4 @@
-package org.exxlexxlee.svitlo.widget.ui
+package org.exxlexxlee.svitlo.ui.widget
 
 import android.view.View
 import android.widget.RemoteViews
@@ -28,11 +28,11 @@ import androidx.glance.text.TextStyle
 import org.exxlexxlee.svitlo.MainActivity
 import org.exxlexxlee.svitlo.R
 import org.exxlexxlee.svitlo.localize.localizedGroupLabel
-import org.exxlexxlee.svitlo.schedule.DarkSchedulePalette
-import org.exxlexxlee.svitlo.schedule.GlanceScheduleDaySwitch
-import org.exxlexxlee.svitlo.schedule.GlanceScheduleGroupBadge
-import org.exxlexxlee.svitlo.schedule.GlanceScheduleTimeline
-import org.exxlexxlee.svitlo.schedule.glanceColor
+import org.exxlexxlee.svitlo.ui.schedule.DarkSchedulePalette
+import org.exxlexxlee.svitlo.ui.schedule.GlanceScheduleDaySwitch
+import org.exxlexxlee.svitlo.ui.schedule.GlanceScheduleGroupBadge
+import org.exxlexxlee.svitlo.ui.schedule.GlanceScheduleTimeline
+import org.exxlexxlee.svitlo.ui.schedule.glanceColor
 import org.exxlexxlee.svitlo.widget.NextPlaceAction
 import org.exxlexxlee.svitlo.widget.WidgetDayReceiver
 import org.exxlexxlee.svitlo.widget.state.WidgetDaySelection

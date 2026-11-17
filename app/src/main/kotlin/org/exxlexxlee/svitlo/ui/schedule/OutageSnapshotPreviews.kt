@@ -1,4 +1,4 @@
-package org.exxlexxlee.svitlo.schedule
+package org.exxlexxlee.svitlo.ui.schedule
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,7 +11,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import org.exxlexxlee.domain.model.*
-import org.exxlexxlee.svitlo.theme.SvitloTheme
+import org.exxlexxlee.svitlo.ui.theme.SvitloTheme
 import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId

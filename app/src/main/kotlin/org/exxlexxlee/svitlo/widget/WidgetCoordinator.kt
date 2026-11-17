@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import org.exxlexxlee.domain.usecase.ObservePlaceSchedules
-import org.exxlexxlee.svitlo.widget.ui.ScheduleWidgetMapper
+import org.exxlexxlee.svitlo.ui.widget.ScheduleWidgetMapper
 import org.exxlexxlee.svitlo.widget.update.WidgetTimeUpdates
 import org.exxlexxlee.svitlo.widget.update.observeWidgetTime
 
