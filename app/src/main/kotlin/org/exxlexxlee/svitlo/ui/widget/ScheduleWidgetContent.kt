@@ -27,7 +27,7 @@ import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import org.exxlexxlee.svitlo.MainActivity
 import org.exxlexxlee.svitlo.R
-import org.exxlexxlee.svitlo.localize.localizedGroupLabel
+import org.exxlexxlee.svitlo.ui.localize.localizedGroupLabel
 import org.exxlexxlee.svitlo.ui.schedule.DarkSchedulePalette
 import org.exxlexxlee.svitlo.ui.schedule.GlanceScheduleDaySwitch
 import org.exxlexxlee.svitlo.ui.schedule.GlanceScheduleGroupBadge

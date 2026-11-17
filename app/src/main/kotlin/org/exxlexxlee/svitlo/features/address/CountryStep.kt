@@ -22,7 +22,7 @@ import org.exxlexxlee.domain.model.Country
 import org.exxlexxlee.svitlo.features.address.models.Event
 import org.exxlexxlee.svitlo.features.address.models.ViewState
 import org.exxlexxlee.svitlo.features.settings.countryNameRes
-import org.exxlexxlee.svitlo.localize.flagRes
+import org.exxlexxlee.svitlo.ui.localize.flagRes
 import java.text.Collator
 
 @Composable

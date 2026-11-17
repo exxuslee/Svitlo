@@ -12,7 +12,7 @@ import org.exxlexxlee.svitlo.features.international.InternationalScreen
 import org.exxlexxlee.svitlo.features.international.InternationalViewModel
 import org.exxlexxlee.svitlo.features.international.models.Event as InternationalEvent
 import org.exxlexxlee.svitlo.navigation.Routes
-import org.exxlexxlee.svitlo.localize.LocalNavController
+import org.exxlexxlee.svitlo.ui.localize.LocalNavController
 import org.exxlexxlee.svitlo.common.ObserveActions
 import org.koin.androidx.compose.koinViewModel
 

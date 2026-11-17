@@ -62,8 +62,8 @@ import org.exxlexxlee.domain.model.PowerState
 import org.exxlexxlee.svitlo.R
 import org.exxlexxlee.svitlo.features.address.AddressIcon
 import org.exxlexxlee.svitlo.features.home.models.Event
-import org.exxlexxlee.svitlo.localize.localizedDuration
-import org.exxlexxlee.svitlo.localize.localizedGroupLabel
+import org.exxlexxlee.svitlo.ui.localize.localizedDuration
+import org.exxlexxlee.svitlo.ui.localize.localizedGroupLabel
 import org.exxlexxlee.svitlo.ui.schedule.OutageSnapshotContent
 import org.exxlexxlee.svitlo.ui.schedule.CardPalette
 import org.exxlexxlee.svitlo.ui.schedule.ScheduleDaySwitch

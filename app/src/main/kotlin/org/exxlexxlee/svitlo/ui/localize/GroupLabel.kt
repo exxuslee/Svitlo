@@ -1,4 +1,4 @@
-package org.exxlexxlee.svitlo.localize
+package org.exxlexxlee.svitlo.ui.localize
 
 internal fun groupLabel(name: String): String {
     val normalized = name.trim()

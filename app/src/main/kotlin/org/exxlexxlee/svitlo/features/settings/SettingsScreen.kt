@@ -51,7 +51,7 @@ import org.exxlexxlee.svitlo.features.settings.models.Action
 import org.exxlexxlee.svitlo.features.settings.models.Event
 import org.exxlexxlee.svitlo.features.settings.models.ViewState
 import org.exxlexxlee.svitlo.navigation.Routes
-import org.exxlexxlee.svitlo.localize.LocalNavController
+import org.exxlexxlee.svitlo.ui.localize.LocalNavController
 import org.exxlexxlee.svitlo.common.ObserveActions
 import org.exxlexxlee.svitlo.ui.theme.AppColors
 import org.exxlexxlee.svitlo.ui.theme.SvitloTheme

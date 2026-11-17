@@ -6,7 +6,7 @@ import org.exxlexxlee.domain.model.OutageSchedule
 import org.exxlexxlee.domain.model.OutageWindows
 import org.exxlexxlee.domain.model.PowerState
 import org.exxlexxlee.domain.model.Selection
-import org.exxlexxlee.svitlo.localize.groupLabel
+import org.exxlexxlee.svitlo.ui.localize.groupLabel
 import java.time.Duration
 import java.time.Instant
 

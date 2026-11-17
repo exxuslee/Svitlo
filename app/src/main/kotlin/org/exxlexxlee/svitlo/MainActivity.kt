@@ -29,7 +29,7 @@ import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import org.exxlexxlee.svitlo.navigation.AppNavHost
 import org.exxlexxlee.svitlo.telemetry.ScreenTracker
 import org.exxlexxlee.svitlo.telemetry.TrackNavigation
-import org.exxlexxlee.svitlo.localize.LocalNavController
+import org.exxlexxlee.svitlo.ui.localize.LocalNavController
 import org.exxlexxlee.svitlo.ui.theme.SvitloTheme
 import org.exxlexxlee.svitlo.update.PlayAppUpdater
 import org.koin.android.ext.android.inject

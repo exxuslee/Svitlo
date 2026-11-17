@@ -1,4 +1,4 @@
-package org.exxlexxlee.svitlo.localize
+package org.exxlexxlee.svitlo.ui.localize
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource

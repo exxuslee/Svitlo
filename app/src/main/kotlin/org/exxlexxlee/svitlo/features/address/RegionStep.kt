@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.sp
 import org.exxlexxlee.domain.model.ServiceArea
 import org.exxlexxlee.svitlo.features.address.models.Event
 import org.exxlexxlee.svitlo.features.address.models.ViewState
-import org.exxlexxlee.svitlo.localize.localizedRegionName
+import org.exxlexxlee.svitlo.ui.localize.localizedRegionName
 import org.exxlexxlee.svitlo.ui.theme.AppColors
 
 

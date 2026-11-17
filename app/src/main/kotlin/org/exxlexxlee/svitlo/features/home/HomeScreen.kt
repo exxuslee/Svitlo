@@ -16,7 +16,7 @@ import org.exxlexxlee.svitlo.R
 import org.exxlexxlee.svitlo.features.home.models.Action
 import org.exxlexxlee.svitlo.features.home.models.Event
 import org.exxlexxlee.svitlo.navigation.Routes
-import org.exxlexxlee.svitlo.localize.LocalNavController
+import org.exxlexxlee.svitlo.ui.localize.LocalNavController
 import org.exxlexxlee.svitlo.common.ObserveActions
 import org.exxlexxlee.svitlo.widget.WidgetManager
 import org.koin.androidx.compose.koinViewModel

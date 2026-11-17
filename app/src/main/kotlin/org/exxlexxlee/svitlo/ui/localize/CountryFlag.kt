@@ -1,4 +1,4 @@
-package org.exxlexxlee.svitlo.localize
+package org.exxlexxlee.svitlo.ui.localize
 
 import androidx.annotation.DrawableRes
 import org.exxlexxlee.domain.model.Country
